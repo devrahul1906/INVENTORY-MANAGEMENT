@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hatvet Pharma - Inventory Workflow Management</title>
+
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- SheetJS for Excel Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+      --warning: #d97706;
+      --success: #16a34a;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --transition-fast: 0.2s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--background);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    
+    .branding-header { text-align: center; width: 100%; margin-bottom: 4px; }
+    .logo-icon { font-size: 3rem; display: block; margin-bottom: 6px; line-height: 1; }
+    .branding-header h2 { font-size: 1.25rem; font-weight: 800; color: #1e3a8a; letter-spacing: -0.01em; }
+    .branding-header p { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+    .card {
+      width: 100%; background-color: var(--card-bg); padding: 22px; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .user-info-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+    .user-details { font-size: 0.88rem; color: var(--text-main); line-height: 1.4; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .metric-card { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 12px; border-radius: var(--radius-md); text-align: center; }
+    .metric-card.warning-card { background: #fffbeb; border-color: #fde68a; }
+    .metric-card.danger-card { background: #fef2f2; border-color: #fecaca; }
+    .metric-card span { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; }
+    .metric-card h3 { font-size: 1.5rem; color: var(--primary); font-weight: 800; margin-top: 2px; }
+    .metric-card.warning-card h3 { color: var(--warning); }
+    .metric-card.danger-card h3 { color: var(--danger); }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+
+    input[type="text"], input[type="password"], input[type="number"], input[type="date"], select {
+      width: 100%; padding: 11px 14px; font-size: 0.92rem; font-family: inherit; color: var(--text-main); background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); outline: none;
+    }
+
+    input:focus, select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+
+    .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+    .password-wrapper input { padding-right: 40px !important; }
+    .toggle-password { position: absolute; right: 12px; cursor: pointer; user-select: none; font-size: 1.1rem; display: none; z-index: 10; }
+
+    button {
+      width: 100%; padding: 12px 16px; font-size: 0.92rem; font-weight: 600; font-family: inherit; color: #ffffff; background-color: var(--primary); border: none; border-radius: var(--radius-sm); cursor: pointer; box-shadow: var(--shadow-sm); transition: background-color var(--transition-fast); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    button:hover { background-color: var(--primary-hover); }
+    button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+    button.btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
+    button.btn-secondary:hover { background-color: #cbd5e1; }
+    button.btn-success { background-color: var(--success); }
+    button.btn-success:hover { background-color: #15803d; }
+    button.btn-danger { background-color: var(--danger); }
+    button.btn-danger:hover { background-color: var(--danger-hover); }
+    button.btn-indigo { background-color: #4f46e5; }
+    button.btn-indigo:hover { background-color: #4338ca; }
+    button.btn-emerald { background-color: #059669; }
+    button.btn-emerald:hover { background-color: #047857; }
+
+    .history-list { max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .history-date-group { display: flex; flex-direction: column; gap: 6px; }
+    .history-date-header { font-size: 0.78rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 8px; border-radius: 4px; display: inline-block; width: fit-content; }
+    
+    .history-item { 
+      padding: 10px 12px; background-color: var(--background); border-radius: var(--radius-sm); border: 1px solid var(--border-color); 
+      display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 0.6fr; gap: 6px; align-items: center; font-size: 0.78rem; 
+    }
+    .history-item-header { font-weight: 700; color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+
+    .footer { font-size: 0.85rem; color: var(--text-muted); text-align: center; font-weight: 600; margin-top: 4px; }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px;
+    }
+
+    .modal-box {
+      background: var(--card-bg); width: 100%; max-width: 440px; border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 14px; animation: modalPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .pdf-item-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+    .pdf-item-table th, .pdf-item-table td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
+    .pdf-item-table th { background: var(--primary-light); color: var(--primary); }
+
+    @keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+
+<body>
+
+  <div id="app" class="container"></div>
+  <div id="modal-container"></div>
+  
+  <input type="file" id="purchasePdfInput" accept="application/pdf" style="display:none;" onchange="handlePurchasePdfUpload(this)">
+  <input type="file" id="dispatchPdfInput" accept="application/pdf" style="display:none;" onchange="handleDispatchPdfUpload(this)">
+  <input type="file" id="dispatchReturnPdfInput" accept="application/pdf" style="display:none;" onchange="handleDispatchReturnPdfUpload(this)">
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzp4-rrsVfrO7qr4TxkADC96o6aetr_sOEowPaR2uoaXPl58JfsvUuY094bFTjViw/exec";
+
+    let userScansCache = [];
+    let pendingDispatchPayload = null;
+    let pendingTransferPayload = null;
+    let pendingDispatchReturnPayload = null;
+
+    window.onload = function () {
+      loadScansFromLocalStorage();
+      if (localStorage.getItem("employee") && localStorage.getItem("warehouse")) {
+        syncDataAndShowDashboard();
+      } else {
+        showLoginPage();
+      }
+    };
+
+    function loadScansFromLocalStorage() {
+      const stored = localStorage.getItem("userScansCache");
+      if (stored) { try { userScansCache = JSON.parse(stored); } catch (e) { userScansCache = []; } }
+    }
+
+    function saveScansToLocalStorage() {
+      localStorage.setItem("userScansCache", JSON.stringify(userScansCache));
+    }
+
+    async function fetchUserScansFromCloud() {
+      const emp = localStorage.getItem("employee");
+      if (!emp) return userScansCache;
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?employee=${encodeURIComponent(emp)}`);
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          userScansCache = data;
+          saveScansToLocalStorage();
+        }
+        return userScansCache;
+      } catch (e) {
+        return userScansCache;
+      }
+    }
+
+    async function fetchPackingAreaStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStock`);
+        const data = await response.json();
+        const packingElem = document.getElementById("packingStockVal");
+        if (packingElem) {
+          packingElem.innerText = data.totalQty || 0;
+        }
+      } catch (e) {
+        const packingElem = document.getElementById("packingStockVal");
+        if (packingElem) packingElem.innerText = "0";
+      }
+    }
+
+    async function fetchExpiredStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStock`);
+        const data = await response.json();
+        const expiredElem = document.getElementById("expiredStockVal");
+        if (expiredElem) {
+          expiredElem.innerText = data.totalQty || 0;
+        }
+      } catch (e) {
+        const expiredElem = document.getElementById("expiredStockVal");
+        if (expiredElem) expiredElem.innerText = "0";
+      }
+    }
+
+    function getBrandingHeader() {
+      return `
+        <div class="branding-header">
+          <span class="logo-icon">📦</span>
+          <h2>HATVET PHARMA PVT LTD</h2>
+          <p>INVENTORY MANAGEMENT SYSTEM</p>
+        </div>
+      `;
+    }
+
+    function getFooter() { return `<div class="footer">Designed By : R.SHARMA✏️</div>`; }
+
+    function handlePasswordInput(input) {
+      const toggleBtn = document.getElementById("togglePasswordBtn");
+      if (toggleBtn) toggleBtn.style.display = input.value.length > 0 ? "block" : "none";
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById("password");
+      const toggleBtn = document.getElementById("togglePasswordBtn");
+      if (passInput && toggleBtn) {
+        if (passInput.type === "password") { passInput.type = "text"; toggleBtn.innerText = "🫣"; }
+        else { passInput.type = "password"; toggleBtn.innerText = "👁️"; }
+      }
+    }
+
+    function showLoginPage() {
+      document.getElementById("app").innerHTML = `
+        ${getBrandingHeader()}
+        <div class="card">
+          <div class="field-group">
+            <label for="employee">Employee Name / ID</label>
+            <input type="text" id="employee" placeholder="Enter Employee Name">
+          </div>
+          <div class="field-group">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="password" placeholder="Enter Password" oninput="handlePasswordInput(this)">
+              <span id="togglePasswordBtn" class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="warehouse">Primary Warehouse Location</label>
+            <select id="warehouse">
+              <option value="">-- Select Warehouse --</option>
+              <option value="Meerut">Meerut</option>
+              <option value="Ghaziabad">Ghaziabad</option>
+              <option value="Packing Area">Packing Area</option>
+              <option value="Other Location">Other Location</option>
+            </select>
+          </div>
+          <button id="loginBtn" onclick="login()">Start / Sync System</button>
+        </div>
+        ${getFooter()}
+      `;
+    }
+
+    async function login() {
+      let emp = document.getElementById("employee").value.trim();
+      let pass = document.getElementById("password").value.trim();
+      let wh = document.getElementById("warehouse").value;
+      let loginBtn = document.getElementById("loginBtn");
+
+      if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
+
+      if (loginBtn) { loginBtn.disabled = true; loginBtn.innerText = "⏳ Authenticating..."; }
+
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}`);
+        const data = await response.json();
+
+        if (data.status === "success") {
+          localStorage.setItem("employee", data.employeeName || emp);
+          localStorage.setItem("warehouse", wh);
+          syncDataAndShowDashboard();
+        } else {
+          alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
+          if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Start / Sync System"; }
+        }
+      } catch (e) {
+        alert("⚠️ Connection error!");
+        if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Start / Sync System"; }
+      }
+    }
+
+    async function syncDataAndShowDashboard() {
+      showDashboard();
+      fetchPackingAreaStock();
+      fetchExpiredStock();
+      await fetchUserScansFromCloud();
+      showDashboard();
+      fetchPackingAreaStock();
+      fetchExpiredStock();
+    }
+
+    function showDashboard() {
+      const scans = userScansCache;
+      const todayStr = new Date().toLocaleDateString();
+      const currentWh = localStorage.getItem("warehouse") || "";
+
+      let todayScans = 0, warehouseStockQty = 0;
+
+      scans.forEach(item => {
+        const itemDate = new Date(item.timestamp).toLocaleDateString();
+        const itemWh = String(item.warehouse || "").trim().toLowerCase();
+        const loggedWh = currentWh.trim().toLowerCase();
+        
+        if (itemDate === todayStr) { 
+          todayScans += 1; 
+        }
+
+        if (itemWh === loggedWh) {
+          warehouseStockQty += (parseInt(item.quantity, 10) || 0);
+        }
+      });
+
+      document.getElementById("app").innerHTML = `
+        <div class="card" style="margin-top: 10px;">
+          <div class="user-info-bar">
+            <div class="user-details">
+              <b>Emp Name:</b> ${escapeHtml(localStorage.getItem("employee"))}<br>
+              <b>Location:</b> ${escapeHtml(localStorage.getItem("warehouse"))}
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span>Bill Received Today</span>
+              <h3>${todayScans}</h3>
+            </div>
+            <div class="metric-card">
+              <span>Warehouse Stock</span>
+              <h3>${warehouseStockQty}</h3>
+            </div>
+            <div class="metric-card warning-card">
+              <span>Packing Area Stock</span>
+              <h3 id="packingStockVal">Loading...</h3>
+            </div>
+            <div class="metric-card danger-card">
+              <span>Expired Stock</span>
+              <h3 id="expiredStockVal">Loading...</h3>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="openPurchaseModal()">📄 New Purchase Entry</button>
+            <button onclick="triggerDispatchPdfSelect()">📄 Upload Bill PDF (Dispatch)</button>
+            <button onclick="triggerDispatchReturnPdfSelect()">📄 Upload Bill PDF (Dispatch Return)</button>
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 History</button>
+            <button onclick="logout()" class="btn-danger">🚪 Logout</button>
+          </div>
+        </div>
+      `;
+      fetchPackingAreaStock();
+      fetchExpiredStock();
+    }
+
+    function openPurchaseModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align:center; color:var(--primary);">📄 New Purchase Entry</h3>
+            <div class="field-group">
+              <label>Category</label>
+              <select id="p_category">
+                <option value="">-- Select Category --</option>
+                <option value="Tablets">Tablets</option>
+                <option value="Oral Powder">Oral Powder</option>
+                <option value="Injection">Injection</option>
+                <option value="Syrup">Syrup</option>
+                <option value="Cream">Cream</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label>Product Name</label>
+              <input type="text" id="p_name" placeholder="Enter Product Name">
+            </div>
+            <div class="field-group">
+              <label>Batch No</label>
+              <input type="text" id="p_batch" placeholder="Enter Batch Number">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="field-group"><label>Mfg Date</label><input type="date" id="p_mfg"></div>
+              <div class="field-group"><label>Exp Date</label><input type="date" id="p_exp"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="field-group"><label>MRP</label><input type="number" id="p_mrp" placeholder="MRP"></div>
+              <div class="field-group"><label>Quantity</label><input type="number" id="p_qty" value="1" min="1"></div>
+            </div>
+            <div class="field-group"><label>Supplier Name</label><input type="text" id="p_supplier" placeholder="Supplier"></div>
+            <button onclick="savePurchaseModalData()" class="btn-success" style="margin-top:6px;">Submit</button>
+            <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function triggerDispatchPdfSelect() { document.getElementById("dispatchPdfInput").click(); }
+    function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
+
+    async function savePurchaseModalData() {
+      let pCategory = document.getElementById("p_category").value;
+      let pName = document.getElementById("p_name").value.trim();
+      let pBatch = document.getElementById("p_batch").value.trim();
+      let pMfg = document.getElementById("p_mfg").value;
+      let pExp = document.getElementById("p_exp").value;
+      let pMrp = document.getElementById("p_mrp").value;
+      let rawQty = parseInt(document.getElementById("p_qty").value, 10) || 1;
+      let pSupplier = document.getElementById("p_supplier").value.trim();
+      let submitBtn = document.querySelector("#modal-container button.btn-success");
+
+      if (!pCategory || !pName || !pBatch) { alert("Please fill in all required fields!"); return; }
+
+      let finalQty = (pCategory.toLowerCase() === "tablets") ? rawQty * 10 : rawQty;
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = "⏳ Saving..."; }
+
+      let payload = {
+        user: localStorage.getItem("employee") || "",
+        warehouse: localStorage.getItem("warehouse") || "",
+        type: "Purchase Entry",
+        category: pCategory,
+        supplier: pSupplier,
+        product: pName,
+        batch: pBatch,
+        mfg: pMfg, exp: pExp, mrp: pMrp,
+        qty: finalQty,
+        scanTime: new Date().toLocaleString()
+      };
+
+      try {
+        const response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const resData = JSON.parse(await response.text());
+
+        if (resData.status === "success") {
+          alert(`✅ Saved Successfully! Qty: ${finalQty}`);
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ Error: " + resData.message);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit"; }
+        }
+      } catch (e) {
+        alert("⚠️ Error: " + e.message);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit"; }
+      }
+    }
+
+    function openTransferModal() {
+      let currentWarehouse = localStorage.getItem("warehouse") || "Meerut";
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <h3 style="text-align:center; color:#4f46e5;">🔄 Internal Stock Transfer</h3>
+            <div class="field-group">
+              <label>Product Name</label>
+              <input type="text" id="t_product" placeholder="Enter Product Name">
+            </div>
+            <div class="field-group">
+              <label>Batch No</label>
+              <input type="text" id="t_batch" placeholder="Enter Batch Number">
+            </div>
+            <div class="field-group">
+              <label>Qty</label>
+              <input type="number" id="t_qty" value="1" min="1">
+            </div>
+            <div class="field-group">
+              <label>Warehouse From (Logged In)</label>
+              <input type="text" id="t_from" value="${escapeHtml(currentWarehouse)}" readonly style="background:#f1f5f9; font-weight:700;">
+            </div>
+            <div class="field-group">
+              <label>Warehouse To</label>
+              <select id="t_to">
+                <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
+                <option value="Ghaziabad" ${currentWarehouse === 'Ghaziabad' ? '' : 'selected'}>Ghaziabad</option>
+                <option value="Meerut" ${currentWarehouse === 'Meerut' ? '' : 'selected'}>Meerut</option>
+                <option value="Other Location">Other Location</option>
+              </select>
+            </div>
+
+            <button onclick="promptTransferConfirmation()" class="btn-indigo" style="margin-top:6px;">Transfer Stock</button>
+            <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function promptTransferConfirmation() {
+      let prod = document.getElementById("t_product").value.trim();
+      let batch = document.getElementById("t_batch").value.trim();
+      let qty = parseInt(document.getElementById("t_qty").value, 10) || 1;
+      let fromWh = document.getElementById("t_from").value;
+      let toWh = document.getElementById("t_to").value;
+
+      if (!prod || !batch) { alert("Please enter Product Name and Batch No!"); return; }
+      if (fromWh === toWh) { alert("From and To Warehouse cannot be the same!"); return; }
+
+      pendingTransferPayload = {
+        action: "transfer",
+        user: localStorage.getItem("employee") || "",
+        product: prod,
+        batch: batch,
+        qty: qty,
+        fromWarehouse: fromWh,
+        toWarehouse: toWh
+      };
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <h3 style="text-align:center; color:#4f46e5;">⚠️ Confirm Stock Transfer</h3>
+            <div style="background:#f8fafc; padding:12px; border-radius:8px; font-size:0.9rem; line-height:1.6;">
+              <b>Product:</b> ${escapeHtml(prod)}<br>
+              <b>Batch No:</b> ${escapeHtml(batch)}<br>
+              <b>Quantity:</b> ${qty}<br>
+              <b>From Location:</b> ${escapeHtml(fromWh)}<br>
+              <b>To Location:</b> ${escapeHtml(toWh)}
+            </div>
+            <p style="text-align:center; font-weight:700; color:var(--danger); font-size:0.9rem;">
+              Are you sure you want to transfer the stock?
+            </p>
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button onclick="executeStockTransfer()" class="btn-success">Yes, Transfer</button>
+              <button onclick="openTransferModal()" class="btn-secondary">Back / Edit</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function executeStockTransfer() {
+      if (!pendingTransferPayload) return;
+
+      let confirmBtn = document.querySelector("#modal-container button.btn-success");
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "⏳ Transferring...";
+      }
+
+      try {
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(pendingTransferPayload)
+        });
+
+        let resData = JSON.parse(await response.text());
+
+        if (resData.status === "success") {
+          alert("✅ " + resData.message);
+          pendingTransferPayload = null;
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ TRANSFER FAILED:\n\n" + resData.message);
+          closeModalAndResume();
+        }
+      } catch (e) {
+        alert("⚠️ Connection Error: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
+async function handleDispatchPdfUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      let file = input.files[0];
+      
+      try {
+        let arrayBuffer = await file.arrayBuffer();
+        let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let textItems = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          let page = await pdf.getPage(i);
+          let textContent = await page.getTextContent();
+          
+          textContent.items.forEach(item => {
+            textItems.push({
+              str: item.str.trim(),
+              x: item.transform[4],
+              y: item.transform[5]
+            });
+          });
+        }
+
+        let fullText = textItems.map(item => item.str).join(" ");
+
+        let invoiceMatch = fullText.match(/Invoice\s*No\.?\s*([A-Z0-9\-]+)/i) || fullText.match(/A00[0-9]+/);
+        let invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "INV-" + Math.floor(Math.random() * 10000);
+
+        let rowsMap = {};
+        textItems.forEach(item => {
+          let yKey = Math.round(item.y / 6) * 6;
+          if (!rowsMap[yKey]) rowsMap[yKey] = [];
+          rowsMap[yKey].push(item);
+        });
+
+        let itemsFound = [];
+        let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a);
+
+        sortedYKeys.forEach(yKey => {
+          let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x);
+          let texts = rowElements.map(el => el.str).filter(t => t.length > 0);
+          let rowString = texts.join(" ");
+
+          // Ignore header, dates, terms, and metadata rows
+          if (rowString.includes("Invoice Date") || rowString.includes("Due Date") || 
+              rowString.includes("Terms & Conditions") || rowString.includes("TOTAL") || 
+              rowString.includes("Product Name") || rowString.includes("HSN")) {
+            return;
+          }
+
+          // Asli product row dhoondhne ke liye jisme batch aur bada quantity ho (jaise 50)
+          let batchToken = texts.find(t => /^[A-Z0-9]{5,10}$/.test(t) && !t.includes("/") && t !== invoiceNo);
+          let qtyToken = texts.find(t => /^\d{1,4}$/.test(t) && parseInt(t, 10) > 1); // 1 se zyada quantity wala hi item select hoga
+
+          let prodName = "";
+          let qty = 1;
+
+          // Agar row mein product name match ho raha hai (jaise CLINDAHAT)
+          let potentialProduct = texts.find(t => t.includes("TAB") || t.includes("CAP") || t.includes("SYRUP") || t.includes("INJ") || t.includes("HAT"));
+          
+          if (potentialProduct && batchToken) {
+            prodName = potentialProduct;
+            qty = qtyToken ? parseInt(qtyToken, 10) : 1;
+
+            let exists = itemsFound.some(item => item.product === prodName && item.batch === batchToken);
+            if (!exists) {
+              itemsFound.push({
+                product: prodName,
+                batch: batchToken,
+                qty: qty
+              });
+            }
+          }
+        });
+
+        if (itemsFound.length === 0) {
+          alert("⚠️ Failed to read valid product items from Dispatch PDF.");
+          input.value = "";
+          return;
+        }
+
+        pendingDispatchPayload = {
+          action: "dispatch",
+          user: localStorage.getItem("employee") || "",
+          warehouse: localStorage.getItem("warehouse") || "",
+          invoiceNo: invoiceNo,
+          items: itemsFound
+        };
+
+        openDispatchConfirmationModal();
+      } catch (err) {
+        alert("⚠️ PDF Parsing Error: " + err.message);
+      }
+      input.value = "";
+    }
+
+       function openDispatchConfirmationModal() {
+      if (!pendingDispatchPayload) return;
+      let itemsRows = pendingDispatchPayload.items.map(item => `
+        <tr><td><b>${escapeHtml(item.product)}</b></td><td>${escapeHtml(item.batch)}</td><td><b>${item.qty}</b></td></tr>
+      `).join("");
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <h3 style="text-align:center; color:var(--primary);">📋 Verify Dispatch PDF</h3>
+            <p style="font-size:0.85rem; text-align:center;"><b>Invoice No:</b> ${escapeHtml(pendingDispatchPayload.invoiceNo)}</p>
+            <table class="pdf-item-table"><thead><tr><th>Product</th><th>Batch</th><th>QTY</th></tr></thead><tbody>${itemsRows}</tbody></table>
+            <p style="text-align:center; font-weight:700; color:var(--danger); margin-top:4px;">Are you sure to proceed?</p>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button onclick="confirmAndProceedDispatch()" class="btn-success">Yes, Proceed</button>
+              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function confirmAndProceedDispatch() {
+      if (!pendingDispatchPayload) return;
+      let confirmBtn = document.querySelector("#modal-container button.btn-success");
+      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerText = "⏳ Processing..."; }
+
+      try {
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(pendingDispatchPayload)
+        });
+        let resData = JSON.parse(await response.text());
+
+        if (resData.status === "success") {
+          alert("✅ Bill Proceed Successfully");
+          pendingDispatchPayload = null;
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ REJECTED:\n\n" + resData.message);
+          closeModalAndResume();
+        }
+      } catch (err) {
+        alert("⚠️ " + err.message);
+        closeModalAndResume();
+      }
+    }
+
+    async function handleDispatchReturnPdfUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      let file = input.files[0];
+      
+      try {
+        let arrayBuffer = await file.arrayBuffer();
+        let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let textItems = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          let page = await pdf.getPage(i);
+          let textContent = await page.getTextContent();
+          
+          textContent.items.forEach(item => {
+            textItems.push({
+              str: item.str.trim(),
+              x: item.transform[4],
+              y: item.transform[5]
+            });
+          });
+        }
+
+        let fullText = textItems.map(item => item.str).join(" ");
+
+        let invoiceMatch = fullText.match(/Invoice\s*No\.?\s*([A-Z0-9\-]+)/i) || fullText.match(/CN[0-9]+/i);
+        let invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "RET-" + Math.floor(Math.random() * 10000);
+
+        let itemsFound = [];
+        let rowsMap = {};
+        
+        textItems.forEach(item => {
+          let yKey = Math.round(item.y / 8) * 8; 
+          if (!rowsMap[yKey]) rowsMap[yKey] = [];
+          rowsMap[yKey].push(item);
+        });
+
+        let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a);
+        let currentDate = new Date();
+
+        sortedYKeys.forEach(yKey => {
+          let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x);
+          let texts = rowElements.map(el => el.str).filter(t => t.length > 0);
+          let rowString = texts.join(" ");
+
+          let hasExpiry = texts.some(t => /^\d{1,2}\/\d{2,4}$/.test(t));
+
+          if (texts.length >= 4 && (hasExpiry || rowString.includes("SYRUP") || rowString.includes("TAB") || rowString.includes("CAP") || rowString.includes("INJ") || rowString.includes("AZITHROHAT"))) {
+            let prodName = "";
+            let batchNo = "";
+            let qty = 1;
+            let expStr = "";
+            let mrp = "0.00";
+
+            let expIndex = texts.findIndex(t => /^\d{1,2}\/\d{2,4}$/.test(t));
+            if (expIndex !== -1) {
+              expStr = texts[expIndex];
+              
+              for (let j = expIndex - 1; j >= 0; j--) {
+                let val = texts[j];
+                if (/^[A-Z0-9\-\/]{3,}$/.test(val) && !val.match(/^\d{6,}$/) && val !== expStr && !val.includes("TAB") && !val.includes("SYRUP") && !val.includes("INJ") && !val.includes("AZITHROHAT")) {
+                  batchNo = val;
+                  break;
+                }
+              }
+
+              if (!batchNo || batchNo.length < 3 || batchNo === prodName) {
+                let foundBatch = texts.find(t => /^[A-Z]{2,3}[\-\/]?\d{3,5}$/.test(t) || /^[A-Z0-9]{5,10}$/.test(t) && t !== expStr);
+                if (foundBatch) batchNo = foundBatch;
+              }
+
+              for (let j = expIndex - 1; j >= 0; j--) {
+                let val = texts[j];
+                if (/^\d{1,3}$/.test(val) && val !== batchNo && parseInt(val) < 500) {
+                  qty = parseInt(val, 10);
+                  break;
+                }
+              }
+
+              let mrpToken = texts.find(t => /^\d{2,3}\.\d{2}$/.test(t));
+              if (mrpToken) {
+                mrp = mrpToken;
+              }
+
+              let nameParts = [];
+              for (let j = 0; j < texts.length; j++) {
+                if (texts[j] === qty.toString() || texts[j] === batchNo || texts[j] === expStr || texts[j] === mrp || /^\d+\.?$/.test(texts[j])) {
+                  break;
+                }
+                nameParts.push(texts[j]);
+              }
+              if (nameParts.length > 0) {
+                prodName = nameParts.join(" ").replace(/^\d+\.\s*/, "").trim();
+              }
+            }
+
+            if (!prodName && texts.length >= 3) {
+              prodName = texts[1] || texts[0];
+              qty = parseInt(texts.find(t => /^\d{1,2}$/.test(t)), 10) || 1;
+              batchNo = texts.find(t => /^[A-Z0-9\-]{3,}$/.test(t) && !t.includes("/")) || "N/A";
+              expStr = texts.find(t => /^\d{1,2}\/\d{2,4}$/.test(t)) || "05/28";
+            }
+
+            if (prodName && prodName.length > 2 && !prodName.toLowerCase().includes("total") && !prodName.toLowerCase().includes("credit")) {
+              let formattedExpDate = parsePdfExpiryToDate(expStr);
+              let statusText = "Usable";
+              let statusClass = "color:var(--success); font-weight:700;";
+
+              if (formattedExpDate) {
+                let expDateObj = new Date(formattedExpDate);
+                let timeDiff = expDateObj.getTime() - currentDate.getTime();
+                let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                if (daysDiff <= 365) {
+                  statusText = "Expired";
+                  statusClass = "color:var(--danger); font-weight:700;";
+                }
+              }
+
+              if (batchNo === prodName || !batchNo) {
+                batchNo = "N/A";
+              }
+
+              let exists = itemsFound.some(item => item.product === prodName && item.batch === batchNo);
+              if (!exists) {
+                itemsFound.push({
+                  product: prodName,
+                  batch: batchNo,
+                  qty: qty,
+                  exp: expStr || "N/A",
+                  mrp: mrp,
+                  expDate: formattedExpDate || "2030-01-01",
+                  status: statusText,
+                  statusClass: statusClass
+                });
+              }
+            }
+          }
+        });
+
+        if (itemsFound.length === 0) {
+          alert("⚠️ Failed to extract items from Dispatch Return PDF. Please check the PDF layout.");
+          input.value = "";
+          return;
+        }
+
+        pendingDispatchReturnPayload = {
+          action: "dispatch_return",
+          user: localStorage.getItem("employee") || "",
+          warehouse: localStorage.getItem("warehouse") || "",
+          invoiceNo: invoiceNo,
+          items: itemsFound
+        };
+
+        openDispatchReturnConfirmationModal();
+      } catch (err) {
+        alert("⚠️ PDF Parsing Error: " + err.message);
+      }
+      input.value = "";
+    }
+
+    function parsePdfExpiryToDate(expStr) {
+      if (!expStr || !expStr.includes("/")) return "2030-01-01";
+      let parts = expStr.split("/");
+      let month = parts[0].padStart(2, '0');
+      let year = parts[1];
+      if (year.length === 2) {
+        year = "20" + year;
+      }
+      return `${year}-${month}-01`;
+    }
+
+    function openDispatchReturnConfirmationModal() {
+      if (!pendingDispatchReturnPayload) return;
+
+      let itemsRows = pendingDispatchReturnPayload.items.map(item => `
+        <tr>
+          <td><b>${escapeHtml(item.product)}</b></td>
+          <td>${escapeHtml(item.batch)}</td>
+          <td><b>${item.qty}</b></td>
+          <td><b>₹${escapeHtml(item.mrp)}</b></td>
+          <td>${escapeHtml(item.exp)}</td>
+          <td><span style="${item.statusClass}">${escapeHtml(item.status)}</span></td>
+        </tr>
+      `).join("");
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 580px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align:center; color:var(--primary);">📦 Dispatch Return Verification</h3>
+            <p style="font-size:0.85rem; text-align:center;"><b>Invoice / Credit Note No:</b> ${escapeHtml(pendingDispatchReturnPayload.invoiceNo)}</p>
+            
+            <table class="pdf-item-table" style="font-size:0.75rem;">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Batch</th>
+                  <th>Qty</th>
+                  <th>MRP</th>
+                  <th>Exp</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsRows}
+              </tbody>
+            </table>
+            
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+              ℹ️ ≤365D → <b>Expired Inventory</b>, others → <b>Usable Inventory</b>.
+            </p>
+
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button onclick="confirmAndExecuteDispatchReturn()" class="btn-success">Confirm & Sync</button>
+              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function confirmAndExecuteDispatchReturn() {
+      if (!pendingDispatchReturnPayload) return;
+      let confirmBtn = document.querySelector("#modal-container button.btn-success");
+      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerText = "⏳ Processing Return..."; }
+
+      try {
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(pendingDispatchReturnPayload)
+        });
+        let resData = JSON.parse(await response.text());
+
+        if (resData.status === "success") {
+          alert("✅ " + resData.message);
+          pendingDispatchReturnPayload = null;
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ ERROR:\n\n" + resData.message);
+          closeModalAndResume();
+        }
+      } catch (err) {
+        alert("⚠️ Connection Error: " + err.message);
+        closeModalAndResume();
+      }
+    }
+
+    async function handlePurchasePdfUpload(input) { if (input.files && input.files.length > 0) alert("PDF Selected!"); closeModalAndResume(); input.value = ""; }
+    function closeModalAndResume() { document.getElementById("modal-container").innerHTML = ""; }
+
+    function historyPage() {
+      let groupedByDate = {};
+
+      userScansCache.forEach((item) => {
+        let rawDate = item.timestamp ? new Date(item.timestamp) : new Date();
+        let dateKey = isNaN(rawDate.getTime()) ? "Recent Entries" : rawDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        if (!groupedByDate[dateKey]) {
+          groupedByDate[dateKey] = [];
+        }
+        groupedByDate[dateKey].push(item);
+      });
+
+      let historyHtml = Object.keys(groupedByDate).length === 0 ? '<p style="text-align:center; color: var(--text-muted);">No history found.</p>' : '';
+
+      for (let dateKey in groupedByDate) {
+        historyHtml += `
+          <div class="history-date-group">
+            <span class="history-date-header">📅 ${dateKey}</span>
+            <div class="history-item history-item-header">
+              <div>Category</div>
+              <div>Product Name</div>
+              <div>Batch No.</div>
+              <div>Qty</div>
+            </div>
+        `;
+
+        groupedByDate[dateKey].forEach((item) => {
+          let userCategoryText = item.inventoryType || item.type || "Purchase Entry";
+          historyHtml += `
+            <div class="history-item">
+              <div style="font-weight:600; color:var(--primary);">${escapeHtml(userCategoryText)}</div>
+              <div style="font-weight:700;">${escapeHtml(item.product)}</div>
+              <div>${escapeHtml(item.batch)}</div>
+              <div style="font-weight:700;">${item.quantity || 1}</div>
+            </div>
+          `;
+        });
+
+        historyHtml += `</div>`;
+      }
+
+      document.getElementById("app").innerHTML = `
+        ${getBrandingHeader()}
+        <div class="card">
+          <h3 style="text-align:center;">📜 Workflow History</h3>
+          <div class="history-list">${historyHtml}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+            <button onclick="downloadHistoryPDF()" class="btn-indigo" style="font-size:0.85rem; padding:10px;">📥 Download PDF</button>
+            <button onclick="downloadHistoryExcel()" class="btn-emerald" style="font-size:0.85rem; padding:10px;">📊 Download Excel</button>
+          </div>
+          <button onclick="showDashboard()" class="btn-secondary" style="margin-top:2px;">⬅️ Back</button>
+        </div>
+        ${getFooter()}
+      `;
+    }
+
+    function downloadHistoryPDF() {
+      if (!userScansCache || userScansCache.length === 0) {
+        alert("No history data available to download!");
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.setTextColor(30, 58, 138);
+      doc.text("HATVET PHARMA PVT LTD - Workflow History", 14, 20);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Employee: ${localStorage.getItem("employee") || "N/A"} | Warehouse: ${localStorage.getItem("warehouse") || "N/A"}`, 14, 28);
+
+      let tableData = userScansCache.map(item => {
+        let cat = item.inventoryType || item.type || "Purchase Entry";
+        let dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-GB') : "N/A";
+        return [dateStr, cat, item.product || "", item.batch || "", item.quantity || 1];
+      });
+
+      doc.autoTable({
+        startY: 34,
+        head: [['Date', 'Category', 'Product Name', 'Batch No.', 'Qty']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [37, 99, 235] }
+      });
+
+      doc.save(`Workflow_History_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    function downloadHistoryExcel() {
+      if (!userScansCache || userScansCache.length === 0) {
+        alert("No history data available to download!");
+        return;
+      }
+
+      let excelData = userScansCache.map(item => {
+        let cat = item.inventoryType || item.type || "Purchase Entry";
+        let dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-GB') : "N/A";
+        return {
+          "Date": dateStr,
+          "Category": cat,
+          "Product Name": item.product || "",
+          "Batch No.": item.batch || "",
+          "Quantity": item.quantity || 1,
+          "Warehouse": item.warehouse || "",
+          "Employee": item.user || ""
+        };
+      });
+
+      let worksheet = XLSX.utils.json_to_sheet(excelData);
+      let workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Workflow History");
+      XLSX.writeFile(workbook, `Workflow_History_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    function logout() { localStorage.clear(); userScansCache = []; showLoginPage(); }
+    function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+  </script>
+
+</body>
+
+</html>
