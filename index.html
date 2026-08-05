@@ -10,7 +10,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <!-- SheetJS for Excel Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
@@ -52,7 +51,6 @@
       line-height: 1.5;
     }
 
-    /* Website System Layout Container */
     .container { 
       width: 100%; 
       max-width: 1280px; 
@@ -84,12 +82,7 @@
       box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 20px;
     }
 
-    /* Login specific card override for centered system layout */
-    .login-wrapper {
-      max-width: 480px;
-      margin: auto;
-      width: 100%;
-    }
+    .login-wrapper { max-width: 480px; margin: auto; width: 100%; }
 
     .user-info-bar { 
       display: flex; 
@@ -100,22 +93,20 @@
     }
     .user-details { font-size: 0.95rem; color: var(--text-main); line-height: 1.5; }
 
-    /* System Grid Metrics for Dashboard */
-    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .metric-card { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: var(--radius-md); text-align: left; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .metric-card { background: var(--primary-light); border: 1px solid #bfdbfe; padding: 16px; border-radius: var(--radius-md); text-align: left; transition: transform 0.2s; }
+    .metric-card.clickable { cursor: pointer; }
+    .metric-card.clickable:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     .metric-card.warning-card { background: #fffbeb; border-color: #fde68a; }
     .metric-card.danger-card { background: #fef2f2; border-color: #fecaca; }
+    .metric-card.info-card { background: #f0fdf4; border-color: #bbf7d0; }
     .metric-card span { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; }
     .metric-card h3 { font-size: 1.8rem; color: var(--primary); font-weight: 800; margin-top: 4px; }
     .metric-card.warning-card h3 { color: var(--warning); }
     .metric-card.danger-card h3 { color: var(--danger); }
+    .metric-card.info-card h3 { color: var(--success); }
 
-    /* Action Buttons Grid Layout */
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
+    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
     .field-group { display: flex; flex-direction: column; gap: 6px; }
     label { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
@@ -173,7 +164,6 @@
 
     @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* Responsive adjustments for smaller desktop viewports */
     @media(max-width: 900px) {
       .metrics-grid { grid-template-columns: repeat(2, 1fr); }
       .action-grid { grid-template-columns: repeat(2, 1fr); }
@@ -197,7 +187,7 @@
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwhYjL-Oadvf0hFaBC43DeT-UEpXiHzLzfSvtbtOo3CGwDCO6DJXhWMX2muGOESVPJi/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyvbAnkZzGOH-VX1BltZrJePPwecpYEAEgNbHicxp4DVKD8kQZnNw00AGwhD6S_b588/exec";
 
     let userScansCache = [];
     let pendingDispatchPayload = null;
@@ -266,6 +256,133 @@
       }
     }
 
+    async function fetchDispatchStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStock`);
+        const data = await response.json();
+        const dispatchElem = document.getElementById("dispatchStockVal");
+        if (dispatchElem) {
+          dispatchElem.innerText = data.totalQty || 0;
+        }
+      } catch (e) {
+        const dispatchElem = document.getElementById("dispatchStockVal");
+        if (dispatchElem) dispatchElem.innerText = "0";
+      }
+    }
+
+    async function fetchDamageStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStock`);
+        const data = await response.json();
+        const damageElem = document.getElementById("damageStockVal");
+        if (damageElem) {
+          damageElem.innerText = data.totalQty || 0;
+        }
+      } catch (e) {
+        const damageElem = document.getElementById("damageStockVal");
+        if (damageElem) damageElem.innerText = "0";
+      }
+    }
+
+    // --- STOCK DETAILS MODAL FUNCTIONS ---
+    async function showWarehouseStockDetails() {
+      const currentWh = localStorage.getItem("warehouse") || "";
+      openStockDetailsModal("📦 Warehouse Stock (" + currentWh + ")", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=warehouseStockDetails&warehouse=${encodeURIComponent(currentWh)}`);
+        const list = await response.json();
+        renderStockDetailsTable("📦 Warehouse Stock (" + currentWh + ")", list);
+      } catch (e) {
+        renderStockDetailsTable("📦 Warehouse Stock (" + currentWh + ")", []);
+      }
+    }
+
+    async function showPackingStockDetails() {
+      openStockDetailsModal("🟢 Packing Area Stock", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStockDetails`);
+        const list = await response.json();
+        renderStockDetailsTable("🟢 Packing Area Stock", list);
+      } catch (e) {
+        renderStockDetailsTable("🟢 Packing Area Stock", []);
+      }
+    }
+
+    async function showExpiredStockDetails() {
+      openStockDetailsModal("🟡 Near to Expired Stock", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStockDetails`);
+        const list = await response.json();
+        renderStockDetailsTable("🟡 Near to Expired Stock", list);
+      } catch (e) {
+        renderStockDetailsTable("🟡 Near to Expired Stock", []);
+      }
+    }
+
+    async function showDispatchStockDetails() {
+      openStockDetailsModal("📄 Dispatch Stock", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStockDetails`);
+        const list = await response.json();
+        renderStockDetailsTable("📄 Dispatch Stock", list);
+      } catch (e) {
+        renderStockDetailsTable("📄 Dispatch Stock", []);
+      }
+    }
+
+    async function showDamageStockDetails() {
+      openStockDetailsModal("⚠️ Damage Stock", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStockDetails`);
+        const list = await response.json();
+        renderStockDetailsTable("⚠️ Damage Stock", list);
+      } catch (e) {
+        renderStockDetailsTable("⚠️ Damage Stock", []);
+      }
+    }
+
+    function openStockDetailsModal(title, contentHtml) {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-height: 85vh; overflow-y: auto;">
+            <h3 style="color:var(--primary);">${escapeHtml(title)}</h3>
+            <div id="stockDetailsContent" style="margin-top: 4px;">${contentHtml}</div>
+            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStockDetailsTable(title, list) {
+      let content = "";
+      if (!Array.isArray(list) || list.length === 0) {
+        content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No products found.</p>`;
+      } else {
+        let rows = list.map(item => `
+          <tr>
+            <td><b>${escapeHtml(item.product)}</b></td>
+            <td style="text-align: right; font-weight: 700; color: var(--primary);">${item.totalQty}</td>
+          </tr>
+        `).join("");
+
+        content = `
+          <table class="pdf-item-table">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th style="text-align: right;">Total Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        `;
+      }
+      openStockDetailsModal(title, content);
+    }
+    // ----------------------------------------------------
+
     function getBrandingHeader() {
       return `
         <div class="branding-header">
@@ -318,6 +435,7 @@
                 <option value="Meerut">Meerut</option>
                 <option value="Ghaziabad">Ghaziabad</option>
                 <option value="Packing Area">Packing Area</option>
+                <option value="Damage Stock">Damage Stock</option>
                 <option value="Other Location">Other Location</option>
               </select>
             </div>
@@ -360,10 +478,14 @@
       showDashboard();
       fetchPackingAreaStock();
       fetchExpiredStock();
+      fetchDispatchStock();
+      fetchDamageStock();
       await fetchUserScansFromCloud();
       showDashboard();
       fetchPackingAreaStock();
       fetchExpiredStock();
+      fetchDispatchStock();
+      fetchDamageStock();
     }
 
     function showDashboard() {
@@ -405,17 +527,25 @@
               <span>Bill Received Today</span>
               <h3>${todayScans}</h3>
             </div>
-            <div class="metric-card">
+            <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
               <span>Warehouse Stock</span>
               <h3>${warehouseStockQty}</h3>
             </div>
-            <div class="metric-card warning-card">
+            <div class="metric-card warning-card clickable" onclick="showPackingStockDetails()" title="Click to view product list">
               <span>Packing Area Stock</span>
               <h3 id="packingStockVal">Loading...</h3>
             </div>
-            <div class="metric-card danger-card">
-              <span>Expired Stock</span>
+            <div class="metric-card danger-card clickable" onclick="showExpiredStockDetails()" title="Click to view product list">
+              <span>Near to Expired Stock</span>
               <h3 id="expiredStockVal">Loading...</h3>
+            </div>
+            <div class="metric-card info-card clickable" onclick="showDispatchStockDetails()" title="Click to view product list">
+              <span>Dispatch Stock</span>
+              <h3 id="dispatchStockVal">Loading...</h3>
+            </div>
+            <div class="metric-card danger-card clickable" onclick="showDamageStockDetails()" title="Click to view product list">
+              <span>Damage Stock</span>
+              <h3 id="damageStockVal">Loading...</h3>
             </div>
           </div>
 
@@ -434,10 +564,11 @@
       `;
       fetchPackingAreaStock();
       fetchExpiredStock();
+      fetchDispatchStock();
+      fetchDamageStock();
     }
 
     function openPurchaseModal() {
-      // Extract unique suppliers from userScansCache for supplier dropdown options
       let supplierSet = new Set();
       userScansCache.forEach(item => {
         if (item.supplier) supplierSet.add(item.supplier.trim());
@@ -480,53 +611,67 @@
               <label>Product Name</label>
               <select id="p_name">
                 <option value="">-- Select Product --</option>
-                <option value="Azithrohat-300 Tablets">Azithrohat-300 Tablets</option>
-                <option value="Cardiohat Tablets">Cardiohat Tablets</option>
-                <option value="Carpohat-50 Tablets">Carpohat-50 Tablets</option>
-                <option value="Carpohat-100 Tablets">Carpohat-100 Tablets</option>
-                <option value="Clindahat-250 Tablets">Clindahat-250 Tablets</option>
-                <option value="Clindahat-600 Tablets">Clindahat-600 Tablets</option>
-                <option value="Enrohat-DT 200 Tablets">Enrohat-DT 200 Tablets</option>
-                <option value="Hatcal-D Tablets">Hatcal-D Tablets</option>
-                <option value="Hatcal Renal Tablets">Hatcal Renal Tablets</option>
-                <option value="Hatclav-500 Tablets">Hatclav-500 Tablets</option>
-                <option value="Hatcort-MP Tablets">Hatcort-MP Tablets</option>
-                <option value="Hatfur Omega Tablets">Hatfur Omega Tablets</option>
-                <option value="Hatfur-Z Tablets">Hatfur-Z Tablets</option>
-                <option value="Hatjoint Plus Tablets">Hatjoint Plus Tablets</option>
-                <option value="Hatlac-Plus Tablets">Hatlac-Plus Tablets</option>
-                <option value="Hatlexin-300 Tablets">Hatlexin-300 Tablets</option>
-                <option value="Hatlexin-600 Tablets">Hatlexin-600 Tablets</option>
-                <option value="Hatlexin-1000 Tablets">Hatlexin-1000 Tablets</option>
-                <option value="Hatpan Tablets">Hatpan Tablets</option>
-                <option value="Hatplat Tablets">Hatplat Tablets</option>
-                <option value="Hatpod-200 DT Tablets">Hatpod-200 DT Tablets</option>
-                <option value="Hatpyrin Tablets">Hatpyrin Tablets</option>
-                <option value="Hatvit-A Tablets">Hatvit-A Tablets</option>
-                <option value="Hatworm Kitty Tablets">Hatworm Kitty Tablets</option>
-                <option value="Hatworm-Plus Tablets">Hatworm-Plus Tablets</option>
-                <option value="Hatzapine Tablets">Hatzapine Tablets</option>
-                <option value="Hatzine-25 Tablets">Hatzine-25 Tablets</option>
-                <option value="Hatzine-50 Tablets">Hatzine-50 Tablets</option>
-                <option value="Heparaj Advance Tablets">Heparaj Advance Tablets</option>
-                <option value="Heparaj-Plus Tablets">Heparaj-Plus Tablets</option>
-                <option value="Infiahat-TBR Tablets">Infiahat-TBR Tablets</option>
-                <option value="Itraraj-100 Tablets">Itraraj-100 Tablets</option>
-                <option value="Iverraj-3 mg Tablets">Iverraj-3 mg Tablets</option>
-                <option value="Iverraj-10 mg Tablets">Iverraj-10 mg Tablets</option>
-                <option value="Iverraj-16 mg Tablets">Iverraj-16 mg Tablets</option>
-                <option value="Ketohat-200 Tablets">Ketohat-200 Tablets</option>
-                <option value="Metrohat-300 Tablets">Metrohat-300 Tablets</option>
-                <option value="Pantohat-40 Tablets">Pantohat-40 Tablets</option>
-                <option value="Pantohat-D Tablets">Pantohat-D Tablets</option>
-                <option value="Rajdox-LB 100 Tablets">Rajdox-LB 100 Tablets</option>
-                <option value="Rajdox-LB 200 Tablets">Rajdox-LB 200 Tablets</option>
-                <option value="Rajdox-LB 300 Tablets">Rajdox-LB 300 Tablets</option>
-                <option value="Rajfan Tablets">Rajfan Tablets</option>
-                <option value="Rantiraj Tablets">Rantiraj Tablets</option>
-                <option value="Renohat Plus Tablets">Renohat Plus Tablets</option>
-                <option value="Torsohat 7.5 Tablets">Torsohat 7.5 Tablets</option>
-                <option value="VITnMIN-H Tablets">VITnMIN-H Tablets</option>
+                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
+		<option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
+		<option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
+		<option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
+		<option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
+		<option value="HATCAL-D TAB">HATCAL-D TAB</option>
+		<option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
+		<option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
+		<option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
+		<option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
+		<option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
+		<option value="HATCORT MP TAB">HATCORT MP TAB</option>
+		<option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
+		<option value="HATFUR TAB">HATFUR TAB</option>
+		<option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
+		<option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
+		<option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
+		<option value="HATLAC TAB">HATLAC TAB</option>
+		<option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
+		<option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
+		<option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
+		<option value="HATPAN TAB">HATPAN TAB</option>
+		<option value="HATPLAT TAB">HATPLAT TAB</option>
+		<option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
+		<option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
+		<option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
+		<option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
+		<option value="HATPYRIN TAB">HATPYRIN TAB</option>
+		<option value="HATVIT-A TAB">HATVIT-A TAB</option>
+		<option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
+		<option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
+		<option value="HATZAPINE TAB">HATZAPINE TAB</option>
+		<option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
+		<option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
+		<option value="HEPARAJ TAB">HEPARAJ TAB</option>
+		<option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
+		<option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
+		<option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
+		<option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
+		<option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
+		<option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
+		<option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
+		<option value="ONCORAJ TAB">ONCORAJ TAB</option>
+		<option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
+		<option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+		<option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
+		<option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
+		<option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
+		<option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
+		<option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
+		<option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
+		<option value="RAJFAN TAB">RAJFAN TAB</option>
+		<option value="RAJPARA TAB">RAJPARA TAB</option>
+		<option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
+		<option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
+		<option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
+		<option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
+		<option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
+		<option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
+		<option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
+ 		<option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
                 <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
                 <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
                 <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
@@ -600,53 +745,47 @@
               <input type="text" id="p_batch" placeholder="Enter Batch Number">
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-  <div class="field-group">
-    <label>Mfg Date</label>
-    <input type="text" id="p_mfg" placeholder="MM-YYYY">
-  </div>
-  <div class="field-group">
-    <label>Exp Date</label>
-    <input type="text" id="p_exp" placeholder="MM-YYYY">
-  </div>
-</div>
+              <div class="field-group"><label>Mfg Date</label><input type="text" id="p_mfg" placeholder="MM-YYYY"></div>
+              <div class="field-group"><label>Exp Date</label><input type="text" id="p_exp" placeholder="MM-YYYY"></div>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
               <div class="field-group"><label>MRP</label><input type="number" id="p_mrp" placeholder="MRP"></div>
               <div class="field-group"><label>Quantity</label><input type="number" id="p_qty" value="1" min="1"></div>
             </div>
-           <div class="field-group">
-  <label>Supplier Name</label>
-  <select id="p_supplier">
-    <option value="">-- Select Supplier --</option>
-    <option value="General Machine Tools">General Machine Tools</option>
-    <option value="Dasya Pharma">Dasya Pharma</option>
-    <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
-    <option value="Zaneka Drugs">Zaneka Drugs</option>
-    <option value="FARMA HUB">FARMA HUB</option>
-    <option value="Fentum Health Care">Fentum Health Care</option>
-    <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
-    <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
-    <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
-    <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
-    <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
-    <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
-    <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
-    <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
-    <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
-    <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
-    <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
-    <option value="ISKON REMEDIES">ISKON REMEDIES</option>
-    <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
-    <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
-    <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
-    <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
-    <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
-    <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
-    <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
-    <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
-    <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
-    ${supplierOptions}
-  </select>
-</div>
+            <div class="field-group">
+              <label>Supplier Name</label>
+              <select id="p_supplier">
+                <option value="">-- Select Supplier --</option>
+                <option value="General Machine Tools">General Machine Tools</option>
+                <option value="Dasya Pharma">Dasya Pharma</option>
+                <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
+                <option value="Zaneka Drugs">Zaneka Drugs</option>
+                <option value="FARMA HUB">FARMA HUB</option>
+                <option value="Fentum Health Care">Fentum Health Care</option>
+                <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
+                <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
+                <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
+                <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
+                <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
+                <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
+                <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
+                <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
+                <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
+                <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
+                <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
+                <option value="ISKON REMEDIES">ISKON REMEDIES</option>
+                <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
+                <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
+                <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
+                <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
+                <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
+                <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
+                <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
+                <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
+                <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
+                ${supplierOptions}
+              </select>
+            </div>
             <div style="display:flex; gap: 12px; margin-top:8px;">
               <button onclick="savePurchaseModalData()" class="btn-success">Submit Entry</button>
               <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
@@ -711,7 +850,7 @@
       }
     }
 
-    function openTransferModal() {
+   function openTransferModal() {
       let currentWarehouse = localStorage.getItem("warehouse") || "Meerut";
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -721,53 +860,67 @@
               <label>Product Name</label>
               <select id="t_product" class="form-control">
                 <option value="">Select Product Name</option>
-                <option value="Azithrohat-300 Tablets">Azithrohat-300 Tablets</option>
-                <option value="Cardiohat Tablets">Cardiohat Tablets</option>
-                <option value="Carpohat-50 Tablets">Carpohat-50 Tablets</option>
-                <option value="Carpohat-100 Tablets">Carpohat-100 Tablets</option>
-                <option value="Clindahat-250 Tablets">Clindahat-250 Tablets</option>
-                <option value="Clindahat-600 Tablets">Clindahat-600 Tablets</option>
-                <option value="Enrohat-DT 200 Tablets">Enrohat-DT 200 Tablets</option>
-                <option value="Hatcal-D Tablets">Hatcal-D Tablets</option>
-                <option value="Hatcal Renal Tablets">Hatcal Renal Tablets</option>
-                <option value="Hatclav-500 Tablets">Hatclav-500 Tablets</option>
-                <option value="Hatcort-MP Tablets">Hatcort-MP Tablets</option>
-                <option value="Hatfur Omega Tablets">Hatfur Omega Tablets</option>
-                <option value="Hatfur-Z Tablets">Hatfur-Z Tablets</option>
-                <option value="Hatjoint Plus Tablets">Hatjoint Plus Tablets</option>
-                <option value="Hatlac-Plus Tablets">Hatlac-Plus Tablets</option>
-                <option value="Hatlexin-300 Tablets">Hatlexin-300 Tablets</option>
-                <option value="Hatlexin-600 Tablets">Hatlexin-600 Tablets</option>
-                <option value="Hatlexin-1000 Tablets">Hatlexin-1000 Tablets</option>
-                <option value="Hatpan Tablets">Hatpan Tablets</option>
-                <option value="Hatplat Tablets">Hatplat Tablets</option>
-                <option value="Hatpod-200 DT Tablets">Hatpod-200 DT Tablets</option>
-                <option value="Hatpyrin Tablets">Hatpyrin Tablets</option>
-                <option value="Hatvit-A Tablets">Hatvit-A Tablets</option>
-                <option value="Hatworm Kitty Tablets">Hatworm Kitty Tablets</option>
-                <option value="Hatworm-Plus Tablets">Hatworm-Plus Tablets</option>
-                <option value="Hatzapine Tablets">Hatzapine Tablets</option>
-                <option value="Hatzine-25 Tablets">Hatzine-25 Tablets</option>
-                <option value="Hatzine-50 Tablets">Hatzine-50 Tablets</option>
-                <option value="Heparaj Advance Tablets">Heparaj Advance Tablets</option>
-                <option value="Heparaj-Plus Tablets">Heparaj-Plus Tablets</option>
-                <option value="Infiahat-TBR Tablets">Infiahat-TBR Tablets</option>
-                <option value="Itraraj-100 Tablets">Itraraj-100 Tablets</option>
-                <option value="Iverraj-3 mg Tablets">Iverraj-3 mg Tablets</option>
-                <option value="Iverraj-10 mg Tablets">Iverraj-10 mg Tablets</option>
-                <option value="Iverraj-16 mg Tablets">Iverraj-16 mg Tablets</option>
-                <option value="Ketohat-200 Tablets">Ketohat-200 Tablets</option>
-                <option value="Metrohat-300 Tablets">Metrohat-300 Tablets</option>
-                <option value="Pantohat-40 Tablets">Pantohat-40 Tablets</option>
-                <option value="Pantohat-D Tablets">Pantohat-D Tablets</option>
-                <option value="Rajdox-LB 100 Tablets">Rajdox-LB 100 Tablets</option>
-                <option value="Rajdox-LB 200 Tablets">Rajdox-LB 200 Tablets</option>
-                <option value="Rajdox-LB 300 Tablets">Rajdox-LB 300 Tablets</option>
-                <option value="Rajfan Tablets">Rajfan Tablets</option>
-                <option value="Rantiraj Tablets">Rantiraj Tablets</option>
-                <option value="Renohat Plus Tablets">Renohat Plus Tablets</option>
-                <option value="Torsohat 7.5 Tablets">Torsohat 7.5 Tablets</option>
-                <option value="VITnMIN-H Tablets">VITnMIN-H Tablets</option>
+                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
+		<option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
+		<option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
+		<option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
+		<option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
+		<option value="HATCAL-D TAB">HATCAL-D TAB</option>
+		<option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
+		<option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
+		<option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
+		<option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
+		<option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
+		<option value="HATCORT MP TAB">HATCORT MP TAB</option>
+		<option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
+		<option value="HATFUR TAB">HATFUR TAB</option>
+		<option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
+		<option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
+		<option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
+		<option value="HATLAC TAB">HATLAC TAB</option>
+		<option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
+		<option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
+		<option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
+		<option value="HATPAN TAB">HATPAN TAB</option>
+		<option value="HATPLAT TAB">HATPLAT TAB</option>
+		<option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
+		<option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
+		<option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
+		<option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
+		<option value="HATPYRIN TAB">HATPYRIN TAB</option>
+		<option value="HATVIT-A TAB">HATVIT-A TAB</option>
+		<option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
+		<option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
+		<option value="HATZAPINE TAB">HATZAPINE TAB</option>
+		<option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
+		<option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
+		<option value="HEPARAJ TAB">HEPARAJ TAB</option>
+		<option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
+		<option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
+		<option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
+		<option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
+		<option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
+		<option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
+		<option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
+		<option value="ONCORAJ TAB">ONCORAJ TAB</option>
+		<option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
+		<option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+		<option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
+		<option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
+		<option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
+		<option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
+		<option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
+		<option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
+		<option value="RAJFAN TAB">RAJFAN TAB</option>
+		<option value="RAJPARA TAB">RAJPARA TAB</option>
+		<option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
+		<option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
+		<option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
+		<option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
+		<option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
+		<option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
+		<option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
+ 		<option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
                 <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
                 <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
                 <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
@@ -832,7 +985,7 @@
                 <option value="Ectocover-PP Dusting Powder">Ectocover-PP Dusting Powder</option>
                 <option value="Ectocover-F Dusting Powder">Ectocover-F Dusting Powder</option>
                 <option value="Hatgroom Dusting Powder">Hatgroom Dusting Powder</option>
-                <option value="BLISTER PACK WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
+                <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
                 <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
               </select>
             </div>
@@ -852,6 +1005,7 @@
               <label>Warehouse To</label>
               <select id="t_to">
                 <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
+                <option value="Damage Stock" ${currentWarehouse === 'Damage Stock' ? '' : 'selected'}>Damage Stock</option>
                 <option value="Ghaziabad" ${currentWarehouse === 'Ghaziabad' ? '' : 'selected'}>Ghaziabad</option>
                 <option value="Meerut" ${currentWarehouse === 'Meerut' ? '' : 'selected'}>Meerut</option>
                 <option value="Other Location">Other Location</option>
@@ -1193,7 +1347,7 @@
                 let timeDiff = expDateObj.getTime() - currentDate.getTime();
                 let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-                if (daysDiff <= 365) {
+                if (daysDiff <= 270) {
                   statusText = "Expired";
                   statusClass = "color:var(--danger); font-weight:700;";
                 }
@@ -1287,7 +1441,7 @@
             </table>
             
             <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
-              ℹ️ ≤365D → <b>Expired Inventory</b>, others → <b>Usable Inventory</b>.
+              ℹ️ ≤270D → <b>Expired Inventory</b>, others → <b>Usable Inventory</b>.
             </p>
 
             <div style="display:flex; gap:12px; margin-top:8px;">
