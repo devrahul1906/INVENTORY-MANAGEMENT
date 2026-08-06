@@ -105,6 +105,9 @@
     .metric-card.warning-card h3 { color: var(--warning); }
     .metric-card.danger-card h3 { color: var(--danger); }
     .metric-card.info-card h3 { color: var(--success); }
+    
+    /* Chota 'pcs' style */
+    .metric-card h3 .unit-pcs { font-size: 0.95rem; font-weight: 600; margin-left: 3px; opacity: 0.85; }
 
     .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
@@ -194,6 +197,13 @@
     let pendingTransferPayload = null;
     let pendingDispatchReturnPayload = null;
 
+    // Helper function for number formatting (e.g., 10,70,69,346)
+    function formatNumber(val) {
+      let num = parseInt(val, 10);
+      if (isNaN(num)) num = 0;
+      return num.toLocaleString('en-IN');
+    }
+
     window.onload = function () {
       loadScansFromLocalStorage();
       if (localStorage.getItem("employee") && localStorage.getItem("warehouse")) {
@@ -234,11 +244,11 @@
         const data = await response.json();
         const packingElem = document.getElementById("packingStockVal");
         if (packingElem) {
-          packingElem.innerText = data.totalQty || 0;
+          packingElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
         }
       } catch (e) {
         const packingElem = document.getElementById("packingStockVal");
-        if (packingElem) packingElem.innerText = "0";
+        if (packingElem) packingElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
       }
     }
 
@@ -248,11 +258,11 @@
         const data = await response.json();
         const expiredElem = document.getElementById("expiredStockVal");
         if (expiredElem) {
-          expiredElem.innerText = data.totalQty || 0;
+          expiredElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
         }
       } catch (e) {
         const expiredElem = document.getElementById("expiredStockVal");
-        if (expiredElem) expiredElem.innerText = "0";
+        if (expiredElem) expiredElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
       }
     }
 
@@ -262,11 +272,11 @@
         const data = await response.json();
         const dispatchElem = document.getElementById("dispatchStockVal");
         if (dispatchElem) {
-          dispatchElem.innerText = data.totalQty || 0;
+          dispatchElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
         }
       } catch (e) {
         const dispatchElem = document.getElementById("dispatchStockVal");
-        if (dispatchElem) dispatchElem.innerText = "0";
+        if (dispatchElem) dispatchElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
       }
     }
 
@@ -276,11 +286,11 @@
         const data = await response.json();
         const damageElem = document.getElementById("damageStockVal");
         if (damageElem) {
-          damageElem.innerText = data.totalQty || 0;
+          damageElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
         }
       } catch (e) {
         const damageElem = document.getElementById("damageStockVal");
-        if (damageElem) damageElem.innerText = "0";
+        if (damageElem) damageElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
       }
     }
 
@@ -298,46 +308,46 @@
     }
 
     async function showPackingStockDetails() {
-      openStockDetailsModal("🟢 Packing Area Stock", "Loading...");
+      openStockDetailsModal("🎁 Packing Area Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStockDetails`);
         const list = await response.json();
-        renderStockDetailsTable("🟢 Packing Area Stock", list);
+        renderStockDetailsTable("🎁 Packing Area Stock", list);
       } catch (e) {
-        renderStockDetailsTable("🟢 Packing Area Stock", []);
+        renderStockDetailsTable("🎁 Packing Area Stock", []);
       }
     }
 
     async function showExpiredStockDetails() {
-      openStockDetailsModal("🟡 Near to Expired Stock", "Loading...");
+      openStockDetailsModal("⚠️ NEAR EXPIRY STOCK", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStockDetails`);
         const list = await response.json();
-        renderStockDetailsTable("🟡 Near to Expired Stock", list);
+        renderStockDetailsTable("⚠️ NEAR EXPIRY STOCK", list);
       } catch (e) {
-        renderStockDetailsTable("🟡 Near to Expired Stock", []);
+        renderStockDetailsTable("⚠️ NEAR EXPIRY STOCK", []);
       }
     }
 
     async function showDispatchStockDetails() {
-      openStockDetailsModal("📄 Dispatch Stock", "Loading...");
+      openStockDetailsModal("📄 Dispatched Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStockDetails`);
         const list = await response.json();
-        renderStockDetailsTable("📄 Dispatch Stock", list);
+        renderStockDetailsTable("📄 Dispatched Stock", list);
       } catch (e) {
-        renderStockDetailsTable("📄 Dispatch Stock", []);
+        renderStockDetailsTable("📄 Dispatched Stock", []);
       }
     }
 
     async function showDamageStockDetails() {
-      openStockDetailsModal("⚠️ Damage Stock", "Loading...");
+      openStockDetailsModal("🚫 Damaged Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStockDetails`);
         const list = await response.json();
-        renderStockDetailsTable("⚠️ Damage Stock", list);
+        renderStockDetailsTable("🚫 Damaged Stock", list);
       } catch (e) {
-        renderStockDetailsTable("⚠️ Damage Stock", []);
+        renderStockDetailsTable("🚫 Damaged Stock", []);
       }
     }
 
@@ -361,7 +371,7 @@
         let rows = list.map(item => `
           <tr>
             <td><b>${escapeHtml(item.product)}</b></td>
-            <td style="text-align: right; font-weight: 700; color: var(--primary);">${item.totalQty}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.totalQty)} pcs</td>
           </tr>
         `).join("");
 
@@ -388,14 +398,16 @@
         <div class="branding-header">
           <span class="logo-icon">📦</span>
           <div class="branding-text">
-            <h2>HATVET PHARMA PVT LTD</h2>
-            <p>INVENTORY MANAGEMENT SYSTEM</p>
+            <h2>HATVET PHARMA PVT. LTD.</h2>
+            <p>🏭INVENTORY MANAGEMENT SYSTEM</p>
           </div>
         </div>
       `;
     }
 
-    function getFooter() { return `<div class="footer">Designed By : R.SHARMA✏️</div>`; }
+    function getFooter() {
+      return `<div class="footer">© 2026 • 💻Developed by <span class="signature">Sharma R.</span></div>`;
+    }
 
     function handlePasswordInput(input) {
       const toggleBtn = document.getElementById("togglePasswordBtn");
@@ -416,10 +428,10 @@
         <div class="login-wrapper" style="margin: auto; width: 100%; display: flex; flex-direction: column; gap: 20px;">
           ${getBrandingHeader()}
           <div class="card">
-            <h3 style="color: var(--primary); text-align: center; margin-bottom: 4px;">🏭 Warehouse Login</h3>
+            <h3 style="color: var(--primary); text-align: center; margin-bottom: 4px;">🔐 Warehouse Sign In</h3>
             <div class="field-group">
-              <label for="employee">Employee Name / ID</label>
-              <input type="text" id="employee" placeholder="Enter Employee Name">
+              <label for="employee">Employee ID / Username</label>
+              <input type="text" id="employee" placeholder="Enter Employee ID / Username">
             </div>
             <div class="field-group">
               <label for="password">Password</label>
@@ -429,7 +441,7 @@
               </div>
             </div>
             <div class="field-group">
-              <label for="warehouse">Primary Warehouse Location</label>
+              <label for="warehouse">Warehouse</label>
               <select id="warehouse">
                 <option value="">-- Select Warehouse --</option>
                 <option value="Meerut">Meerut</option>
@@ -439,7 +451,7 @@
                 <option value="Other Location">Other Location</option>
               </select>
             </div>
-            <button id="loginBtn" onclick="login()" style="margin-top: 8px;">Start / Sync System</button>
+            <button id="loginBtn" onclick="login()" style="margin-top: 8px;">Sign In 🔓</button>
           </div>
         </div>
         ${getFooter()}
@@ -514,47 +526,47 @@
         <div class="card">
           <div class="user-info-bar">
             <div class="user-details">
-              <b>User Name:</b> ${escapeHtml(localStorage.getItem("employee"))} &nbsp;|&nbsp; 
-              <b>Warehouse Location:</b> ${escapeHtml(localStorage.getItem("warehouse"))}
+              <b>👤 User:</b> ${escapeHtml(localStorage.getItem("employee"))} &nbsp;|&nbsp; 
+              <b>🏭 Warehouse:</b> ${escapeHtml(localStorage.getItem("warehouse"))}
             </div>
             <div>
-              <button onclick="logout()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.85rem;">🚪 Logout</button>
+              <button onclick="logout()" class="btn-danger" style="width: auto; padding: 8px 16px; font-size: 0.85rem;">⏻ Log out</button>
             </div>
           </div>
 
           <div class="metrics-grid">
             <div class="metric-card">
-              <span>Bill Received Today</span>
-              <h3>${todayScans}</h3>
+              <span>Bills Received Today</span>
+              <h3>${formatNumber(todayScans)} </h3>
             </div>
             <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
               <span>Warehouse Stock</span>
-              <h3>${warehouseStockQty}</h3>
+              <h3>${formatNumber(warehouseStockQty)} <span class="unit-pcs">pcs</span></h3>
             </div>
             <div class="metric-card warning-card clickable" onclick="showPackingStockDetails()" title="Click to view product list">
               <span>Packing Area Stock</span>
               <h3 id="packingStockVal">Loading...</h3>
             </div>
             <div class="metric-card danger-card clickable" onclick="showExpiredStockDetails()" title="Click to view product list">
-              <span>Near to Expired Stock</span>
+              <span>NEAR EXPIRY STOCK</span>
               <h3 id="expiredStockVal">Loading...</h3>
             </div>
             <div class="metric-card info-card clickable" onclick="showDispatchStockDetails()" title="Click to view product list">
-              <span>Dispatch Stock</span>
+              <span>Dispatched Stock</span>
               <h3 id="dispatchStockVal">Loading...</h3>
             </div>
             <div class="metric-card danger-card clickable" onclick="showDamageStockDetails()" title="Click to view product list">
-              <span>Damage Stock</span>
+              <span>Damaged Stock</span>
               <h3 id="damageStockVal">Loading...</h3>
             </div>
           </div>
 
           <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
-            <h4 style="margin-bottom: 12px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">System Operations & Actions</h4>
+            <h4 style="margin-bottom: 12px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">System Operations</h4>
             <div class="action-grid">
-              <button onclick="openPurchaseModal()">📄 New Purchase Entry</button>
-              <button onclick="triggerDispatchPdfSelect()">📄 Upload Bill PDF (Dispatch)</button>
-              <button onclick="triggerDispatchReturnPdfSelect()">📄 Upload Bill PDF (Dispatch Return)</button>
+              <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
+              <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill PDF</button>
+              <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return Bill PDF</button>
               <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
               <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
             </div>
@@ -612,66 +624,66 @@
               <select id="p_name">
                 <option value="">-- Select Product --</option>
                 <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
-		<option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
-		<option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
-		<option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
-		<option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
-		<option value="HATCAL-D TAB">HATCAL-D TAB</option>
-		<option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
-		<option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
-		<option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
-		<option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
-		<option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
-		<option value="HATCORT MP TAB">HATCORT MP TAB</option>
-		<option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
-		<option value="HATFUR TAB">HATFUR TAB</option>
-		<option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
-		<option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
-		<option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
-		<option value="HATLAC TAB">HATLAC TAB</option>
-		<option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
-		<option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
-		<option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
-		<option value="HATPAN TAB">HATPAN TAB</option>
-		<option value="HATPLAT TAB">HATPLAT TAB</option>
-		<option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
-		<option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
-		<option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
-		<option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
-		<option value="HATPYRIN TAB">HATPYRIN TAB</option>
-		<option value="HATVIT-A TAB">HATVIT-A TAB</option>
-		<option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
-		<option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
-		<option value="HATZAPINE TAB">HATZAPINE TAB</option>
-		<option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
-		<option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
-		<option value="HEPARAJ TAB">HEPARAJ TAB</option>
-		<option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
-		<option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
-		<option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
-		<option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
-		<option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
-		<option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
-		<option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
-		<option value="ONCORAJ TAB">ONCORAJ TAB</option>
-		<option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-		<option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
-		<option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
-		<option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
-		<option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
-		<option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
-		<option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
-		<option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
-		<option value="RAJFAN TAB">RAJFAN TAB</option>
-		<option value="RAJPARA TAB">RAJPARA TAB</option>
-		<option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
-		<option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
-		<option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
-		<option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
-		<option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
-		<option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
-		<option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
- 		<option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
+                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
+                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
+                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
+                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
+                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
+                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
+                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
+                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
+                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
+                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
+                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
+                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
+                <option value="HATFUR TAB">HATFUR TAB</option>
+                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
+                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
+                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
+                <option value="HATLAC TAB">HATLAC TAB</option>
+                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
+                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
+                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
+                <option value="HATPAN TAB">HATPAN TAB</option>
+                <option value="HATPLAT TAB">HATPLAT TAB</option>
+                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
+                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
+                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
+                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
+                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
+                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
+                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
+                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
+                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
+                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
+                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
+                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
+                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
+                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
+                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
+                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
+                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
+                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
+                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
+                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
+                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
+                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
+                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
+                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
+                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
+                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
+                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
+                <option value="RAJFAN TAB">RAJFAN TAB</option>
+                <option value="RAJPARA TAB">RAJPARA TAB</option>
+                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
+                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
+                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
+                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
+                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
+                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
+                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
+                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
                 <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
                 <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
                 <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
@@ -850,7 +862,7 @@
       }
     }
 
-   function openTransferModal() {
+    function openTransferModal() {
       let currentWarehouse = localStorage.getItem("warehouse") || "Meerut";
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -861,66 +873,66 @@
               <select id="t_product" class="form-control">
                 <option value="">Select Product Name</option>
                 <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
-		<option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
-		<option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
-		<option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
-		<option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
-		<option value="HATCAL-D TAB">HATCAL-D TAB</option>
-		<option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
-		<option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
-		<option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
-		<option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
-		<option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
-		<option value="HATCORT MP TAB">HATCORT MP TAB</option>
-		<option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
-		<option value="HATFUR TAB">HATFUR TAB</option>
-		<option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
-		<option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
-		<option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
-		<option value="HATLAC TAB">HATLAC TAB</option>
-		<option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
-		<option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
-		<option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
-		<option value="HATPAN TAB">HATPAN TAB</option>
-		<option value="HATPLAT TAB">HATPLAT TAB</option>
-		<option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
-		<option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
-		<option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
-		<option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
-		<option value="HATPYRIN TAB">HATPYRIN TAB</option>
-		<option value="HATVIT-A TAB">HATVIT-A TAB</option>
-		<option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
-		<option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
-		<option value="HATZAPINE TAB">HATZAPINE TAB</option>
-		<option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
-		<option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
-		<option value="HEPARAJ TAB">HEPARAJ TAB</option>
-		<option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
-		<option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
-		<option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
-		<option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
-		<option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
-		<option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
-		<option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
-		<option value="ONCORAJ TAB">ONCORAJ TAB</option>
-		<option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-		<option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
-		<option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
-		<option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
-		<option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
-		<option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
-		<option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
-		<option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
-		<option value="RAJFAN TAB">RAJFAN TAB</option>
-		<option value="RAJPARA TAB">RAJPARA TAB</option>
-		<option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
-		<option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
-		<option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
-		<option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
-		<option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
-		<option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
-		<option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
- 		<option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
+                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
+                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
+                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
+                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
+                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
+                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
+                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
+                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
+                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
+                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
+                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
+                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
+                <option value="HATFUR TAB">HATFUR TAB</option>
+                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
+                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
+                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
+                <option value="HATLAC TAB">HATLAC TAB</option>
+                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
+                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
+                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
+                <option value="HATPAN TAB">HATPAN TAB</option>
+                <option value="HATPLAT TAB">HATPLAT TAB</option>
+                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
+                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
+                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
+                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
+                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
+                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
+                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
+                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
+                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
+                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
+                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
+                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
+                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
+                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
+                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
+                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
+                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
+                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
+                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
+                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
+                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
+                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
+                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
+                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
+                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
+                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
+                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
+                <option value="RAJFAN TAB">RAJFAN TAB</option>
+                <option value="RAJPARA TAB">RAJPARA TAB</option>
+                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
+                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
+                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
+                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
+                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
+                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
+                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
+                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
                 <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
                 <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
                 <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
@@ -1005,7 +1017,7 @@
               <label>Warehouse To</label>
               <select id="t_to">
                 <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
-                <option value="Damage Stock" ${currentWarehouse === 'Damage Stock' ? '' : 'selected'}>Damage Stock</option>
+                <option value="Damaged Stock" ${currentWarehouse === 'Damaged Stock' ? '' : 'selected'}>Damaged Stock</option>
                 <option value="Ghaziabad" ${currentWarehouse === 'Ghaziabad' ? '' : 'selected'}>Ghaziabad</option>
                 <option value="Meerut" ${currentWarehouse === 'Meerut' ? '' : 'selected'}>Meerut</option>
                 <option value="Other Location">Other Location</option>
@@ -1048,7 +1060,7 @@
             <div style="background:#f8fafc; padding:16px; border-radius:8px; font-size:0.92rem; line-height:1.6; border: 1px solid var(--border-color);">
               <b>Product:</b> ${escapeHtml(prod)}<br>
               <b>Batch No:</b> ${escapeHtml(batch)}<br>
-              <b>Quantity:</b> ${qty}<br>
+              <b>Quantity:</b> ${formatNumber(qty)} pcs<br>
               <b>From Location:</b> ${escapeHtml(fromWh)}<br>
               <b>To Location:</b> ${escapeHtml(toWh)}
             </div>
@@ -1191,7 +1203,7 @@
     function openDispatchConfirmationModal() {
       if (!pendingDispatchPayload) return;
       let itemsRows = pendingDispatchPayload.items.map(item => `
-        <tr><td><b>${escapeHtml(item.product)}</b></td><td>${escapeHtml(item.batch)}</td><td><b>${item.qty}</b></td></tr>
+        <tr><td><b>${escapeHtml(item.product)}</b></td><td>${escapeHtml(item.batch)}</td><td><b>${formatNumber(item.qty)} pcs</b></td></tr>
       `).join("");
 
       document.getElementById("modal-container").innerHTML = `
@@ -1411,7 +1423,7 @@
         <tr>
           <td><b>${escapeHtml(item.product)}</b></td>
           <td>${escapeHtml(item.batch)}</td>
-          <td><b>${item.qty}</b></td>
+          <td><b>${formatNumber(item.qty)} pcs</b></td>
           <td><b>₹${escapeHtml(item.mrp)}</b></td>
           <td>${escapeHtml(item.exp)}</td>
           <td><span style="${item.statusClass}">${escapeHtml(item.status)}</span></td>
@@ -1519,7 +1531,7 @@
               <div style="font-weight:600; color:var(--primary);">${escapeHtml(userCategoryText)}</div>
               <div style="font-weight:700;">${escapeHtml(item.product)}</div>
               <div>${escapeHtml(item.batch)}</div>
-              <div style="font-weight:700;">${item.quantity || 1}</div>
+              <div style="font-weight:700;">${formatNumber(item.quantity || 1)} pcs</div>
             </div>
           `;
         });
@@ -1563,7 +1575,7 @@
       let tableData = userScansCache.map(item => {
         let cat = item.inventoryType || item.type || "Purchase Entry";
         let dateStr = item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-GB') : "N/A";
-        return [dateStr, cat, item.product || "", item.batch || "", item.quantity || 1];
+        return [dateStr, cat, item.product || "", item.batch || "", formatNumber(item.quantity || 1) + " pcs"];
       });
 
       doc.autoTable({
@@ -1591,7 +1603,7 @@
           "Category": cat,
           "Product Name": item.product || "",
           "Batch No.": item.batch || "",
-          "Quantity": item.quantity || 1,
+          "Quantity": `${formatNumber(item.quantity || 1)} pcs`,
           "Warehouse": item.warehouse || "",
           "Employee": item.user || ""
         };
