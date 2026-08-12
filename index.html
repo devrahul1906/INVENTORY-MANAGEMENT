@@ -49,7 +49,6 @@
       line-height: 1.5;
     }
 
-    /* Web Layout Structure */
     .container { 
       width: 100%; 
       max-width: 1440px; 
@@ -61,7 +60,6 @@
       flex: 1;
     }
     
-    /* Top Desktop Header/Navbar (FIXED ALIGNMENT & TEXT-WRAP) */
     .branding-header { 
       display: flex;
       align-items: center;
@@ -97,7 +95,6 @@
       white-space: nowrap; 
     }
 
-    /* Date & Time Stamp Badge Style */
     .datetime-stamp-badge {
       font-size: 0.88rem;
       font-weight: 700;
@@ -116,7 +113,6 @@
       box-shadow: var(--shadow-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 24px;
     }
 
-    /* Login Page Centered Layout */
     .login-container {
       display: flex;
       flex-direction: column;
@@ -134,7 +130,6 @@
     }
     .user-details { font-size: 1rem; color: var(--text-main); font-weight: 500; }
 
-    /* Web Metrics Grid */
     .metrics-grid { 
       display: grid; 
       grid-template-columns: repeat(6, 1fr); 
@@ -154,15 +149,17 @@
     .metric-card.warning-card { background: #fffbeb; border-color: #fde68a; }
     .metric-card.danger-card { background: #fef2f2; border-color: #fecaca; }
     .metric-card.info-card { background: #f0fdf4; border-color: #bbf7d0; }
+    .metric-card.main-wh-card { background: #f3e8ff; border-color: #d8b4fe; } 
+    
     .metric-card span { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; display: block; }
     .metric-card h3 { font-size: 1.8rem; color: var(--primary); font-weight: 800; margin-top: 8px; }
     .metric-card.warning-card h3 { color: var(--warning); }
     .metric-card.danger-card h3 { color: var(--danger); }
     .metric-card.info-card h3 { color: var(--success); }
+    .metric-card.main-wh-card h3 { color: #7e22ce; }
     
     .metric-card h3 .unit-pcs { font-size: 0.9rem; font-weight: 600; margin-left: 3px; opacity: 0.85; }
 
-    /* Web Desktop Grid */
     .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
     .field-group { display: flex; flex-direction: column; gap: 6px; }
@@ -221,7 +218,6 @@
 
     @keyframes modalPop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* Responsive Web Breakpoints */
     @media(max-width: 1200px) {
       .metrics-grid { grid-template-columns: repeat(3, 1fr); }
     }
@@ -252,7 +248,8 @@
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx8VVh9LgmPS5G9KGQztCUajaizls-dl_jYmvwKafF9lW4Rds1GAskvnSz6h6LI-64D/exec";
+    // DO NOT FORGET TO UPDATE THIS IF YOU CREATE A NEW DEPLOYMENT URL
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwud7MzvPAEztXWngBEXKzjCjBybHm24imVw8uS7z_MvjBpDcCiMVblE9536QmNiJ2_/exec";
 
     let userScansCache = [];
     let pendingDispatchPayload = null;
@@ -265,7 +262,6 @@
       return num.toLocaleString('en-IN');
     }
 
-    /* --- Live Date & Time Stamp Function --- */
     function updateLiveDateTime() {
       const now = new Date();
       const day = String(now.getDate()).padStart(2, '0');
@@ -313,7 +309,7 @@
       const emp = localStorage.getItem("employee");
       if (!emp) return userScansCache;
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?employee=${encodeURIComponent(emp)}`);
+        const response = await fetch(`${GOOGLE_SHEET_URL}?employee=${encodeURIComponent(emp)}&warehouse=${encodeURIComponent(localStorage.getItem("warehouse") || "")}`);
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
           userScansCache = data;
@@ -322,6 +318,34 @@
         return userScansCache;
       } catch (e) {
         return userScansCache;
+      }
+    }
+
+    async function fetchQaStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=qaStock`);
+        const data = await response.json();
+        const elem = document.getElementById("qaStockVal");
+        if (elem) {
+          elem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
+        }
+      } catch (e) {
+        const elem = document.getElementById("qaStockVal");
+        if (elem) elem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
+      }
+    }
+
+    async function fetchMainWarehouseStock() {
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=mainWarehouseStock`);
+        const data = await response.json();
+        const mainElem = document.getElementById("mainWarehouseStockVal");
+        if (mainElem) {
+          mainElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
+        }
+      } catch (e) {
+        const mainElem = document.getElementById("mainWarehouseStockVal");
+        if (mainElem) mainElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
       }
     }
 
@@ -382,36 +406,59 @@
     }
 
     async function showWarehouseStockDetails() {
-      const currentWh = localStorage.getItem("warehouse") || "";
-      openStockDetailsModal("📦 Warehouse Stock (" + currentWh + ")", "Loading...");
+      const targetWh = "QA (Quality Assurance)";
+      openStockDetailsModal("📦 QA (Quality Assurance)", "Loading...");
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=warehouseStockDetails&warehouse=${encodeURIComponent(currentWh)}`);
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=warehouseStockDetails&warehouse=${encodeURIComponent(targetWh)}`);
+        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
-        renderStockDetailsTable("📦 Warehouse Stock (" + currentWh + ")", list);
+        renderStockDetailsTable("📦 QA (Quality Assurance)", list);
       } catch (e) {
-        renderStockDetailsTable("📦 Warehouse Stock (" + currentWh + ")", []);
+        console.error("Fetch Error:", e);
+        renderStockDetailsTable("📦 QA (Quality Assurance)", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
+      }
+    }
+
+    async function showMainWarehouseStockDetails() {
+      openStockDetailsModal("🏢 Main Warehouse", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=mainWarehouseStockDetails`);
+        if (!response.ok) throw new Error("API Connection Failed");
+        const list = await response.json();
+        renderStockDetailsTable("🏢 Main Warehouse", list);
+      } catch (e) {
+        console.error("Fetch Error:", e);
+        renderStockDetailsTable("🏢 Main Warehouse", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
     async function showPackingStockDetails() {
-      openStockDetailsModal("🎁 Packing Area Stock", "Loading...");
+      openStockDetailsModal("🎁 Packing Area", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStockDetails`);
+        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
-        renderStockDetailsTable("🎁 Packing Area Stock", list);
+        renderStockDetailsTable("🎁 Packing Area", list);
       } catch (e) {
-        renderStockDetailsTable("🎁 Packing Area Stock", []);
+        console.error("Fetch Error:", e);
+        renderStockDetailsTable("🎁 Packing Area", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
     async function showExpiredStockDetails() {
-      openStockDetailsModal("⚠️ NEAR-EXPIRY STOCK", "Loading...");
+      openStockDetailsModal("⚠️ Near-Expiry Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStockDetails`);
+        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
-        renderStockDetailsTable("⚠️ NEAR-EXPIRY STOCK", list);
+        renderStockDetailsTable("⚠️ Near-Expiry Stock", list);
       } catch (e) {
-        renderStockDetailsTable("⚠️ NEAR-EXPIRY STOCK", []);
+        console.error("Fetch Error:", e);
+        renderStockDetailsTable("⚠️ Near-Expiry Stock", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -419,10 +466,13 @@
       openStockDetailsModal("📄 Dispatched Qty", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStockDetails`);
+        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("📄 Dispatched Qty", list);
       } catch (e) {
+        console.error("Fetch Error:", e);
         renderStockDetailsTable("📄 Dispatched Qty", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -430,10 +480,13 @@
       openStockDetailsModal("🚫 Damaged Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStockDetails`);
+        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("🚫 Damaged Stock", list);
       } catch (e) {
+        console.error("Fetch Error:", e);
         renderStockDetailsTable("🚫 Damaged Stock", []);
+        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -535,10 +588,11 @@
                 <label for="warehouse">Warehouse</label>
                 <select id="warehouse">
                   <option value="">-- Select Warehouse --</option>
-                  <option value="Meerut">Meerut</option>
-                  <option value="Ghaziabad">Ghaziabad</option>
+                  <option value="QA (Quality Assurance)">QA (Quality Assurance)</option>
+                  <option value="Main Warehouse">Main Warehouse</option>
                   <option value="Packing Area">Packing Area</option>
-                  <option value="Damage Stock">Damage Stock</option>
+                  <option value="Near-Expiry">Near-Expiry</option>
+                  <option value="Damaged">Damaged</option>
                   <option value="Other Location">Other Location</option>
                 </select>
               </div>
@@ -562,12 +616,13 @@
       if (loginBtn) { loginBtn.disabled = true; loginBtn.innerText = "⏳ Authenticating..."; }
 
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}`);
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}&warehouse=${encodeURIComponent(wh)}`);
         const data = await response.json();
 
         if (data.status === "success") {
           localStorage.setItem("employee", data.employeeName || emp);
           localStorage.setItem("warehouse", wh);
+          localStorage.setItem("role", data.role || "Standard");
           syncDataAndShowDashboard();
         } else {
           alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
@@ -581,12 +636,16 @@
 
     async function syncDataAndShowDashboard() {
       showDashboard();
+      fetchQaStock();
+      fetchMainWarehouseStock();
       fetchPackingAreaStock();
       fetchExpiredStock();
       fetchDispatchStock();
       fetchDamageStock();
       await fetchUserScansFromCloud();
       showDashboard();
+      fetchQaStock();
+      fetchMainWarehouseStock();
       fetchPackingAreaStock();
       fetchExpiredStock();
       fetchDispatchStock();
@@ -597,22 +656,71 @@
       const scans = userScansCache;
       const todayStr = new Date().toLocaleDateString();
       const currentWh = localStorage.getItem("warehouse") || "";
+      const userRole = localStorage.getItem("role") || "Standard";
 
-      let todayScans = 0, warehouseStockQty = 0;
+      let todayScans = 0;
 
       scans.forEach(item => {
         const itemDate = new Date(item.timestamp).toLocaleDateString();
-        const itemWh = String(item.warehouse || "").trim().toLowerCase();
-        const loggedWh = currentWh.trim().toLowerCase();
-        
         if (itemDate === todayStr) { 
           todayScans += 1; 
         }
-
-        if (itemWh === loggedWh) {
-          warehouseStockQty += (parseInt(item.quantity, 10) || 0);
-        }
       });
+
+      let actionButtons = "";
+      const lowerWh = currentWh.trim().toLowerCase();
+      
+      if (userRole.toLowerCase() === "view-only") {
+        actionButtons = `<p style="color:var(--text-muted); font-size: 0.9rem; grid-column: span 3; text-align: center;">You have View-Only access. Operations are disabled.</p>`;
+      } else if (userRole.toLowerCase() === "admin") {
+        actionButtons = `
+          <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
+          <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
+          <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return (PDF)</button>
+          <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+          <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+          <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+        `;
+      } else {
+        if (lowerWh === "qa (quality assurance)") {
+          actionButtons = `
+            <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+          `;
+        } else if (lowerWh === "main warehouse") {
+          actionButtons = `
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+          `;
+        } else if (lowerWh === "packing area") {
+          actionButtons = `
+            <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
+            <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return (PDF)</button>
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+          `;
+        } else if (lowerWh === "near-expiry" || lowerWh === "damaged") {
+          actionButtons = `
+            <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+          `;
+        } else {
+          actionButtons = `
+            <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
+            <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
+            <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return (PDF)</button>
+            <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
+            <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+          `;
+        }
+      }
 
       document.getElementById("app").innerHTML = `
         ${getBrandingHeader()}
@@ -629,27 +737,31 @@
 
           <div class="metrics-grid">
             <div class="metric-card">
-              <span>Bills Received Today</span>
-              <h3>${formatNumber(todayScans)}<span class="unit-Nos">Nos</span></h3>
+              <span>BILLS RECEIVED TODAY</span>
+              <h3>${formatNumber(todayScans)}<span class="unit-Nos">NOS</span></h3>
             </div>
             <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
-              <span>Warehouse Stock</span>
-              <h3>${formatNumber(warehouseStockQty)} <span class="unit-pcs">pcs</span></h3>
+              <span>QA (QUALITY ASSURANCE)</span>
+              <h3 id="qaStockVal">Loading...</h3>
+            </div>
+            <div class="metric-card main-wh-card clickable" onclick="showMainWarehouseStockDetails()" title="Click to view product list">
+              <span>MAIN WAREHOUSE</span>
+              <h3 id="mainWarehouseStockVal">Loading...</h3>
             </div>
             <div class="metric-card warning-card clickable" onclick="showPackingStockDetails()" title="Click to view product list">
-              <span>Packing Area Stock</span>
+              <span>PACKING AREA</span>
               <h3 id="packingStockVal">Loading...</h3>
             </div>
             <div class="metric-card danger-card clickable" onclick="showExpiredStockDetails()" title="Click to view product list">
-              <span>Near-Expiry Stock</span>
+              <span>NEAR-EXPIRY</span>
               <h3 id="expiredStockVal">Loading...</h3>
             </div>
             <div class="metric-card info-card clickable" onclick="showDispatchStockDetails()" title="Click to view product list">
-              <span>Dispatched Qty</span>
+              <span>DISPATCHED QTY</span>
               <h3 id="dispatchStockVal">Loading...</h3>
             </div>
             <div class="metric-card danger-card clickable" onclick="showDamageStockDetails()" title="Click to view product list">
-              <span>Damaged Stock</span>
+              <span>DAMAGED</span>
               <h3 id="damageStockVal">Loading...</h3>
             </div>
           </div>
@@ -657,18 +769,14 @@
           <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
             <h4 style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em;">OPERATIONS</h4>
             <div class="action-grid">
-              <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
-              <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
-              <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return (PDF)</button>
-              <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
-              <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
-              <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
+              ${actionButtons}
             </div>
           </div>
         </div>
         ${getFooter()}
       `;
       updateLiveDateTime();
+      fetchMainWarehouseStock();
       fetchPackingAreaStock();
       fetchExpiredStock();
       fetchDispatchStock();
@@ -958,11 +1066,50 @@
     }
 
     function openTransferModal() {
-      let currentWarehouse = localStorage.getItem("warehouse") || "Meerut";
+      let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
+      
+      let qaRemarkHtml = "";
+      let warehouseToOptions = "";
+
+      if (currentWarehouse === 'QA (Quality Assurance)') {
+        qaRemarkHtml = `
+          <div class="field-group" style="margin-top: 8px;">
+            <label>QA Remarks <span style="color:var(--danger);">*</span></label>
+            <input type="text" id="t_qa_remark" placeholder="Enter QA Remarks (Mandatory)">
+          </div>
+        `;
+        warehouseToOptions = `
+          <option value="Main Warehouse" selected>Main Warehouse</option>
+          <option value="Packing Area">Packing Area</option>
+          <option value="Damaged">Damaged</option>
+        `;
+      } else if (currentWarehouse === 'Main Warehouse') {
+        warehouseToOptions = `
+          <option value="Packing Area" selected>Packing Area</option>
+          <option value="Damaged">Damaged</option>
+          <option value="Near-Expiry">Near-Expiry</option>
+        `;
+      } else if (currentWarehouse === 'Packing Area') {
+        warehouseToOptions = `
+          <option value="Near-Expiry" selected>Near-Expiry</option>
+          <option value="Damaged">Damaged</option>
+        `;
+      } else {
+        warehouseToOptions = `
+          <option value="Main Warehouse" ${currentWarehouse === 'Main Warehouse' ? '' : 'selected'}>Main Warehouse</option>
+          <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
+          <option value="Damaged" ${currentWarehouse === 'Damaged' ? '' : 'selected'}>Damaged</option>
+          <option value="Near-Expiry" ${currentWarehouse === 'Near-Expiry' ? '' : 'selected'}>Near-Expiry</option>
+          <option value="QA (Quality Assurance)" ${currentWarehouse === 'QA (Quality Assurance)' ? '' : 'selected'}>QA (Quality Assurance)</option>
+          <option value="Other Location">Other Location</option>
+        `;
+      }
+
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
             <h3 style="color:#4f46e5;">🔄 Internal Stock Transfer</h3>
+            
             <div class="field-group">
               <label>Product Name</label>
               <select id="t_product" class="form-control">
@@ -1096,26 +1243,28 @@
                 <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
               </select>
             </div>
+            
             <div class="field-group">
               <label>Batch No</label>
               <input type="text" id="t_batch" placeholder="Enter Batch Number">
             </div>
+            
             <div class="field-group">
               <label>Qty</label>
               <input type="number" id="t_qty" value="1" min="1">
             </div>
+            
             <div class="field-group">
               <label>Warehouse From (Logged In)</label>
               <input type="text" id="t_from" value="${escapeHtml(currentWarehouse)}" readonly style="background:#f1f5f9; font-weight:700;">
             </div>
+            
+            ${qaRemarkHtml}
+
             <div class="field-group">
               <label>Warehouse To</label>
               <select id="t_to">
-                <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
-                <option value="Damaged Stock" ${currentWarehouse === 'Damaged Stock' ? '' : 'selected'}>Damaged Stock</option>
-                <option value="Ghaziabad" ${currentWarehouse === 'Ghaziabad' ? '' : 'selected'}>Ghaziabad</option>
-                <option value="Meerut" ${currentWarehouse === 'Meerut' ? '' : 'selected'}>Meerut</option>
-                <option value="Other Location">Other Location</option>
+                ${warehouseToOptions}
               </select>
             </div>
 
@@ -1134,9 +1283,22 @@
       let qty = parseInt(document.getElementById("t_qty").value, 10) || 1;
       let fromWh = document.getElementById("t_from").value;
       let toWh = document.getElementById("t_to").value;
+      
+      let qaRemark = "";
 
       if (!prod || !batch) { alert("Please enter Product Name and Batch No!"); return; }
       if (fromWh === toWh) { alert("From and To Warehouse cannot be the same!"); return; }
+
+      if (fromWh === "QA (Quality Assurance)") {
+        let remarkInput = document.getElementById("t_qa_remark");
+        if (remarkInput) {
+          qaRemark = remarkInput.value.trim();
+          if (!qaRemark) {
+            alert("QA Remarks is mandatory when transferring from QA (Quality Assurance)!");
+            return;
+          }
+        }
+      }
 
       pendingTransferPayload = {
         action: "transfer",
@@ -1145,19 +1307,23 @@
         batch: batch,
         qty: qty,
         fromWarehouse: fromWh,
-        toWarehouse: toWh
+        toWarehouse: toWh,
+        qaRemark: qaRemark
       };
+
+      let remarkHtml = qaRemark ? `<b>QA Remarks:</b> ${escapeHtml(qaRemark)}<br>` : "";
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
             <h3 style="color:#4f46e5;">⚠️ Confirm Stock Transfer</h3>
             <div style="background:#f8fafc; padding:16px; border-radius:8px; font-size:0.92rem; line-height:1.6; border: 1px solid var(--border-color);">
               <b>Product:</b> ${escapeHtml(prod)}<br>
               <b>Batch No:</b> ${escapeHtml(batch)}<br>
               <b>Quantity:</b> ${formatNumber(qty)} pcs<br>
               <b>From Location:</b> ${escapeHtml(fromWh)}<br>
-              <b>To Location:</b> ${escapeHtml(toWh)}
+              <b>To Location:</b> ${escapeHtml(toWh)}<br>
+              ${remarkHtml}
             </div>
             <p style="font-weight:700; color:var(--danger); font-size:0.9rem;">
               Are you sure you want to transfer the stock?
