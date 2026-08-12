@@ -26,6 +26,7 @@
       --danger: #dc2626;
       --danger-hover: #b91c1c;
       --warning: #d97706;
+      --warning-hover: #b45309;
       --success: #16a34a;
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
@@ -191,6 +192,8 @@
     button.btn-indigo:hover { background-color: #4338ca; }
     button.btn-emerald { background-color: #059669; }
     button.btn-emerald:hover { background-color: #047857; }
+    button.btn-warning { background-color: var(--warning); }
+    button.btn-warning:hover { background-color: var(--warning-hover); }
 
     .history-list { max-height: 520px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 6px; }
     .history-date-group { display: flex; flex-direction: column; gap: 8px; }
@@ -249,9 +252,10 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // DO NOT FORGET TO UPDATE THIS IF YOU CREATE A NEW DEPLOYMENT URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwud7MzvPAEztXWngBEXKzjCjBybHm24imVw8uS7z_MvjBpDcCiMVblE9536QmNiJ2_/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz5KAbb9e16mS4iQRN6siORUgVKDzi6sUqzt-0mRK5PiD8c7A105d_ir1Dd5rCqOd4/exec";
 
     let userScansCache = [];
+    let holdInvCache = [];
     let pendingDispatchPayload = null;
     let pendingTransferPayload = null;
     let pendingDispatchReturnPayload = null;
@@ -306,10 +310,8 @@
     }
 
     async function fetchUserScansFromCloud() {
-      const emp = localStorage.getItem("employee");
-      if (!emp) return userScansCache;
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?employee=${encodeURIComponent(emp)}&warehouse=${encodeURIComponent(localStorage.getItem("warehouse") || "")}`);
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=fallback`); 
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
           userScansCache = data;
@@ -321,87 +323,38 @@
       }
     }
 
-    async function fetchQaStock() {
+    async function fetchAllMetrics() {
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=qaStock`);
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=getAllMetrics`);
         const data = await response.json();
-        const elem = document.getElementById("qaStockVal");
-        if (elem) {
-          elem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
-      } catch (e) {
-        const elem = document.getElementById("qaStockVal");
-        if (elem) elem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
-      }
-    }
-
-    async function fetchMainWarehouseStock() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=mainWarehouseStock`);
-        const data = await response.json();
+        
+        const qaElem = document.getElementById("qaStockVal");
+        if (qaElem) qaElem.innerHTML = `${formatNumber(data.qa || 0)} <span class="unit-pcs">PCS</span>`;
+        
         const mainElem = document.getElementById("mainWarehouseStockVal");
-        if (mainElem) {
-          mainElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
-      } catch (e) {
-        const mainElem = document.getElementById("mainWarehouseStockVal");
-        if (mainElem) mainElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
-      }
-    }
-
-    async function fetchPackingAreaStock() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStock`);
-        const data = await response.json();
+        if (mainElem) mainElem.innerHTML = `${formatNumber(data.main || 0)} <span class="unit-pcs">PCS</span>`;
+        
         const packingElem = document.getElementById("packingStockVal");
-        if (packingElem) {
-          packingElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
-      } catch (e) {
-        const packingElem = document.getElementById("packingStockVal");
-        if (packingElem) packingElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
-      }
-    }
-
-    async function fetchExpiredStock() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStock`);
-        const data = await response.json();
+        if (packingElem) packingElem.innerHTML = `${formatNumber(data.packing || 0)} <span class="unit-pcs">PCS</span>`;
+        
         const expiredElem = document.getElementById("expiredStockVal");
-        if (expiredElem) {
-          expiredElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
-      } catch (e) {
-        const expiredElem = document.getElementById("expiredStockVal");
-        if (expiredElem) expiredElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
-      }
-    }
-
-    async function fetchDispatchStock() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStock`);
-        const data = await response.json();
+        if (expiredElem) expiredElem.innerHTML = `${formatNumber(data.expired || 0)} <span class="unit-pcs">PCS</span>`;
+        
         const dispatchElem = document.getElementById("dispatchStockVal");
-        if (dispatchElem) {
-          dispatchElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
-      } catch (e) {
-        const dispatchElem = document.getElementById("dispatchStockVal");
-        if (dispatchElem) dispatchElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
-      }
-    }
+        if (dispatchElem) dispatchElem.innerHTML = `${formatNumber(data.dispatch || 0)} <span class="unit-pcs">PCS</span>`;
+        
+        const damageElem = document.getElementById("damageStockVal");
+        if (damageElem) damageElem.innerHTML = `${formatNumber(data.damage || 0)} <span class="unit-pcs">PCS</span>`;
 
-    async function fetchDamageStock() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStock`);
-        const data = await response.json();
-        const damageElem = document.getElementById("damageStockVal");
-        if (damageElem) {
-          damageElem.innerHTML = `${formatNumber(data.totalQty || 0)} <span class="unit-pcs">pcs</span>`;
-        }
+        const holdElem = document.getElementById("holdStockVal");
+        if (holdElem) holdElem.innerHTML = `${formatNumber(data.hold || 0)} <span class="unit-pcs">PCS</span>`;
+        
       } catch (e) {
-        const damageElem = document.getElementById("damageStockVal");
-        if (damageElem) damageElem.innerHTML = `0 <span class="unit-pcs">pcs</span>`;
+        console.error("Metrics load failed:", e);
+        ["qaStockVal", "mainWarehouseStockVal", "packingStockVal", "expiredStockVal", "dispatchStockVal", "damageStockVal", "holdStockVal"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el && el.innerText === "Loading...") el.innerHTML = `0 <span class="unit-pcs">PCS</span>`;
+        });
       }
     }
 
@@ -410,13 +363,10 @@
       openStockDetailsModal("📦 QA (Quality Assurance)", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=warehouseStockDetails&warehouse=${encodeURIComponent(targetWh)}`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("📦 QA (Quality Assurance)", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("📦 QA (Quality Assurance)", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -424,13 +374,10 @@
       openStockDetailsModal("🏢 Main Warehouse", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=mainWarehouseStockDetails`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("🏢 Main Warehouse", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("🏢 Main Warehouse", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -438,13 +385,10 @@
       openStockDetailsModal("🎁 Packing Area", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=packingStockDetails`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("🎁 Packing Area", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("🎁 Packing Area", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -452,13 +396,10 @@
       openStockDetailsModal("⚠️ Near-Expiry Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=expiredStockDetails`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("⚠️ Near-Expiry Stock", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("⚠️ Near-Expiry Stock", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -466,13 +407,10 @@
       openStockDetailsModal("📄 Dispatched Qty", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=dispatchStockDetails`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("📄 Dispatched Qty", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("📄 Dispatched Qty", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
       }
     }
 
@@ -480,13 +418,21 @@
       openStockDetailsModal("🚫 Damaged Stock", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=damageStockDetails`);
-        if (!response.ok) throw new Error("API Connection Failed");
         const list = await response.json();
         renderStockDetailsTable("🚫 Damaged Stock", list);
       } catch (e) {
-        console.error("Fetch Error:", e);
         renderStockDetailsTable("🚫 Damaged Stock", []);
-        alert("⚠️ Google Sheet Connection Failed! Kripya check karein ki aapne Apps Script ko 'New Version' par deploy kiya hai.");
+      }
+    }
+
+    async function showHoldStockDetails() {
+      openStockDetailsModal("⏸️ Hold Items", "Loading...");
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=holdStockDetails`);
+        const list = await response.json();
+        renderStockDetailsTable("⏸️ Hold Items", list);
+      } catch (e) {
+        renderStockDetailsTable("⏸️ Hold Items", []);
       }
     }
 
@@ -629,27 +575,15 @@
           if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Sign In 🔓"; }
         }
       } catch (e) {
-        alert("⚠️ Connection error!");
+        alert("⚠️ Connection error: " + e.message);
         if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Sign In 🔓"; }
       }
     }
 
     async function syncDataAndShowDashboard() {
-      showDashboard();
-      fetchQaStock();
-      fetchMainWarehouseStock();
-      fetchPackingAreaStock();
-      fetchExpiredStock();
-      fetchDispatchStock();
-      fetchDamageStock();
-      await fetchUserScansFromCloud();
-      showDashboard();
-      fetchQaStock();
-      fetchMainWarehouseStock();
-      fetchPackingAreaStock();
-      fetchExpiredStock();
-      fetchDispatchStock();
-      fetchDamageStock();
+      showDashboard(); 
+      await fetchUserScansFromCloud(); 
+      showDashboard(); 
     }
 
     function showDashboard() {
@@ -678,6 +612,7 @@
           <button onclick="triggerDispatchPdfSelect()">🚚 Upload Dispatch Bill (PDF)</button>
           <button onclick="triggerDispatchReturnPdfSelect()">↩️ Upload Dispatch Return (PDF)</button>
           <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+          <button onclick="openHoldModal()" class="btn-warning">⏸️ Hold / Unhold Item</button>
           <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
           <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
         `;
@@ -686,6 +621,7 @@
           actionButtons = `
             <button onclick="openPurchaseModal()">🛒 New Purchase Entry</button>
             <button onclick="openTransferModal()" class="btn-indigo">🔄 Internal Stock Transfer</button>
+            <button onclick="openHoldModal()" class="btn-warning">⏸️ Hold / Unhold Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary">📉 Stock Shortages</button>
             <button onclick="historyPage()" class="btn-secondary">📜 Workflow History</button>
           `;
@@ -764,6 +700,10 @@
               <span>DAMAGED</span>
               <h3 id="damageStockVal">Loading...</h3>
             </div>
+            <div class="metric-card warning-card clickable" onclick="showHoldStockDetails()" title="Click to view product list">
+              <span>HOLD ITEMS</span>
+              <h3 id="holdStockVal">Loading...</h3>
+            </div>
           </div>
 
           <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -776,11 +716,7 @@
         ${getFooter()}
       `;
       updateLiveDateTime();
-      fetchMainWarehouseStock();
-      fetchPackingAreaStock();
-      fetchExpiredStock();
-      fetchDispatchStock();
-      fetchDamageStock();
+      fetchAllMetrics();
     }
 
     function openPurchaseModal() {
@@ -1065,6 +1001,144 @@
       }
     }
 
+    function openHoldModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
+            <h3 style="color:#d97706;">⏸️ Hold / Unhold Item</h3>
+            
+            <div style="display:flex; gap:16px; margin-bottom:12px; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fde68a;">
+               <label><input type="radio" name="holdActionType" value="HOLD" checked onchange="loadHoldInventory('QA')"> Hold Item (From QA)</label>
+               <label><input type="radio" name="holdActionType" value="UNHOLD" onchange="loadHoldInventory('HOLD')"> Unhold Item (To Main WH)</label>
+            </div>
+            
+            <div class="field-group">
+              <label>Product Name</label>
+              <select id="h_product" class="form-control" onchange="populateHoldBatches()">
+                <option value="">Loading products...</option>
+              </select>
+            </div>
+            
+            <div class="field-group">
+              <label>Batch No (Available Qty)</label>
+              <select id="h_batch" class="form-control" onchange="setMaxHoldQty()">
+                <option value="">Select Product First</option>
+              </select>
+            </div>
+            
+            <div class="field-group">
+              <label>Qty</label>
+              <input type="number" id="h_qty" value="1" min="1">
+              <small id="h_max_qty_label" style="color:var(--text-muted); font-weight: 600;"></small>
+            </div>
+            
+            <div class="field-group">
+              <label>Reason / Remarks <span style="color:var(--danger);">*</span></label>
+              <input type="text" id="h_reason" placeholder="Enter Hold/Unhold Reason (Mandatory)">
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:8px;">
+              <button onclick="executeHoldAction()" class="btn-warning">Submit Action</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+      loadHoldInventory('QA');
+    }
+
+    async function loadHoldInventory(source) {
+      document.getElementById('h_product').innerHTML = '<option value="">Loading...</option>';
+      document.getElementById('h_batch').innerHTML = '<option value="">Select Product First</option>';
+      document.getElementById('h_qty').value = 1;
+      document.getElementById('h_max_qty_label').innerText = "";
+      
+      let submitBtn = document.querySelector("#modal-container button.btn-warning");
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getInventoryForHold&source=${source}`);
+        holdInvCache = await response.json();
+        
+        let uniqueProds = [...new Set(holdInvCache.map(i => i.product))].sort();
+        let opts = '<option value="">-- Select Product --</option>';
+        uniqueProds.forEach(p => {
+          opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
+        });
+        document.getElementById('h_product').innerHTML = opts;
+        if (submitBtn) submitBtn.disabled = false;
+      } catch (e) {
+        alert("Failed to load inventory. Please try again.");
+      }
+    }
+
+    function populateHoldBatches() {
+      let selProd = document.getElementById('h_product').value;
+      let batches = holdInvCache.filter(i => i.product === selProd);
+      let opts = '<option value="">-- Select Batch --</option>';
+      batches.forEach(b => {
+        opts += `<option value="${escapeHtml(b.batch)}" data-qty="${b.qty}">${escapeHtml(b.batch)} (Avail: ${b.qty})</option>`;
+      });
+      document.getElementById('h_batch').innerHTML = opts;
+      document.getElementById('h_max_qty_label').innerText = "";
+    }
+
+    function setMaxHoldQty() {
+      let selBatch = document.getElementById('h_batch');
+      if (selBatch.selectedIndex > 0) {
+        let maxQty = selBatch.options[selBatch.selectedIndex].getAttribute('data-qty');
+        document.getElementById('h_max_qty_label').innerText = `Max Available: ${maxQty} pcs`;
+        document.getElementById('h_qty').max = maxQty;
+      }
+    }
+
+    async function executeHoldAction() {
+      let type = document.querySelector('input[name="holdActionType"]:checked').value;
+      let prod = document.getElementById('h_product').value.trim();
+      let batch = document.getElementById('h_batch').value.trim();
+      let qty = parseInt(document.getElementById('h_qty').value, 10) || 0;
+      let reason = document.getElementById('h_reason').value.trim();
+      
+      if (!prod || !batch || qty <= 0 || !reason) {
+        alert("Please fill all fields! Reason is mandatory.");
+        return;
+      }
+      
+      let submitBtn = document.querySelector("#modal-container button.btn-warning");
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = "⏳ Processing..."; }
+      
+      let payload = {
+        action: "hold_action",
+        user: localStorage.getItem("employee") || "",
+        holdType: type,
+        product: prod,
+        batch: batch,
+        qty: qty,
+        reason: reason
+      };
+      
+      try {
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        let resData = await response.json();
+        
+        if (resData.status === "success") {
+          alert("✅ " + resData.message);
+          closeModalAndResume();
+          syncDataAndShowDashboard();
+        } else {
+          alert("❌ ERROR: " + resData.message);
+          closeModalAndResume();
+        }
+      } catch (e) {
+        alert("⚠️ Connection Error: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
     function openTransferModal() {
       let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
       
@@ -1112,136 +1186,7 @@
             
             <div class="field-group">
               <label>Product Name</label>
-              <select id="t_product" class="form-control">
-                <option value="">Select Product Name</option>
-                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
-                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
-                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
-                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
-                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
-                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
-                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
-                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
-                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
-                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
-                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
-                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
-                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
-                <option value="HATFUR TAB">HATFUR TAB</option>
-                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
-                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
-                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
-                <option value="HATLAC TAB">HATLAC TAB</option>
-                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
-                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
-                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
-                <option value="HATPAN TAB">HATPAN TAB</option>
-                <option value="HATPLAT TAB">HATPLAT TAB</option>
-                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
-                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
-                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
-                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
-                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
-                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
-                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
-                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
-                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
-                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
-                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
-                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
-                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
-                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
-                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
-                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
-                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
-                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
-                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
-                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
-                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
-                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
-                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
-                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
-                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
-                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
-                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
-                <option value="RAJFAN TAB">RAJFAN TAB</option>
-                <option value="RAJPARA TAB">RAJPARA TAB</option>
-                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
-                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
-                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
-                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
-                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
-                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
-                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
-                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
-                <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
-                <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
-                <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
-                <option value="Hatcure Injection">Hatcure Injection</option>
-                <option value="Pantohat L.V. Injection">Pantohat L.V. Injection</option>
-                <option value="Rajdox-100 Injection">Rajdox-100 Injection</option>
-                <option value="Rajdox-200 Injection">Rajdox-200 Injection</option>
-                <option value="Vettax-SL. Injection">Vettax-SL. Injection</option>
-                <option value="Vetaxone-SL Injection">Vetaxone-SL Injection</option>
-                <option value="Vetaxone-Tazo Injection">Vetaxone-Tazo Injection</option>
-                <option value="Clindahat Syrup">Clindahat Syrup</option>
-                <option value="Digehat Plus Syrup">Digehat Plus Syrup</option>
-                <option value="Enrohat-50 Syrup">Enrohat-50 Syrup</option>
-                <option value="Epihat-KBR Syrup">Epihat-KBR Syrup</option>
-                <option value="Epihat-LC Syrup">Epihat-LC Syrup</option>
-                <option value="Hatcal Junior Syrup">Hatcal Junior Syrup</option>
-                <option value="Hatclav-250 Syrup">Hatclav-250 Syrup</option>
-                <option value="Hatcort-DS Syrup">Hatcort-DS Syrup</option>
-                <option value="Hatlexin-250 Syrup">Hatlexin-250 Syrup</option>
-                <option value="Hatloose Syrup">Hatloose Syrup</option>
-                <option value="Hatplat Syrup">Hatplat Syrup</option>
-                <option value="Hatpod-100 DS Syrup">Hatpod-100 DS Syrup</option>
-                <option value="Hatpyrin Syrup">Hatpyrin Syrup</option>
-                <option value="Heparaj Junior Syrup">Heparaj Junior Syrup</option>
-                <option value="Immunohat Syrup">Immunohat Syrup</option>
-                <option value="Itraraj Oral Solution">Itraraj Oral Solution</option>
-                <option value="Metrohat Syrup">Metrohat Syrup</option>
-                <option value="Pulmohat Syrup">Pulmohat Syrup</option>
-                <option value="Rajcpm Syrup">Rajcpm Syrup</option>
-                <option value="Rajfan-50 Syrup">Rajfan-50 Syrup</option>
-                <option value="Rajmet-DP Syrup">Rajmet-DP Syrup</option>
-                <option value="Rantiraj Syrup">Rantiraj Syrup</option>
-                <option value="Renalraj Suspension">Renalraj Suspension</option>
-                <option value="Renchal-H Syrup">Renchal-H Syrup</option>
-                <option value="Hatgat Eye Drop">Hatgat Eye Drop</option>
-                <option value="Hatgat-P Eye Drop">Hatgat-P Eye Drop</option>
-                <option value="Hatmoist Eye Drop">Hatmoist Eye Drop</option>
-                <option value="Hatmox Eye Drop">Hatmox Eye Drop</option>
-                <option value="Hatmox-D Eye Drop">Hatmox-D Eye Drop</option>
-                <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
-                <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
-                <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
-                <option value="Hatderm KC Topical Spray">Hatderm KC Topical Spray</option>
-                <option value="Hatderm MC Topical Spray">Hatderm MC Topical Spray</option>
-                <option value="Hatodine Ointment">Hatodine Ointment</option>
-                <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
-                <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
-                <option value="Hatodine Scrub Topical Spray">Hatodine Scrub Topical Spray</option>
-                <option value="Scabhat Ointment">Scabhat Ointment</option>
-                <option value="Cortihat Topical Spray">Cortihat Topical Spray</option>
-                <option value="Hatotic-ES Ear Drop">Hatotic-ES Ear Drop</option>
-                <option value="Hatotic-GBC Ear Drop">Hatotic-GBC Ear Drop</option>
-                <option value="Hatotic-NBC Ear Drop">Hatotic-NBC Ear Drop</option>
-                <option value="Otihat Ear Cleanser">Otihat Ear Cleanser</option>
-                <option value="Otihat TeN Ear Cleanser">Otihat TeN Ear Cleanser</option>
-                <option value="All in One Shampoo 200 ml">All in One Shampoo 200 ml</option>
-                <option value="Anti-Dandruff Shampoo">Anti-Dandruff Shampoo</option>
-                <option value="Dry Foam Shampoo">Dry Foam Shampoo</option>
-                <option value="Ectocover-CM24 Shampoo">Ectocover-CM24 Shampoo</option>
-                <option value="Ectocover-PNC Shampoo">Ectocover-PNC Shampoo</option>
-                <option value="Ectocover-B.P.S.S. Shampoo">Ectocover-B.P.S.S. Shampoo</option>
-                <option value="Ectocover-PP Dusting Powder">Ectocover-PP Dusting Powder</option>
-                <option value="Ectocover-F Dusting Powder">Ectocover-F Dusting Powder</option>
-                <option value="Hatgroom Dusting Powder">Hatgroom Dusting Powder</option>
-                <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-                <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-              </select>
+              <input type="text" id="t_product" placeholder="Enter Product Name">
             </div>
             
             <div class="field-group">
