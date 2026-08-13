@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hatvet Pharma - Enterprise Inventory Management Portal</title>
 
-  <!-- Added Font Awesome for Professional Enterprise Icons -->
+  <!-- Font Awesome for Professional Enterprise Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -134,7 +134,6 @@
     }
     .user-details { font-size: 1rem; color: var(--text-main); font-weight: 500; }
 
-    /* CHANGED: Grid Template Columns from 6 to 4 for 4x2 Matrix */
     .metrics-grid { 
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
@@ -167,7 +166,6 @@
     
     .metric-card h3 .unit-pcs { font-size: 0.9rem; font-weight: 600; margin-left: 3px; opacity: 0.85; }
 
-    /* NEW CSS for "View Stock ->" CTA in Cards */
     .view-stock-text {
       font-size: 0.8rem;
       color: var(--primary);
@@ -358,6 +356,10 @@
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=getAllMetrics`);
         const data = await response.json();
         
+        // Update today's bills instantly from optimized backend API
+        const billsElem = document.getElementById("todayBillsVal");
+        if (billsElem) billsElem.innerHTML = `${formatNumber(data.todayBills || 0)} <span class="unit-pcs">NOS</span>`;
+
         const qaElem = document.getElementById("qaStockVal");
         if (qaElem) qaElem.innerHTML = `${formatNumber(data.qa || 0)} <span class="unit-pcs">PCS</span>`;
         
@@ -381,7 +383,7 @@
         
       } catch (e) {
         console.error("Metrics load failed:", e);
-        ["qaStockVal", "mainWarehouseStockVal", "packingStockVal", "expiredStockVal", "dispatchStockVal", "damageStockVal", "holdStockVal"].forEach(id => {
+        ["todayBillsVal", "qaStockVal", "mainWarehouseStockVal", "packingStockVal", "expiredStockVal", "dispatchStockVal", "damageStockVal", "holdStockVal"].forEach(id => {
             const el = document.getElementById(id);
             if(el && el.innerText === "Loading...") el.innerHTML = `0 <span class="unit-pcs">PCS</span>`;
         });
@@ -615,26 +617,15 @@
     }
 
     async function syncDataAndShowDashboard() {
+      // NON-BLOCKING UI RENDER (Speed Optimized)
       showDashboard(); 
-      await fetchUserScansFromCloud(); 
-      showDashboard(); 
+      fetchAllMetrics(); 
+      fetchUserScansFromCloud(); 
     }
 
     function showDashboard() {
-      const scans = userScansCache;
-      const todayStr = new Date().toLocaleDateString();
       const currentWh = localStorage.getItem("warehouse") || "";
       const userRole = localStorage.getItem("role") || "Standard";
-
-      let todayScans = 0;
-
-      scans.forEach(item => {
-        const itemDate = new Date(item.timestamp).toLocaleDateString();
-        if (itemDate === todayStr) { 
-          todayScans += 1; 
-        }
-      });
-
       let actionButtons = "";
       const lowerWh = currentWh.trim().toLowerCase();
       
@@ -646,7 +637,7 @@
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
           <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
           
-          <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry Bill</button>
+          <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
           
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
@@ -680,7 +671,7 @@
           actionButtons = `
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
             
-            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry Bill</button>
+            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
             
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
@@ -721,7 +712,7 @@
           <div class="metrics-grid">
             <div class="metric-card">
               <span>BILLS RECEIVED TODAY</span>
-              <h3>${formatNumber(todayScans)}<span class="unit-pcs">NOS</span></h3>
+              <h3 id="todayBillsVal">Loading...</h3>
             </div>
             <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
               <span>QA (QUALITY ASSURANCE)</span>
@@ -770,7 +761,6 @@
         ${getFooter()}
       `;
       updateLiveDateTime();
-      fetchAllMetrics();
     }
 
     function openPurchaseModal() {
@@ -1006,7 +996,7 @@
     
     function handleExpiryDamagePdfUpload(input) { 
       if (input.files && input.files.length > 0) {
-        alert("The expiry-related PDF generation logic has not yet been implemented in the backend. (File: " + input.files[0].name + ")"); 
+        alert("Expiry/Damage PDF logic abhi backend me add nahi hui hai. (File: " + input.files[0].name + ")"); 
         input.value = ""; 
       }
     }
