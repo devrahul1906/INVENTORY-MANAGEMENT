@@ -287,6 +287,7 @@
     let pendingDispatchPayload = null;
     let pendingTransferPayload = null;
     let pendingDispatchReturnPayload = null;
+    let pendingExpiryDamagePayload = null;
 
     function formatNumber(val) {
       let num = parseInt(val, 10);
@@ -914,8 +915,7 @@
                 <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
                 <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
                 <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
-                <option value="Hatderm KC Topical Spray">Hatderm KC Topical Spray</option>
-                <option value="Hatderm MC Topical Spray">Hatderm MC Topical Spray</option>
+                <option value="Hatderm KC Topical Spray">Hatderm MC Topical Spray</option>
                 <option value="Hatodine Ointment">Hatodine Ointment</option>
                 <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
                 <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
@@ -998,11 +998,200 @@
     function triggerDispatchPdfSelect() { document.getElementById("dispatchPdfInput").click(); }
     function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
     function triggerExpiryDamagePdfSelect() { document.getElementById("expiryDamagePdfInput").click(); }
-    
-    function handleExpiryDamagePdfUpload(input) { 
-      if (input.files && input.files.length > 0) {
-        alert("Expiry/Damage PDF logic abhi backend me add nahi hui hai. (File: " + input.files[0].name + ")"); 
-        input.value = ""; 
+
+    // --- ADVANCE MARG ERP PARSER FOR EXPIRY/DAMAGE ---
+    async function handleExpiryDamagePdfUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      let file = input.files[0];
+      
+      try {
+        let arrayBuffer = await file.arrayBuffer();
+        let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let textItems = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          let page = await pdf.getPage(i);
+          let textContent = await page.getTextContent();
+          
+          textContent.items.forEach(item => {
+            textItems.push({
+              str: item.str.trim(),
+              x: item.transform[4],
+              y: item.transform[5],
+              page: i
+            });
+          });
+        }
+
+        let fullText = textItems.map(item => item.str).join(" ");
+        let invoiceMatch = fullText.match(/Invoice\s*No\.?\s*([A-Z0-9\-]+)/i) || fullText.match(/CA[0-9]+/i);
+        let invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "EXP-" + Math.floor(Math.random() * 10000);
+
+        let itemsFound = [];
+
+        // Group by Page, then perfectly construct Lines by Y-coordinate
+        let pagesMap = {};
+        textItems.forEach(item => {
+          if (!pagesMap[item.page]) pagesMap[item.page] = [];
+          pagesMap[item.page].push(item);
+        });
+
+        Object.keys(pagesMap).forEach(pageNum => {
+          let pageItems = pagesMap[pageNum];
+          let rowsMap = {};
+          
+          pageItems.forEach(item => {
+            // Group items perfectly on the same visual line (tolerance of 4px)
+            let yKey = Math.round(item.y / 4) * 4;
+            if (!rowsMap[yKey]) rowsMap[yKey] = [];
+            rowsMap[yKey].push(item);
+          });
+
+          let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a); // Top to bottom
+
+          sortedYKeys.forEach(yKey => {
+            let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x); // Left to right
+            let texts = rowElements.map(el => el.str).filter(str => str !== "");
+            let rowString = texts.join(" ");
+
+            // Skip irrelevant header/footer lines
+            if (/(E-Mail|Invoice|Due Date|L\.R\.|E-WAY|IRN|Party Name|DELIVERY AT|TOTAL|GST|Terms|A\/c|IFSC|Rs\.|Discount|@gmail\.com|Phone:|D\.L\.No|GSTIN|Bank Details|Grand Total|CLASS|TAXABLE AMT)/i.test(rowString)) {
+              return;
+            }
+
+            // Extreme strict Regex format extraction
+            let itemRegex = /(?:(?:^|\s)(\d+)\s*\.\s+)?(\d+)\s+(.+?)\s+([A-Z0-9\-\/_]+)\s+(\d{1,2}\/\d{2,4})\s+(\d{6,10})\s+\d+(\.\d+)?/i;
+            let match = rowString.match(itemRegex);
+
+            if (match) {
+              let qty = parseInt(match[2], 10);
+              let rawProd = match[3].trim();
+              let batch = match[4].trim();
+              
+              // Clean out the "ZZZZ" and Pack (e.g. 1*10, 30 ML)
+              rawProd = rawProd.replace(/^[A-Z]{3,5}\s+/, ''); 
+              rawProd = rawProd.replace(/^(1\*\d+|[0-9.]+\s*(ML|GM|MG|ml|gm|mg))\s+/i, '').trim();
+
+              if (qty > 0 && rawProd.length > 2 && batch.length > 2) {
+                let exists = itemsFound.some(i => i.product === rawProd && i.batch === batch);
+                if (!exists) {
+                  itemsFound.push({
+                    product: rawProd,
+                    batch: batch,
+                    qty: qty
+                  });
+                }
+              }
+            }
+          });
+        });
+
+        if (itemsFound.length === 0) {
+          alert("⚠️ Failed to extract products. Ensure the PDF format matches the expected Challan structure.");
+          input.value = "";
+          return;
+        }
+
+        pendingExpiryDamagePayload = {
+          action: "expiry_damage_dispatch",
+          user: localStorage.getItem("employee") || "",
+          invoiceNo: invoiceNo,
+          items: itemsFound
+        };
+
+        openExpiryDamageConfirmationModal();
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ PDF Parsing Error: " + err.message);
+      }
+      input.value = "";
+    }
+
+    function openExpiryDamageConfirmationModal() {
+      if (!pendingExpiryDamagePayload) return;
+      
+      let itemsRows = pendingExpiryDamagePayload.items.map((item, idx) => `
+        <tr>
+          <td><b>${escapeHtml(item.product)}</b></td>
+          <td>
+            <input type="text" id="edit_ed_batch_${idx}" value="${escapeHtml(item.batch)}" style="width: 110px; padding: 6px; font-size: 0.85rem; text-transform: uppercase; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; background: #fff;">
+          </td>
+          <td>
+            <input type="number" id="edit_ed_qty_${idx}" value="${item.qty}" min="1" style="width: 80px; padding: 6px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; background: #fff;">
+          </td>
+        </tr>
+      `).join("");
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="color:var(--danger);"><i class="fa-solid fa-file-circle-exclamation"></i> Verify Expiry/Damage PDF</h3>
+            <p style="font-size:0.9rem;"><b>Invoice/Challan No:</b> ${escapeHtml(pendingExpiryDamagePayload.invoiceNo)}</p>
+            <table class="pdf-item-table" style="width:100%;">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Batch no</th>
+                  <th>Total Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsRows}
+              </tbody>
+            </table>
+            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Near-Expiry.</p>
+            <div style="display:flex; gap:12px; margin-top:8px;">
+              <button onclick="confirmAndExecuteExpiryDamage()" class="btn-success">Yes, Proceed</button>
+              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function confirmAndExecuteExpiryDamage() {
+      if (!pendingExpiryDamagePayload) return;
+      
+      let items = pendingExpiryDamagePayload.items;
+      for (let i = 0; i < items.length; i++) {
+        let newBatch = document.getElementById("edit_ed_batch_" + i).value.trim();
+        let newQty = parseInt(document.getElementById("edit_ed_qty_" + i).value, 10) || 0;
+        
+        if (!newBatch) {
+          alert("Batch number cannot be empty for " + items[i].product);
+          return;
+        }
+        
+        items[i].batch = newBatch;
+        items[i].qty = newQty;
+      }
+
+      let confirmBtn = document.querySelector("#modal-container button.btn-success");
+      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing..."; }
+
+      try {
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(pendingExpiryDamagePayload)
+        });
+        
+        let text = await response.text();
+        let resData = JSON.parse(text);
+
+        if (resData.status === "success") {
+          alert("✅ Expiry/Damage Bill Proceeded Successfully!");
+          pendingExpiryDamagePayload = null;
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ REJECTED:\n\n" + resData.message);
+          closeModalAndResume();
+        }
+      } catch (err) {
+        alert("⚠️ Network Error: " + err.message);
+        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = "Yes, Proceed"; }
       }
     }
 
