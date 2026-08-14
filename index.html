@@ -630,7 +630,12 @@
       const lowerWh = currentWh.trim().toLowerCase();
       
       if (userRole.toLowerCase() === "view-only") {
-        actionButtons = `<p style="color:var(--text-muted); font-size: 0.9rem; grid-column: span 3; text-align: center;">You have View-Only access. Operations are disabled.</p>`;
+        actionButtons = `
+          <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          <div style="grid-column: span 2; display: flex; align-items: center;">
+            <p style="color:var(--text-muted); font-size: 0.9rem; margin: 0;">You have View-Only access. Other operations are disabled.</p>
+          </div>
+        `;
       } else if (userRole.toLowerCase() === "admin") {
         actionButtons = `
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
@@ -642,7 +647,7 @@
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-          <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
         `;
       } else {
         if (lowerWh === "qa (quality assurance)") {
@@ -651,13 +656,13 @@
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "main warehouse") {
           actionButtons = `
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "packing area") {
           actionButtons = `
@@ -665,7 +670,7 @@
             <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "near-expiry") {
           actionButtons = `
@@ -675,14 +680,14 @@
             
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "damaged") {
           actionButtons = `
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else {
           actionButtons = `
@@ -691,7 +696,7 @@
             <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="openStockReportModal()" class="btn-secondary"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         }
       }
@@ -1343,8 +1348,7 @@
                 <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
                 <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
                 <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
-                <option value="Hatderm KC Topical Spray">Hatderm KC Topical Spray</option>
-                <option value="Hatderm MC Topical Spray">Hatderm MC Topical Spray</option>
+                <option value="Hatderm KC Topical Spray">Hatderm MC Topical Spray</option>
                 <option value="Hatodine Ointment">Hatodine Ointment</option>
                 <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
                 <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
