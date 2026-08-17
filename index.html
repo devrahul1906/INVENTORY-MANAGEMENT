@@ -284,6 +284,7 @@
     let holdInvCache = [];
     let currentStockDataCache = [];
     let fullStockDataCache = [];
+    let sampleRoomStockCache = [];
     let pendingDispatchPayload = null;
     let pendingTransferPayload = null;
     let pendingDispatchReturnPayload = null;
@@ -319,9 +320,29 @@
 
     setInterval(updateLiveDateTime, 1000);
 
+    // --- AUTO-PING (HEARTBEAT) FOR ACTIVE USERS & DURATIONS ---
+    setInterval(() => {
+      let emp = localStorage.getItem("employee");
+      let sessionId = localStorage.getItem("sessionId");
+      if (emp) {
+        let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
+        if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
+        fetch(url).catch(e => {});
+      }
+    }, 120000); // Send ping every 2 minutes
+
     window.onload = function () {
       loadScansFromLocalStorage();
-      if (localStorage.getItem("employee") && localStorage.getItem("warehouse")) {
+      let emp = localStorage.getItem("employee");
+      let wh = localStorage.getItem("warehouse");
+      let sessionId = localStorage.getItem("sessionId");
+      
+      if (emp && wh) {
+        // INSTANT PING TO MARK USER ACTIVE IMMEDIATELY ON LOAD OR REFRESH
+        let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
+        if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
+        fetch(url).catch(e => {});
+        
         syncDataAndShowDashboard();
       } else {
         showLoginPage();
@@ -357,7 +378,6 @@
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=getAllMetrics`);
         const data = await response.json();
         
-        // Update today's bills instantly from optimized backend API
         const billsElem = document.getElementById("todayBillsVal");
         if (billsElem) billsElem.innerHTML = `${formatNumber(data.todayBills || 0)} <span class="unit-pcs">NOS</span>`;
 
@@ -567,6 +587,7 @@
                 <label for="warehouse">Warehouse</label>
                 <select id="warehouse">
                   <option value="">-- Select Warehouse --</option>
+                  <option value="All View">All View (For Management Use Only)</option>
                   <option value="QA (Quality Assurance)">QA (Quality Assurance)</option>
                   <option value="Main Warehouse">Main Warehouse</option>
                   <option value="Packing Area">Packing Area</option>
@@ -602,6 +623,9 @@
           localStorage.setItem("employee", data.employeeName || emp);
           localStorage.setItem("warehouse", wh);
           localStorage.setItem("role", data.role || "Standard");
+          if (data.sessionId) {
+            localStorage.setItem("sessionId", data.sessionId);
+          }
           syncDataAndShowDashboard();
         } else {
           alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
@@ -618,7 +642,6 @@
     }
 
     async function syncDataAndShowDashboard() {
-      // NON-BLOCKING UI RENDER (Speed Optimized)
       showDashboard(); 
       fetchAllMetrics(); 
       fetchUserScansFromCloud(); 
@@ -632,9 +655,11 @@
       
       if (userRole.toLowerCase() === "view-only") {
         actionButtons = `
+          <button onclick="openSampleRoomDetails()" class="btn-secondary"><i class="fa-solid fa-flask"></i> Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
-          <div style="grid-column: span 2; display: flex; align-items: center;">
-            <p style="color:var(--text-muted); font-size: 0.9rem; margin: 0;">You have View-Only access. Other operations are disabled.</p>
+          <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
+          <div style="grid-column: span 3; display: flex; align-items: center;">
+            <p style="color:var(--text-muted); font-size: 0.9rem; margin: 0;">You have View-Only access. Operations disabled.</p>
           </div>
         `;
       } else if (userRole.toLowerCase() === "admin") {
@@ -646,7 +671,10 @@
           <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
           
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
+          <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
+          <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
+          <button onclick="openSampleRoomDetails()" class="btn-secondary"><i class="fa-solid fa-flask"></i> Sample Room</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
         `;
@@ -670,15 +698,14 @@
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
             <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
+            <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "near-expiry") {
           actionButtons = `
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
-            
             <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
-            
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
@@ -769,6 +796,188 @@
       updateLiveDateTime();
     }
 
+    async function openSampleRoomDetails() {
+      // Show loading state first
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
+            <h3 style="color:var(--primary);"><i class='fa-solid fa-flask'></i> Sample Room Stock</h3>
+            <div style="margin-top: 16px; text-align: center;">Loading...</div>
+            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
+          </div>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails`);
+        const list = await response.json();
+        sampleRoomStockCache = list; 
+        renderSampleRoomStockTable("<i class='fa-solid fa-flask'></i> Sample Room Stock", list);
+      } catch (e) {
+        sampleRoomStockCache = [];
+        renderSampleRoomStockTable("<i class='fa-solid fa-flask'></i> Sample Room Stock", []);
+      }
+    }
+
+    function renderSampleRoomStockTable(title, list) {
+      let content = "";
+      if (!Array.isArray(list) || list.length === 0) {
+        content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No products found.</p>`;
+      } else {
+        let rows = list.map(item => `
+          <tr>
+            <td><b>${escapeHtml(item.product)}</b></td>
+            <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.totalQty)} pcs</td>
+          </tr>
+        `).join("");
+
+        content = `
+          <table class="pdf-item-table">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th style="text-align: right;">Total Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        `;
+      }
+      
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
+            <h3 style="color:var(--primary);">${title}</h3>
+            <div id="stockDetailsContent" style="margin-top: 16px; margin-bottom: 16px;">${content}</div>
+            <div style="display:flex; gap:12px; margin-top:16px;">
+              <button onclick="downloadSampleRoomExcel()" class="btn-emerald"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function downloadSampleRoomExcel() {
+      if(!sampleRoomStockCache || sampleRoomStockCache.length === 0) return alert("No data to export");
+      let exportData = sampleRoomStockCache.map((item, idx) => ({
+        "Sr.No": idx + 1,
+        "Product Name": item.product,
+        "Total Qty": item.totalQty
+      }));
+      let ws = XLSX.utils.json_to_sheet(exportData);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sample Room Stock");
+      XLSX.writeFile(wb, `Sample_Room_Stock_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    // --- ACTIVE USERS MODAL (ADMIN & VIEW ONLY) ---
+    async function openActiveUsersModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <h3 style="color:#0284c7; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Active Users...</h3>
+          </div>
+        </div>
+      `;
+      try {
+        let res = await fetch(`${GOOGLE_SHEET_URL}?action=getActiveUsers`);
+        let data = await res.json();
+        
+        let activeCount = data.filter(u => u.status.includes("Active")).length;
+        let inactiveCount = data.length - activeCount;
+
+        let rows = data.map((u, i) => `
+          <tr>
+            <td>${i+1}</td>
+            <td><b>${escapeHtml(u.user)}</b></td>
+            <td>${escapeHtml(u.role)}</td>
+            <td>${escapeHtml(u.warehouse)}</td>
+            <td style="font-weight:bold; color: ${u.status.includes('Active') ? 'var(--success)' : 'var(--danger)'};">${escapeHtml(u.status)}</td>
+          </tr>
+        `).join("");
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+              <h3 style="color:#0284c7;"><i class="fa-solid fa-users-viewfinder"></i> System User Status</h3>
+              
+              <div style="display: flex; gap: 20px; margin-top: 10px; margin-bottom: 15px;">
+                <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; text-align: center;">
+                  <h4 style="color: var(--success); margin: 0; font-size: 1.5rem;">${activeCount}</h4>
+                  <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Active (Online)</span>
+                </div>
+                <div style="flex: 1; background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 8px; text-align: center;">
+                  <h4 style="color: var(--danger); margin: 0; font-size: 1.5rem;">${inactiveCount}</h4>
+                  <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Inactive (Offline)</span>
+                </div>
+              </div>
+
+              <table class="pdf-item-table" style="width:100%; font-size: 0.85rem;">
+                <thead>
+                  <tr>
+                    <th style="width: 5%;">#</th>
+                    <th>User Name</th>
+                    <th>Role</th>
+                    <th>Assigned Warehouse</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows}
+                </tbody>
+              </table>
+              <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                <button onclick="downloadUserLogs()" class="btn-emerald" style="width: auto; padding: 8px 24px;"><i class="fa-solid fa-file-excel"></i> Export Login History</button>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch(e) {
+        alert("Error loading active users: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
+    // --- DOWNLOAD LOGIN HISTORY EXCEL ---
+    async function downloadUserLogs() {
+      try {
+        let btn = document.querySelector("#modal-container .btn-emerald");
+        if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+        
+        let res = await fetch(`${GOOGLE_SHEET_URL}?action=getUserLogs`);
+        let data = await res.json();
+        
+        if (!data || data.length === 0) {
+          alert("No login history found.");
+          if(btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Login History";
+          return;
+        }
+        
+        let exportData = data.map((item, idx) => ({
+          "S.No": idx + 1,
+          "User Name": item.user,
+          "Role": item.role,
+          "Warehouse": item.warehouse,
+          "Login Time": item.loginTime,
+          "Last Active / Logout": item.logoutTime,
+          "Duration": item.duration
+        }));
+        
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Login History");
+        XLSX.writeFile(wb, "System_Login_History_" + new Date().toISOString().slice(0,10) + ".xlsx");
+        
+        if(btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Login History";
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      }
+    }
+
     function openPurchaseModal() {
       let supplierSet = new Set();
       userScansCache.forEach(item => {
@@ -812,628 +1021,6 @@
               <label>Product Name</label>
               <select id="p_name">
                 <option value="">-- Select Product --</option>
-                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
-                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
-                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
-                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
-                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
-                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
-                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
-                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
-                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
-                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
-                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
-                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
-                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
-                <option value="HATFUR TAB">HATFUR TAB</option>
-                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
-                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
-                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
-                <option value="HATLAC TAB">HATLAC TAB</option>
-                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
-                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
-                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
-                <option value="HATPAN TAB">HATPAN TAB</option>
-                <option value="HATPLAT TAB">HATPLAT TAB</option>
-                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
-                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
-                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
-                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
-                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
-                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
-                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
-                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
-                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
-                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
-                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
-                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
-                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
-                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
-                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
-                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
-                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
-                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
-                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
-                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
-                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
-                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
-                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
-                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
-                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
-                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
-                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
-                <option value="RAJFAN TAB">RAJFAN TAB</option>
-                <option value="RAJPARA TAB">RAJPARA TAB</option>
-                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
-                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
-                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
-                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
-                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
-                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
-                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
-                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
-                <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
-                <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
-                <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
-                <option value="Hatcure Injection">Hatcure Injection</option>
-                <option value="Pantohat L.V. Injection">Pantohat L.V. Injection</option>
-                <option value="Rajdox-100 Injection">Rajdox-100 Injection</option>
-                <option value="Rajdox-200 Injection">Rajdox-200 Injection</option>
-                <option value="Vettax-SL. Injection">Vettax-SL. Injection</option>
-                <option value="Vetaxone-SL Injection">Vetaxone-SL Injection</option>
-                <option value="Vetaxone-Tazo Injection">Vetaxone-Tazo Injection</option>
-                <option value="Clindahat Syrup">Clindahat Syrup</option>
-                <option value="Digehat Plus Syrup">Digehat Plus Syrup</option>
-                <option value="Enrohat-50 Syrup">Enrohat-50 Syrup</option>
-                <option value="Epihat-KBR Syrup">Epihat-KBR Syrup</option>
-                <option value="Epihat-LC Syrup">Epihat-LC Syrup</option>
-                <option value="Hatcal Junior Syrup">Hatcal Junior Syrup</option>
-                <option value="Hatclav-250 Syrup">Hatclav-250 Syrup</option>
-                <option value="Hatcort-DS Syrup">Hatcort-DS Syrup</option>
-                <option value="Hatlexin-250 Syrup">Hatlexin-250 Syrup</option>
-                <option value="Hatloose Syrup">Hatloose Syrup</option>
-                <option value="Hatplat Syrup">Hatplat Syrup</option>
-                <option value="Hatpod-100 DS Syrup">Hatpod-100 DS Syrup</option>
-                <option value="Hatpyrin Syrup">Hatpyrin Syrup</option>
-                <option value="Heparaj Junior Syrup">Heparaj Junior Syrup</option>
-                <option value="Immunohat Syrup">Immunohat Syrup</option>
-                <option value="Itraraj Oral Solution">Itraraj Oral Solution</option>
-                <option value="Metrohat Syrup">Metrohat Syrup</option>
-                <option value="Pulmohat Syrup">Pulmohat Syrup</option>
-                <option value="Rajcpm Syrup">Rajcpm Syrup</option>
-                <option value="Rajfan-50 Syrup">Rajfan-50 Syrup</option>
-                <option value="Rajmet-DP Syrup">Rajmet-DP Syrup</option>
-                <option value="Rantiraj Syrup">Rantiraj Syrup</option>
-                <option value="Renalraj Suspension">Renalraj Suspension</option>
-                <option value="Renchal-H Syrup">Renchal-H Syrup</option>
-                <option value="Hatgat Eye Drop">Hatgat Eye Drop</option>
-                <option value="Hatgat-P Eye Drop">Hatgat-P Eye Drop</option>
-                <option value="Hatmoist Eye Drop">Hatmoist Eye Drop</option>
-                <option value="Hatmox Eye Drop">Hatmox Eye Drop</option>
-                <option value="Hatmox-D Eye Drop">Hatmox-D Eye Drop</option>
-                <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
-                <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
-                <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
-                <option value="Hatderm KC Topical Spray">Hatderm MC Topical Spray</option>
-                <option value="Hatodine Ointment">Hatodine Ointment</option>
-                <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
-                <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
-                <option value="Hatodine Scrub Topical Spray">Hatodine Scrub Topical Spray</option>
-                <option value="Scabhat Ointment">Scabhat Ointment</option>
-                <option value="Cortihat Topical Spray">Cortihat Topical Spray</option>
-                <option value="Hatotic-ES Ear Drop">Hatotic-ES Ear Drop</option>
-                <option value="Hatotic-GBC Ear Drop">Hatotic-GBC Ear Drop</option>
-                <option value="Hatotic-NBC Ear Drop">Hatotic-NBC Ear Drop</option>
-                <option value="Otihat Ear Cleanser">Otihat Ear Cleanser</option>
-                <option value="Otihat TeN Ear Cleanser">Otihat TeN Ear Cleanser</option>
-                <option value="All in One Shampoo 200 ml">All in One Shampoo 200 ml</option>
-                <option value="Anti-Dandruff Shampoo">Anti-Dandruff Shampoo</option>
-                <option value="Dry Foam Shampoo">Dry Foam Shampoo</option>
-                <option value="Ectocover-CM24 Shampoo">Ectocover-CM24 Shampoo</option>
-                <option value="Ectocover-PNC Shampoo">Ectocover-PNC Shampoo</option>
-                <option value="Ectocover-B.P.S.S. Shampoo">Ectocover-B.P.S.S. Shampoo</option>
-                <option value="Ectocover-PP Dusting Powder">Ectocover-PP Dusting Powder</option>
-                <option value="Ectocover-F Dusting Powder">Ectocover-F Dusting Powder</option>
-                <option value="Hatgroom Dusting Powder">Hatgroom Dusting Powder</option>
-                <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-                <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Batch No</label>
-              <input type="text" id="p_batch" placeholder="Enter Batch Number">
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div class="field-group"><label>Mfg Date</label><input type="text" id="p_mfg" placeholder="MM-YYYY"></div>
-              <div class="field-group"><label>Exp Date</label><input type="text" id="p_exp" placeholder="MM-YYYY"></div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div class="field-group"><label>MRP</label><input type="number" id="p_mrp" placeholder="MRP"></div>
-              <div class="field-group"><label>Quantity</label><input type="number" id="p_qty" value="1" min="1"></div>
-            </div>
-            <div class="field-group">
-              <label>Supplier Name</label>
-              <select id="p_supplier">
-                <option value="">-- Select Supplier --</option>
-                <option value="General Machine Tools">General Machine Tools</option>
-                <option value="Dasya Pharma">Dasya Pharma</option>
-                <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
-                <option value="Zaneka Drugs">Zaneka Drugs</option>
-                <option value="FARMA HUB">FARMA HUB</option>
-                <option value="Fentum Health Care">Fentum Health Care</option>
-                <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
-                <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
-                <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
-                <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
-                <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
-                <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
-                <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
-                <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
-                <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
-                <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
-                <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
-                <option value="ISKON REMEDIES">ISKON REMEDIES</option>
-                <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
-                <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
-                <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
-                <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
-                <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
-                <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
-                <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
-                <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
-                <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
-                ${supplierOptions}
-              </select>
-            </div>
-            <div style="display:flex; gap: 12px; margin-top:8px;">
-              <button onclick="savePurchaseModalData()" class="btn-success">Submit Entry</button>
-              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function triggerDispatchPdfSelect() { document.getElementById("dispatchPdfInput").click(); }
-    function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
-    function triggerExpiryDamagePdfSelect() { document.getElementById("expiryDamagePdfInput").click(); }
-
-    // --- ADVANCE MARG ERP PARSER FOR EXPIRY/DAMAGE ---
-    async function handleExpiryDamagePdfUpload(input) {
-      if (!input.files || input.files.length === 0) return;
-      let file = input.files[0];
-      
-      try {
-        let arrayBuffer = await file.arrayBuffer();
-        let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let textItems = [];
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          let page = await pdf.getPage(i);
-          let textContent = await page.getTextContent();
-          
-          textContent.items.forEach(item => {
-            textItems.push({
-              str: item.str.trim(),
-              x: item.transform[4],
-              y: item.transform[5],
-              page: i
-            });
-          });
-        }
-
-        let fullText = textItems.map(item => item.str).join(" ");
-        let invoiceMatch = fullText.match(/Invoice\s*No\.?\s*([A-Z0-9\-]+)/i) || fullText.match(/CA[0-9]+/i);
-        let invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "EXP-" + Math.floor(Math.random() * 10000);
-
-        let itemsFound = [];
-
-        // Group by Page, then perfectly construct Lines by Y-coordinate
-        let pagesMap = {};
-        textItems.forEach(item => {
-          if (!pagesMap[item.page]) pagesMap[item.page] = [];
-          pagesMap[item.page].push(item);
-        });
-
-        Object.keys(pagesMap).forEach(pageNum => {
-          let pageItems = pagesMap[pageNum];
-          let rowsMap = {};
-          
-          pageItems.forEach(item => {
-            // Group items perfectly on the same visual line (tolerance of 4px)
-            let yKey = Math.round(item.y / 4) * 4;
-            if (!rowsMap[yKey]) rowsMap[yKey] = [];
-            rowsMap[yKey].push(item);
-          });
-
-          let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a); // Top to bottom
-
-          sortedYKeys.forEach(yKey => {
-            let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x); // Left to right
-            let texts = rowElements.map(el => el.str).filter(str => str !== "");
-            let rowString = texts.join(" ");
-
-            // Skip irrelevant header/footer lines
-            if (/(E-Mail|Invoice|Due Date|L\.R\.|E-WAY|IRN|Party Name|DELIVERY AT|TOTAL|GST|Terms|A\/c|IFSC|Rs\.|Discount|@gmail\.com|Phone:|D\.L\.No|GSTIN|Bank Details|Grand Total|CLASS|TAXABLE AMT)/i.test(rowString)) {
-              return;
-            }
-
-            // Extreme strict Regex format extraction
-            let itemRegex = /(?:(?:^|\s)(\d+)\s*\.\s+)?(\d+)\s+(.+?)\s+([A-Z0-9\-\/_]+)\s+(\d{1,2}\/\d{2,4})\s+(\d{6,10})\s+\d+(\.\d+)?/i;
-            let match = rowString.match(itemRegex);
-
-            if (match) {
-              let qty = parseInt(match[2], 10);
-              let rawProd = match[3].trim();
-              let batch = match[4].trim();
-              
-              // Clean out the "ZZZZ" and Pack (e.g. 1*10, 30 ML)
-              rawProd = rawProd.replace(/^[A-Z]{3,5}\s+/, ''); 
-              rawProd = rawProd.replace(/^(1\*\d+|[0-9.]+\s*(ML|GM|MG|ml|gm|mg))\s+/i, '').trim();
-
-              if (qty > 0 && rawProd.length > 2 && batch.length > 2) {
-                let exists = itemsFound.some(i => i.product === rawProd && i.batch === batch);
-                if (!exists) {
-                  itemsFound.push({
-                    product: rawProd,
-                    batch: batch,
-                    qty: qty
-                  });
-                }
-              }
-            }
-          });
-        });
-
-        if (itemsFound.length === 0) {
-          alert("⚠️ Failed to extract products. Ensure the PDF format matches the expected Challan structure.");
-          input.value = "";
-          return;
-        }
-
-        pendingExpiryDamagePayload = {
-          action: "expiry_damage_dispatch",
-          user: localStorage.getItem("employee") || "",
-          invoiceNo: invoiceNo,
-          items: itemsFound
-        };
-
-        openExpiryDamageConfirmationModal();
-      } catch (err) {
-        console.error(err);
-        alert("⚠️ PDF Parsing Error: " + err.message);
-      }
-      input.value = "";
-    }
-
-    function openExpiryDamageConfirmationModal() {
-      if (!pendingExpiryDamagePayload) return;
-      
-      let itemsRows = pendingExpiryDamagePayload.items.map((item, idx) => `
-        <tr>
-          <td><b>${escapeHtml(item.product)}</b></td>
-          <td>
-            <input type="text" id="edit_ed_batch_${idx}" value="${escapeHtml(item.batch)}" style="width: 110px; padding: 6px; font-size: 0.85rem; text-transform: uppercase; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; background: #fff;">
-          </td>
-          <td>
-            <input type="number" id="edit_ed_qty_${idx}" value="${item.qty}" min="1" style="width: 80px; padding: 6px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; background: #fff;">
-          </td>
-        </tr>
-      `).join("");
-
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
-            <h3 style="color:var(--danger);"><i class="fa-solid fa-file-circle-exclamation"></i> Verify Expiry/Damage PDF</h3>
-            <p style="font-size:0.9rem;"><b>Invoice/Challan No:</b> ${escapeHtml(pendingExpiryDamagePayload.invoiceNo)}</p>
-            <table class="pdf-item-table" style="width:100%;">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Batch no</th>
-                  <th>Total Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsRows}
-              </tbody>
-            </table>
-            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Near-Expiry.</p>
-            <div style="display:flex; gap:12px; margin-top:8px;">
-              <button onclick="confirmAndExecuteExpiryDamage()" class="btn-success">Yes, Proceed</button>
-              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    async function confirmAndExecuteExpiryDamage() {
-      if (!pendingExpiryDamagePayload) return;
-      
-      let items = pendingExpiryDamagePayload.items;
-      for (let i = 0; i < items.length; i++) {
-        let newBatch = document.getElementById("edit_ed_batch_" + i).value.trim();
-        let newQty = parseInt(document.getElementById("edit_ed_qty_" + i).value, 10) || 0;
-        
-        if (!newBatch) {
-          alert("Batch number cannot be empty for " + items[i].product);
-          return;
-        }
-        
-        items[i].batch = newBatch;
-        items[i].qty = newQty;
-      }
-
-      let confirmBtn = document.querySelector("#modal-container button.btn-success");
-      if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing..."; }
-
-      try {
-        let response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(pendingExpiryDamagePayload)
-        });
-        
-        let text = await response.text();
-        let resData = JSON.parse(text);
-
-        if (resData.status === "success") {
-          alert("✅ Expiry/Damage Bill Proceeded Successfully!");
-          pendingExpiryDamagePayload = null;
-          closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
-        } else {
-          alert("❌ REJECTED:\n\n" + resData.message);
-          closeModalAndResume();
-        }
-      } catch (err) {
-        alert("⚠️ Network Error: " + err.message);
-        if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = "Yes, Proceed"; }
-      }
-    }
-
-    async function savePurchaseModalData() {
-      let pCategory = document.getElementById("p_category").value;
-      let pName = document.getElementById("p_name").value.trim();
-      let pBatch = document.getElementById("p_batch").value.trim();
-      let pMfg = document.getElementById("p_mfg").value;
-      let pExp = document.getElementById("p_exp").value;
-      let pMrp = document.getElementById("p_mrp").value;
-      let rawQty = parseInt(document.getElementById("p_qty").value, 10) || 1;
-      let pSupplier = document.getElementById("p_supplier").value.trim();
-      let submitBtn = document.querySelector("#modal-container button.btn-success");
-
-      if (!pCategory || !pName || !pBatch) { alert("Please fill in all required fields!"); return; }
-
-      let finalQty = (pCategory.toLowerCase() === "tablets") ? rawQty * 10 : rawQty;
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Saving..."; }
-
-      let payload = {
-        user: localStorage.getItem("employee") || "",
-        warehouse: localStorage.getItem("warehouse") || "",
-        type: "Purchase Entry",
-        category: pCategory,
-        supplier: pSupplier,
-        product: pName,
-        batch: pBatch,
-        mfg: pMfg, exp: pExp, mrp: pMrp,
-        qty: finalQty,
-        scanTime: new Date().toLocaleString()
-      };
-
-      try {
-        const response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        const resData = JSON.parse(await response.text());
-
-        if (resData.status === "success") {
-          alert(`✅ Saved Successfully! Qty: ${finalQty}`);
-          closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
-        } else {
-          alert("❌ Error: " + resData.message);
-          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
-        }
-      } catch (e) {
-        alert("⚠️ Error: " + e.message);
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
-      }
-    }
-
-    function openHoldModal() {
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
-            <h3 style="color:#d97706;"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</h3>
-            
-            <div style="display:flex; gap:16px; margin-bottom:12px; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fde68a;">
-               <label><input type="radio" name="holdActionType" value="HOLD" checked onchange="loadHoldInventory('QA')"> Hold Item (From QA)</label>
-               <label><input type="radio" name="holdActionType" value="UNHOLD" onchange="loadHoldInventory('HOLD')"> Unhold Item (To Main WH)</label>
-            </div>
-            
-            <div class="field-group">
-              <label>Product Name</label>
-              <select id="h_product" class="form-control" onchange="populateHoldBatches()">
-                <option value="">Loading products...</option>
-              </select>
-            </div>
-            
-            <div class="field-group">
-              <label>Batch No (Available Qty)</label>
-              <select id="h_batch" class="form-control" onchange="setMaxHoldQty()">
-                <option value="">Select Product First</option>
-              </select>
-            </div>
-            
-            <div class="field-group">
-              <label>Qty</label>
-              <input type="number" id="h_qty" value="1" min="1">
-              <small id="h_max_qty_label" style="color:var(--text-muted); font-weight: 600;"></small>
-            </div>
-            
-            <div class="field-group">
-              <label>Reason / Remarks <span style="color:var(--danger);">*</span></label>
-              <input type="text" id="h_reason" placeholder="Enter Hold/Unhold Reason (Mandatory)">
-            </div>
-
-            <div style="display:flex; gap:12px; margin-top:8px;">
-              <button onclick="executeHoldAction()" class="btn-warning">Submit</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
-            </div>
-          </div>
-        </div>
-      `;
-      loadHoldInventory('QA');
-    }
-
-    async function loadHoldInventory(source) {
-      document.getElementById('h_product').innerHTML = '<option value="">Loading...</option>';
-      document.getElementById('h_batch').innerHTML = '<option value="">Select Product First</option>';
-      document.getElementById('h_qty').value = 1;
-      document.getElementById('h_max_qty_label').innerText = "";
-      
-      let submitBtn = document.querySelector("#modal-container button.btn-warning");
-      if (submitBtn) submitBtn.disabled = true;
-
-      try {
-        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getInventoryForHold&source=${source}`);
-        holdInvCache = await response.json();
-        
-        let uniqueProds = [...new Set(holdInvCache.map(i => i.product))].sort();
-        let opts = '<option value="">-- Select Product --</option>';
-        uniqueProds.forEach(p => {
-          opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
-        });
-        document.getElementById('h_product').innerHTML = opts;
-        if (submitBtn) submitBtn.disabled = false;
-      } catch (e) {
-        alert("Failed to load inventory. Please try again.");
-      }
-    }
-
-    function populateHoldBatches() {
-      let selProd = document.getElementById('h_product').value;
-      let batches = holdInvCache.filter(i => i.product === selProd);
-      let opts = '<option value="">-- Select Batch --</option>';
-      batches.forEach(b => {
-        opts += `<option value="${escapeHtml(b.batch)}" data-qty="${b.qty}">${escapeHtml(b.batch)} (Avail: ${b.qty})</option>`;
-      });
-      document.getElementById('h_batch').innerHTML = opts;
-      document.getElementById('h_max_qty_label').innerText = "";
-    }
-
-    function setMaxHoldQty() {
-      let selBatch = document.getElementById('h_batch');
-      if (selBatch.selectedIndex > 0) {
-        let maxQty = selBatch.options[selBatch.selectedIndex].getAttribute('data-qty');
-        document.getElementById('h_max_qty_label').innerText = `Max Available: ${maxQty} pcs`;
-        document.getElementById('h_qty').max = maxQty;
-      }
-    }
-
-    async function executeHoldAction() {
-      let type = document.querySelector('input[name="holdActionType"]:checked').value;
-      let prod = document.getElementById('h_product').value.trim();
-      let batch = document.getElementById('h_batch').value.trim();
-      let qty = parseInt(document.getElementById('h_qty').value, 10) || 0;
-      let reason = document.getElementById('h_reason').value.trim();
-      
-      if (!prod || !batch || qty <= 0 || !reason) {
-        alert("Please fill all fields! Reason is mandatory.");
-        return;
-      }
-      
-      let submitBtn = document.querySelector("#modal-container button.btn-warning");
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing..."; }
-      
-      let payload = {
-        action: "hold_action",
-        user: localStorage.getItem("employee") || "",
-        holdType: type,
-        product: prod,
-        batch: batch,
-        qty: qty,
-        reason: reason
-      };
-      
-      try {
-        let response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        let resData = await response.json();
-        
-        if (resData.status === "success") {
-          alert("✅ " + resData.message);
-          closeModalAndResume();
-          syncDataAndShowDashboard();
-        } else {
-          alert("❌ ERROR: " + resData.message);
-          closeModalAndResume();
-        }
-      } catch (e) {
-        alert("⚠️ Connection Error: " + e.message);
-        closeModalAndResume();
-      }
-    }
-
-    function openTransferModal() {
-      let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
-      
-      let qaRemarkHtml = "";
-      let warehouseToOptions = "";
-
-      if (currentWarehouse === 'QA (Quality Assurance)') {
-        qaRemarkHtml = `
-          <div class="field-group" style="margin-top: 8px;">
-            <label>QA Remarks <span style="color:var(--danger);">*</span></label>
-            <input type="text" id="t_qa_remark" placeholder="Enter QA Remarks (Mandatory)">
-          </div>
-        `;
-        warehouseToOptions = `
-          <option value="Main Warehouse" selected>Main Warehouse</option>
-          <option value="Packing Area">Packing Area</option>
-          <option value="Damaged">Damaged</option>
-        `;
-      } else if (currentWarehouse === 'Main Warehouse') {
-        warehouseToOptions = `
-          <option value="Packing Area" selected>Packing Area</option>
-          <option value="Damaged">Damaged</option>
-          <option value="Near-Expiry">Near-Expiry</option>
-        `;
-      } else if (currentWarehouse === 'Packing Area') {
-        warehouseToOptions = `
-          <option value="Near-Expiry" selected>Near-Expiry</option>
-          <option value="Damaged">Damaged</option>
-        `;
-      } else {
-        warehouseToOptions = `
-          <option value="Main Warehouse" ${currentWarehouse === 'Main Warehouse' ? '' : 'selected'}>Main Warehouse</option>
-          <option value="Packing Area" ${currentWarehouse === 'Packing Area' ? '' : 'selected'}>Packing Area</option>
-          <option value="Damaged" ${currentWarehouse === 'Damaged' ? '' : 'selected'}>Damaged</option>
-          <option value="Near-Expiry" ${currentWarehouse === 'Near-Expiry' ? '' : 'selected'}>Near-Expiry</option>
-          <option value="QA (Quality Assurance)" ${currentWarehouse === 'QA (Quality Assurance)' ? '' : 'selected'}>QA (Quality Assurance)</option>
-          <option value="Other Location">Other Location</option>
-        `;
-      }
-
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
-            <h3 style="color:#4f46e5;"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</h3>
-            
-            <div class="field-group">
-              <label>Product Name</label>
-              <select id="t_product" class="form-control">
-                <option value="">Select Product Name</option>
                 <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
                 <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
                 <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
@@ -2073,7 +1660,7 @@
               while (preTokens.length > 0 && /^\d+(\.\d+)?$/.test(preTokens[preTokens.length - 1].replace(/,/g, ''))) {
                 let val = preTokens.pop().replace(/,/g, '');
                 if(/^\d+$/.test(val)) {
-                    nums.unshift(parseInt(val, 10));
+                    unshift(parseInt(val, 10));
                 }
               }
               
@@ -2397,6 +1984,148 @@
       }
     }
 
+    // --- SALES RETURN - SUSPENSE ITEM FRONTEND LOGIC ---
+    function openSalesReturnSuspenseModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 700px;">
+            <h3 style="color:var(--warning);"><i class="fa-solid fa-box-open"></i> Sales Return - Suspense Item</h3>
+            
+            <div style="display: flex; gap: 20px; align-items: stretch; margin-top: 10px;">
+              <!-- Left Side (Inputs) -->
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                <div class="field-group">
+                  <label>Product Name</label>
+                  <input type="text" id="sr_product" placeholder="Enter Product Name">
+                </div>
+                <div class="field-group">
+                  <label>Batch no</label>
+                  <input type="text" id="sr_batch" placeholder="Enter Batch No." style="text-transform: uppercase;">
+                </div>
+                <div class="field-group">
+                  <label>Exp. Date</label>
+                  <input type="text" id="sr_exp" placeholder="MM/YY or YYYY-MM-DD" oninput="updateSuspenseStatus()">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div class="field-group">
+                    <label>Qty.</label>
+                    <input type="number" id="sr_qty" value="0" min="0">
+                  </div>
+                  <div class="field-group">
+                    <label>Free</label>
+                    <input type="number" id="sr_free" value="0" min="0">
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label>MRP.</label>
+                  <input type="number" id="sr_mrp" placeholder="0.00" step="0.01" min="0">
+                </div>
+              </div>
+              
+              <!-- Right Side (Dynamic Status) -->
+              <div style="flex: 0.8; background: var(--primary-light); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                 <h4 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Status</h4>
+                 <div id="sr_status_box" style="font-size: 1.4rem; font-weight: 800; color: var(--text-muted); padding: 10px; border-radius: 8px; width: 100%; background: #fff; box-shadow: var(--shadow-sm);">
+                    Pending
+                 </div>
+                 <p id="sr_days_text" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;"></p>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:16px;">
+              <button onclick="submitSalesReturnSuspense()" class="btn-success">Submit Entry</button>
+              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateSuspenseStatus() {
+      let expVal = document.getElementById("sr_exp").value.trim();
+      let statusBox = document.getElementById("sr_status_box");
+      let daysText = document.getElementById("sr_days_text");
+      
+      let formattedExpDate = parsePdfExpiryToDate(expVal); 
+      
+      if (!expVal || expVal.length < 5) {
+         statusBox.innerText = "Pending";
+         statusBox.style.color = "var(--text-muted)";
+         daysText.innerText = "";
+         return;
+      }
+
+      if (formattedExpDate) {
+        let expDateObj = new Date(formattedExpDate);
+        let currentDate = new Date();
+        let timeDiff = expDateObj.getTime() - currentDate.getTime();
+        let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        daysText.innerText = daysDiff + " Days remaining";
+
+        if (daysDiff <= 270) {
+           statusBox.innerText = "Near-Expiry";
+           statusBox.style.color = "var(--danger)";
+        } else {
+           statusBox.innerText = "Usable";
+           statusBox.style.color = "var(--success)";
+        }
+      }
+    }
+
+    async function submitSalesReturnSuspense() {
+      let product = document.getElementById("sr_product").value.trim();
+      let batch = document.getElementById("sr_batch").value.trim();
+      let exp = document.getElementById("sr_exp").value.trim();
+      let qty = parseInt(document.getElementById("sr_qty").value, 10) || 0;
+      let free = parseInt(document.getElementById("sr_free").value, 10) || 0;
+      let mrp = document.getElementById("sr_mrp").value.trim() || "0.00";
+
+      if (!product || !batch || !exp || (qty + free) <= 0) {
+        alert("Please fill Product Name, Batch, Exp Date, and ensure Qty + Free is greater than 0!");
+        return;
+      }
+
+      let formattedExpDate = parsePdfExpiryToDate(exp);
+
+      let submitBtn = document.querySelector("#modal-container button.btn-success");
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Submitting..."; }
+
+      let payload = {
+        action: "sales_return_suspense",
+        user: localStorage.getItem("employee") || "",
+        warehouse: localStorage.getItem("warehouse") || "",
+        product: product,
+        batch: batch,
+        expDate: formattedExpDate,
+        qty: qty,
+        free: free,
+        mrp: mrp
+      };
+
+      try {
+        const response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const resData = JSON.parse(await response.text());
+
+        if (resData.status === "success") {
+          alert("✅ " + resData.message);
+          closeModalAndResume();
+          await fetchUserScansFromCloud();
+          showDashboard();
+        } else {
+          alert("❌ Error: " + resData.message);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
+        }
+      } catch (e) {
+        alert("⚠️ Error: " + e.message);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
+      }
+    }
+
     async function handlePurchasePdfUpload(input) { if (input.files && input.files.length > 0) alert("PDF Selected!"); closeModalAndResume(); input.value = ""; }
     function closeModalAndResume() { document.getElementById("modal-container").innerHTML = ""; }
 
@@ -2455,18 +2184,27 @@
 
     // --- STOCK REPORT MODAL LOGIC ---
     function openStockReportModal() {
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box">
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Select Stock Report</h3>
-            <div style="display:flex; flex-direction:column; gap:16px; margin-top:10px;">
-              <button onclick="loadCurrentWarehouseReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">1. Current Warehouse Stock Report</button>
-              <button onclick="loadFullStockReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">2. Full Stock Report</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+      const userRole = localStorage.getItem("role") || "Standard";
+      const wh = localStorage.getItem("warehouse") || "";
+      if (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only") {
+        let currentWhBtn = wh === "All View" ? "" : `<button onclick="loadCurrentWarehouseReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">1. Current Warehouse Stock Report</button>`;
+        let titleNum = wh === "All View" ? "1." : "2.";
+        
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box">
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Select Stock Report</h3>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:10px;">
+                ${currentWhBtn}
+                <button onclick="loadFullStockReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">${titleNum} Full Stock Report</button>
+                <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+              </div>
             </div>
           </div>
-        </div>
-      `;
+        `;
+      } else {
+        loadCurrentWarehouseReport();
+      }
     }
 
     async function loadCurrentWarehouseReport() {
@@ -2502,7 +2240,7 @@
         renderCurrentStockReport(wh, currentStockDataCache);
       } catch (e) {
         alert("Error loading report. " + e.message);
-        openStockReportModal();
+        closeModalAndResume();
       }
     }
 
@@ -2520,13 +2258,21 @@
         });
       }
 
+      const userRole = localStorage.getItem("role") || "Standard";
+      let backBtnHtml = "";
+      if (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only") {
+         backBtnHtml = `<button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>`;
+      } else {
+         backBtnHtml = `<button onclick="closeModalAndResume()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-xmark"></i> Close</button>`;
+      }
+
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
             <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Current Warehouse Stock Report<br><small style="font-size:0.9rem; color:var(--text-muted);">${escapeHtml(wh)}</small></h3>
             <div style="display:flex; justify-content:space-between; margin-top:8px;">
               <button onclick="downloadCurrentStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-              <button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+              ${backBtnHtml}
             </div>
             <table class="pdf-item-table" style="margin-top:16px;">
               <thead>
@@ -2664,7 +2410,15 @@
       }
     }
 
-    function logout() { localStorage.clear(); userScansCache = []; showLoginPage(); }
+    async function logout() { 
+      let user = localStorage.getItem("employee");
+      let sessionId = localStorage.getItem("sessionId");
+      if (user) {
+        try { await fetch(`${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(user)}&sessionId=${encodeURIComponent(sessionId || '')}`); } catch(e){}
+      }
+      localStorage.clear(); userScansCache = []; showLoginPage(); 
+    }
+    
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
   </script>
 
