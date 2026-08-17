@@ -677,9 +677,7 @@
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
           <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
-          
           <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
-          
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
           <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
@@ -695,53 +693,41 @@
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "main warehouse") {
           actionButtons = `
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "packing area") {
           actionButtons = `
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
             <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
+            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "near-expiry") {
           actionButtons = `
-            <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
-            
-            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
-            
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "damaged") {
           actionButtons = `
-            <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
-            <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
-            <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-            <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         }
@@ -1333,8 +1319,7 @@
           alert("✅ Expiry/Damage Bill Proceeded Successfully!");
           pendingExpiryDamagePayload = null;
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ REJECTED:\n\n" + resData.message);
           closeModalAndResume();
@@ -1385,8 +1370,7 @@
         if (resData.status === "success") {
           alert(`✅ Saved Successfully! Qty: ${finalQty}`);
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ Error: " + resData.message);
           if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
@@ -1563,6 +1547,12 @@
         warehouseToOptions = `
           <option value="Near-Expiry" selected>Near-Expiry</option>
           <option value="Damaged">Damaged</option>
+        `;
+      } else if (currentWarehouse === 'Damaged') {
+        warehouseToOptions = `
+          <option value="Packing Area" selected>Packing Area</option>
+          <option value="Near-Expiry">Near-Expiry</option>
+          <option value="Other Location">Other Location</option>
         `;
       } else {
         warehouseToOptions = `
@@ -1828,8 +1818,7 @@
           alert("✅ " + resData.message);
           pendingTransferPayload = null;
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ TRANSFER FAILED:\n\n" + resData.message);
           closeModalAndResume();
@@ -2128,8 +2117,7 @@
           alert("✅ Bill Proceed Successfully");
           pendingDispatchPayload = null;
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ REJECTED:\n\n" + resData.message);
           closeModalAndResume();
@@ -2535,8 +2523,7 @@
           alert("✅ " + resData.message);
           pendingDispatchReturnPayload = null;
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ ERROR:\n\n" + resData.message);
           closeModalAndResume();
@@ -2558,8 +2545,136 @@
               <!-- Left Side (Inputs) -->
               <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
                 <div class="field-group">
-                  <label>Product Name</label>
-                  <input type="text" id="sr_product" placeholder="Enter Product Name">
+              <label>Product Name</label>
+              <select id="sr_product" class="form-control">
+                <option value="">Select Product Name</option>
+                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
+                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
+                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
+                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
+                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
+                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
+                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
+                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
+                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
+                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
+                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
+                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
+                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
+                <option value="HATFUR TAB">HATFUR TAB</option>
+                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
+                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
+                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
+                <option value="HATLAC TAB">HATLAC TAB</option>
+                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
+                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
+                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
+                <option value="HATPAN TAB">HATPAN TAB</option>
+                <option value="HATPLAT TAB">HATPLAT TAB</option>
+                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
+                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
+                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
+                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
+                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
+                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
+                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
+                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
+                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
+                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
+                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
+                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
+                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
+                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
+                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
+                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
+                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
+                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
+                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
+                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
+                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
+                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
+                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
+                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
+                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
+                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
+                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
+                <option value="RAJFAN TAB">RAJFAN TAB</option>
+                <option value="RAJPARA TAB">RAJPARA TAB</option>
+                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
+                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
+                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
+                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
+                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
+                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
+                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
+                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
+                <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
+                <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
+                <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
+                <option value="Hatcure Injection">Hatcure Injection</option>
+                <option value="Pantohat L.V. Injection">Pantohat L.V. Injection</option>
+                <option value="Rajdox-100 Injection">Rajdox-100 Injection</option>
+                <option value="Rajdox-200 Injection">Rajdox-200 Injection</option>
+                <option value="Vettax-SL. Injection">Vettax-SL. Injection</option>
+                <option value="Vetaxone-SL Injection">Vetaxone-SL Injection</option>
+                <option value="Vetaxone-Tazo Injection">Vetaxone-Tazo Injection</option>
+                <option value="Clindahat Syrup">Clindahat Syrup</option>
+                <option value="Digehat Plus Syrup">Digehat Plus Syrup</option>
+                <option value="Enrohat-50 Syrup">Enrohat-50 Syrup</option>
+                <option value="Epihat-KBR Syrup">Epihat-KBR Syrup</option>
+                <option value="Epihat-LC Syrup">Epihat-LC Syrup</option>
+                <option value="Hatcal Junior Syrup">Hatcal Junior Syrup</option>
+                <option value="Hatclav-250 Syrup">Hatclav-250 Syrup</option>
+                <option value="Hatcort-DS Syrup">Hatcort-DS Syrup</option>
+                <option value="Hatlexin-250 Syrup">Hatlexin-250 Syrup</option>
+                <option value="Hatloose Syrup">Hatloose Syrup</option>
+                <option value="Hatplat Syrup">Hatplat Syrup</option>
+                <option value="Hatpod-100 DS Syrup">Hatpod-100 DS Syrup</option>
+                <option value="Hatpyrin Syrup">Hatpyrin Syrup</option>
+                <option value="Heparaj Junior Syrup">Heparaj Junior Syrup</option>
+                <option value="Immunohat Syrup">Immunohat Syrup</option>
+                <option value="Itraraj Oral Solution">Itraraj Oral Solution</option>
+                <option value="Metrohat Syrup">Metrohat Syrup</option>
+                <option value="Pulmohat Syrup">Pulmohat Syrup</option>
+                <option value="Rajcpm Syrup">Rajcpm Syrup</option>
+                <option value="Rajfan-50 Syrup">Rajfan-50 Syrup</option>
+                <option value="Rajmet-DP Syrup">Rajmet-DP Syrup</option>
+                <option value="Rantiraj Syrup">Rantiraj Syrup</option>
+                <option value="Renalraj Suspension">Renalraj Suspension</option>
+                <option value="Renchal-H Syrup">Renchal-H Syrup</option>
+                <option value="Hatgat Eye Drop">Hatgat Eye Drop</option>
+                <option value="Hatgat-P Eye Drop">Hatgat-P Eye Drop</option>
+                <option value="Hatmoist Eye Drop">Hatmoist Eye Drop</option>
+                <option value="Hatmox Eye Drop">Hatmox Eye Drop</option>
+                <option value="Hatmox-D Eye Drop">Hatmox-D Eye Drop</option>
+                <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
+                <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
+                <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
+                <option value="Hatderm KC Topical Spray">Hatderm MC Topical Spray</option>
+                <option value="Hatodine Ointment">Hatodine Ointment</option>
+                <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
+                <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
+                <option value="Hatodine Scrub Topical Spray">Hatodine Scrub Topical Spray</option>
+                <option value="Scabhat Ointment">Scabhat Ointment</option>
+                <option value="Cortihat Topical Spray">Cortihat Topical Spray</option>
+                <option value="Hatotic-ES Ear Drop">Hatotic-ES Ear Drop</option>
+                <option value="Hatotic-GBC Ear Drop">Hatotic-GBC Ear Drop</option>
+                <option value="Hatotic-NBC Ear Drop">Hatotic-NBC Ear Drop</option>
+                <option value="Otihat Ear Cleanser">Otihat Ear Cleanser</option>
+                <option value="Otihat TeN Ear Cleanser">Otihat TeN Ear Cleanser</option>
+                <option value="All in One Shampoo 200 ml">All in One Shampoo 200 ml</option>
+                <option value="Anti-Dandruff Shampoo">Anti-Dandruff Shampoo</option>
+                <option value="Dry Foam Shampoo">Dry Foam Shampoo</option>
+                <option value="Ectocover-CM24 Shampoo">Ectocover-CM24 Shampoo</option>
+                <option value="Ectocover-PNC Shampoo">Ectocover-PNC Shampoo</option>
+                <option value="Ectocover-B.P.S.S. Shampoo">Ectocover-B.P.S.S. Shampoo</option>
+                <option value="Ectocover-PP Dusting Powder">Ectocover-PP Dusting Powder</option>
+                <option value="Ectocover-F Dusting Powder">Ectocover-F Dusting Powder</option>
+                <option value="Hatgroom Dusting Powder">Hatgroom Dusting Powder</option>
+                <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
+                <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
+              </select>
                 </div>
                 <div class="field-group">
                   <label>Batch no</label>
@@ -2677,8 +2792,7 @@
         if (resData.status === "success") {
           alert("✅ " + resData.message);
           closeModalAndResume();
-          await fetchUserScansFromCloud();
-          showDashboard();
+          syncDataAndShowDashboard();
         } else {
           alert("❌ Error: " + resData.message);
           if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Entry"; }
