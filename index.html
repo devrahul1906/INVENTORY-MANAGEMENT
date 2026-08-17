@@ -499,6 +499,82 @@
       }
     }
 
+    // --- HELPER TO FORMAT LONG DATES INTO MM-YY ---
+    function formatShortDate(rawStr) {
+      if (!rawStr) return "";
+      // Check if it's a long Date string from Google Sheets
+      if (rawStr.includes("GMT") || rawStr.includes("Standard Time") || rawStr.length > 20) {
+        let d = new Date(rawStr);
+        if (!isNaN(d.getTime())) {
+          let m = String(d.getMonth() + 1).padStart(2, '0');
+          let y = String(d.getFullYear()).slice(-2);
+          return m + "-" + y;
+        }
+      }
+      return rawStr;
+    }
+
+    // --- NEW: FETCH TODAY'S BILLS MODAL LOGIC ---
+    async function showTodayBillsDetails() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 850px; max-height: 85vh; overflow-y: auto;">
+            <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Today's Received Bills</h3>
+            <div id="stockDetailsContent" style="margin-top: 12px; text-align:center;">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading today's data...
+            </div>
+            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 12px; width: auto; padding: 8px 16px;">Close</button>
+          </div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=getTodayBillsDetails`);
+        const list = await response.json();
+        
+        let content = "";
+        if (!Array.isArray(list) || list.length === 0) {
+          content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No bills received today.</p>`;
+        } else {
+          let rows = list.map(item => `
+            <tr>
+              <td>${escapeHtml(item.user)}</td>
+              <td>${escapeHtml(item.supplier)}</td>
+              <td><b>${escapeHtml(item.product)}</b></td>
+              <td>${escapeHtml(formatShortDate(item.mfg))}</td>
+              <td>${escapeHtml(formatShortDate(item.exp))}</td>
+              <td>${escapeHtml(item.mrp)}</td>
+              <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)}</td>
+            </tr>
+          `).join("");
+
+          content = `
+            <div style="overflow-x: auto;">
+              <table class="pdf-item-table" style="min-width: 750px; font-size: 0.82rem;">
+                <thead>
+                  <tr>
+                    <th>USER</th>
+                    <th>SUPPLIER NAME</th>
+                    <th>PRODUCT NAME</th>
+                    <th>MFG</th>
+                    <th>EXP</th>
+                    <th>MRP</th>
+                    <th style="text-align: right;">QTY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+        document.getElementById("stockDetailsContent").innerHTML = content;
+      } catch (e) {
+        document.getElementById("stockDetailsContent").innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;">Error loading data.</p>`;
+      }
+    }
+
     function openStockDetailsModal(title, contentHtml) {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -747,10 +823,17 @@
           </div>
 
           <div class="metrics-grid">
-            <div class="metric-card">
-              <span>BILLS RECEIVED TODAY</span>
-              <h3 id="todayBillsVal">Loading...</h3>
-            </div>
+            ${(userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only" || lowerWh === "qa (quality assurance)") 
+              ? `<div class="metric-card clickable" onclick="showTodayBillsDetails()" title="Click to view today's bills details">
+                  <span>BILLS RECEIVED TODAY</span>
+                  <h3 id="todayBillsVal">Loading...</h3>
+                  <div class="view-stock-text">View Details <i class="fa-solid fa-arrow-right"></i></div>
+                 </div>`
+              : `<div class="metric-card">
+                  <span>BILLS RECEIVED TODAY</span>
+                  <h3 id="todayBillsVal">Loading...</h3>
+                 </div>`
+            }
             <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
               <span>QA (QUALITY ASSURANCE)</span>
               <h3 id="qaStockVal">Loading...</h3>
