@@ -282,6 +282,7 @@
 
     let userScansCache = [];
     let holdInvCache = [];
+    let transferInvCache = [];
     let currentStockDataCache = [];
     let fullStockDataCache = [];
     let pendingDispatchPayload = null;
@@ -502,7 +503,6 @@
     // --- HELPER TO FORMAT LONG DATES INTO MM-YY ---
     function formatShortDate(rawStr) {
       if (!rawStr) return "";
-      // Check if it's a long Date string from Google Sheets
       if (rawStr.includes("GMT") || rawStr.includes("Standard Time") || rawStr.length > 20) {
         let d = new Date(rawStr);
         if (!isNaN(d.getTime())) {
@@ -1602,6 +1602,7 @@
       }
     }
 
+    // --- NEW INTERNAL TRANSFER MODAL LOGIC ---
     function openTransferModal() {
       let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
       
@@ -1655,145 +1656,22 @@
             
             <div class="field-group">
               <label>Product Name</label>
-              <select id="t_product" class="form-control">
-                <option value="">Select Product Name</option>
-                <option value="CARDIOHAT TAB">CARDIOHAT TAB</option>
-                <option value="CARPOHAT-100 TAB">CARPOHAT-100 TAB</option>
-                <option value="CARPOHAT-50 TAB.">CARPOHAT-50 TAB.</option>
-                <option value="CLINDAHAT 600MG TAB.">CLINDAHAT 600MG TAB.</option>
-                <option value="CLINDAHAT-250 TAB">CLINDAHAT-250 TAB</option>
-                <option value="HATCAL-D TAB">HATCAL-D TAB</option>
-                <option value="HATCAL-RENAL TAB">HATCAL-RENAL TAB</option>
-                <option value="HATCEF-100 DT TAB">HATCEF-100 DT TAB</option>
-                <option value="HATCEF-200 DT TAB">HATCEF-200 DT TAB</option>
-                <option value="HATCLAV 500 TAB">HATCLAV 500 TAB</option>
-                <option value="HATCLAV-375 TAB">HATCLAV-375 TAB</option>
-                <option value="HATCORT MP TAB">HATCORT MP TAB</option>
-                <option value="HATFUR OMEGA TAB">HATFUR OMEGA TAB</option>
-                <option value="HATFUR TAB">HATFUR TAB</option>
-                <option value="HATFUR-Z TAB.">HATFUR-Z TAB.</option>
-                <option value="HATJOINT PLUS TAB">HATJOINT PLUS TAB</option>
-                <option value="HATLAC PLUS TAB.">HATLAC PLUS TAB.</option>
-                <option value="HATLAC TAB">HATLAC TAB</option>
-                <option value="HATLEXIN-1000 TAB">HATLEXIN-1000 TAB</option>
-                <option value="HATLEXIN-300 TAB.">HATLEXIN-300 TAB.</option>
-                <option value="HATLEXIN-600 TAB.">HATLEXIN-600 TAB.</option>
-                <option value="HATPAN TAB">HATPAN TAB</option>
-                <option value="HATPLAT TAB">HATPLAT TAB</option>
-                <option value="HATPLAT TAB. (HERBAL)">HATPLAT TAB. (HERBAL)</option>
-                <option value="HATPOD 100 DT TAB">HATPOD 100 DT TAB</option>
-                <option value="HATPOD 200 DT TAB">HATPOD 200 DT TAB</option>
-                <option value="HATPOD-200 TAB">HATPOD-200 TAB</option>
-                <option value="HATPYRIN TAB">HATPYRIN TAB</option>
-                <option value="HATVIT-A TAB">HATVIT-A TAB</option>
-                <option value="HATWORM KITTY TAB">HATWORM KITTY TAB</option>
-                <option value="HATWORM PLUS TAB.">HATWORM PLUS TAB.</option>
-                <option value="HATZAPINE TAB">HATZAPINE TAB</option>
-                <option value="HEPARAJ ADVANCE TAB">HEPARAJ ADVANCE TAB</option>
-                <option value="HEPARAJ PLUS TAB.">HEPARAJ PLUS TAB.</option>
-                <option value="HEPARAJ TAB">HEPARAJ TAB</option>
-                <option value="INFLAHAT-TBR TAB">INFLAHAT-TBR TAB</option>
-                <option value="ITRARAJ-100MG TAB">ITRARAJ-100MG TAB</option>
-                <option value="IVERRAJ-10MG TAB.">IVERRAJ-10MG TAB.</option>
-                <option value="IVERRAJ-3MG TAB.">IVERRAJ-3MG TAB.</option>
-                <option value="IVERRAJ-DT 16 TAB">IVERRAJ-DT 16 TAB</option>
-                <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
-                <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
-                <option value="ONCORAJ TAB">ONCORAJ TAB</option>
-                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
-                <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
-                <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
-                <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
-                <option value="RAJDROXIL-250 TAB">RAJDROXIL-250 TAB</option>
-                <option value="RAJDROXIL-500 DT TAB">RAJDROXIL-500 DT TAB</option>
-                <option value="RAJDROXIL-600 DT TAB">RAJDROXIL-600 DT TAB</option>
-                <option value="RAJFAN TAB">RAJFAN TAB</option>
-                <option value="RAJPARA TAB">RAJPARA TAB</option>
-                <option value="RANTIRAJ TAB">RANTIRAJ TAB</option>
-                <option value="RENOHAT PLUS TABLET">RENOHAT PLUS TABLET</option>
-                <option value="TERBIRAJ 250 TAB">TERBIRAJ 250 TAB</option>
-                <option value="TERBIRAJ 500 TAB">TERBIRAJ 500 TAB</option>
-                <option value="TORSOHAT 7.5 TAB">TORSOHAT 7.5 TAB</option>
-                <option value="TRAMAHAT 100 DT TAB">TRAMAHAT 100 DT TAB</option>
-                <option value="TRAMAHAT 50 DT TAB">TRAMAHAT 50 DT TAB</option>
-                <option value="VITnMIN-H TAB">VITnMIN-H TAB</option>
-                <option value="Hatgrow Plus Oral Powder">Hatgrow Plus Oral Powder</option>
-                <option value="Ondahat Oral Spray">Ondahat Oral Spray</option>
-                <option value="Amoxyhat-SL Injection">Amoxyhat-SL Injection</option>
-                <option value="Hatcure Injection">Hatcure Injection</option>
-                <option value="Pantohat L.V. Injection">Pantohat L.V. Injection</option>
-                <option value="Rajdox-100 Injection">Rajdox-100 Injection</option>
-                <option value="Rajdox-200 Injection">Rajdox-200 Injection</option>
-                <option value="Vettax-SL. Injection">Vettax-SL. Injection</option>
-                <option value="Vetaxone-SL Injection">Vetaxone-SL Injection</option>
-                <option value="Vetaxone-Tazo Injection">Vetaxone-Tazo Injection</option>
-                <option value="Clindahat Syrup">Clindahat Syrup</option>
-                <option value="Digehat Plus Syrup">Digehat Plus Syrup</option>
-                <option value="Enrohat-50 Syrup">Enrohat-50 Syrup</option>
-                <option value="Epihat-KBR Syrup">Epihat-KBR Syrup</option>
-                <option value="Epihat-LC Syrup">Epihat-LC Syrup</option>
-                <option value="Hatcal Junior Syrup">Hatcal Junior Syrup</option>
-                <option value="Hatclav-250 Syrup">Hatclav-250 Syrup</option>
-                <option value="Hatcort-DS Syrup">Hatcort-DS Syrup</option>
-                <option value="Hatlexin-250 Syrup">Hatlexin-250 Syrup</option>
-                <option value="Hatloose Syrup">Hatloose Syrup</option>
-                <option value="Hatplat Syrup">Hatplat Syrup</option>
-                <option value="Hatpod-100 DS Syrup">Hatpod-100 DS Syrup</option>
-                <option value="Hatpyrin Syrup">Hatpyrin Syrup</option>
-                <option value="Heparaj Junior Syrup">Heparaj Junior Syrup</option>
-                <option value="Immunohat Syrup">Immunohat Syrup</option>
-                <option value="Itraraj Oral Solution">Itraraj Oral Solution</option>
-                <option value="Metrohat Syrup">Metrohat Syrup</option>
-                <option value="Pulmohat Syrup">Pulmohat Syrup</option>
-                <option value="Rajcpm Syrup">Rajcpm Syrup</option>
-                <option value="Rajfan-50 Syrup">Rajfan-50 Syrup</option>
-                <option value="Rajmet-DP Syrup">Rajmet-DP Syrup</option>
-                <option value="Rantiraj Syrup">Rantiraj Syrup</option>
-                <option value="Renalraj Suspension">Renalraj Suspension</option>
-                <option value="Renchal-H Syrup">Renchal-H Syrup</option>
-                <option value="Hatgat Eye Drop">Hatgat Eye Drop</option>
-                <option value="Hatgat-P Eye Drop">Hatgat-P Eye Drop</option>
-                <option value="Hatmoist Eye Drop">Hatmoist Eye Drop</option>
-                <option value="Hatmox Eye Drop">Hatmox Eye Drop</option>
-                <option value="Hatmox-D Eye Drop">Hatmox-D Eye Drop</option>
-                <option value="Hatmox-KT Eye Drop">Hatmox-KT Eye Drop</option>
-                <option value="Opthoraj-DT Eye Drop">Opthoraj-DT Eye Drop</option>
-                <option value="Hatderm-KCN Cream">Hatderm-KCN Cream</option>
-                <option value="Hatderm KC Topical Spray">Hatderm MC Topical Spray</option>
-                <option value="Hatodine Ointment">Hatodine Ointment</option>
-                <option value="Hatodine-M Ointment">Hatodine-M Ointment</option>
-                <option value="Hatodine Aqua Solution">Hatodine Aqua Solution</option>
-                <option value="Hatodine Scrub Topical Spray">Hatodine Scrub Topical Spray</option>
-                <option value="Scabhat Ointment">Scabhat Ointment</option>
-                <option value="Cortihat Topical Spray">Cortihat Topical Spray</option>
-                <option value="Hatotic-ES Ear Drop">Hatotic-ES Ear Drop</option>
-                <option value="Hatotic-GBC Ear Drop">Hatotic-GBC Ear Drop</option>
-                <option value="Hatotic-NBC Ear Drop">Hatotic-NBC Ear Drop</option>
-                <option value="Otihat Ear Cleanser">Otihat Ear Cleanser</option>
-                <option value="Otihat TeN Ear Cleanser">Otihat TeN Ear Cleanser</option>
-                <option value="All in One Shampoo 200 ml">All in One Shampoo 200 ml</option>
-                <option value="Anti-Dandruff Shampoo">Anti-Dandruff Shampoo</option>
-                <option value="Dry Foam Shampoo">Dry Foam Shampoo</option>
-                <option value="Ectocover-CM24 Shampoo">Ectocover-CM24 Shampoo</option>
-                <option value="Ectocover-PNC Shampoo">Ectocover-PNC Shampoo</option>
-                <option value="Ectocover-B.P.S.S. Shampoo">Ectocover-B.P.S.S. Shampoo</option>
-                <option value="Ectocover-PP Dusting Powder">Ectocover-PP Dusting Powder</option>
-                <option value="Ectocover-F Dusting Powder">Ectocover-F Dusting Powder</option>
-                <option value="Hatgroom Dusting Powder">Hatgroom Dusting Powder</option>
-                <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-                <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
+              <select id="t_product" class="form-control" onchange="populateTransferBatches()">
+                <option value="">Loading products...</option>
               </select>
             </div>
             
             <div class="field-group">
-              <label>Batch No</label>
-              <input type="text" id="t_batch" placeholder="Enter Batch Number">
+              <label>Batch No (Available Qty)</label>
+              <select id="t_batch" class="form-control" onchange="setMaxTransferQty()">
+                <option value="">Select Product First</option>
+              </select>
             </div>
             
             <div class="field-group">
               <label>Qty</label>
               <input type="number" id="t_qty" value="1" min="1">
+              <small id="t_max_qty_label" style="color:var(--text-muted); font-weight: 600;"></small>
             </div>
             
             <div class="field-group">
@@ -1817,6 +1695,50 @@
           </div>
         </div>
       `;
+      loadTransferInventory(currentWarehouse);
+    }
+
+    async function loadTransferInventory(currentWarehouse) {
+      let submitBtn = document.querySelector("#modal-container button.btn-indigo");
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getInventoryForTransfer&warehouse=${encodeURIComponent(currentWarehouse)}`);
+        transferInvCache = await response.json();
+        
+        let uniqueProds = [...new Set(transferInvCache.map(i => i.product))].sort();
+        let opts = '<option value="">-- Select Product Name --</option>';
+        uniqueProds.forEach(p => {
+          opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
+        });
+        document.getElementById('t_product').innerHTML = opts;
+        if (submitBtn) submitBtn.disabled = false;
+      } catch (e) {
+        alert("Failed to load inventory for transfer. Please try again.");
+      }
+    }
+
+    function populateTransferBatches() {
+      let selProd = document.getElementById('t_product').value;
+      let batches = transferInvCache.filter(i => i.product === selProd);
+      let opts = '<option value="">-- Select Batch --</option>';
+      batches.forEach(b => {
+        opts += `<option value="${escapeHtml(b.batch)}" data-qty="${b.qty}">${escapeHtml(b.batch)} (Avail: ${b.qty})</option>`;
+      });
+      document.getElementById('t_batch').innerHTML = opts;
+      document.getElementById('t_max_qty_label').innerText = "";
+      document.getElementById('t_qty').removeAttribute('max');
+    }
+
+    function setMaxTransferQty() {
+      let selBatch = document.getElementById('t_batch');
+      if (selBatch.selectedIndex > 0) {
+        let maxQty = selBatch.options[selBatch.selectedIndex].getAttribute('data-qty');
+        document.getElementById('t_max_qty_label').innerText = `Max Available: ${maxQty} pcs`;
+        document.getElementById('t_qty').max = maxQty;
+      } else {
+        document.getElementById('t_max_qty_label').innerText = "";
+      }
     }
 
     function promptTransferConfirmation() {
@@ -1828,7 +1750,7 @@
       
       let qaRemark = "";
 
-      if (!prod || !batch) { alert("Please enter Product Name and Batch No!"); return; }
+      if (!prod || !batch) { alert("Please select Product Name and Batch No!"); return; }
       if (fromWh === toWh) { alert("From and To Warehouse cannot be the same!"); return; }
 
       if (fromWh === "QA (Quality Assurance)") {
