@@ -490,17 +490,16 @@
     }
 
     async function showSampleRoomStockDetails() {
-      openStockDetailsModal("<i class='fa-solid fa-vials'></i> Sample Room", "Loading...");
+      openStockDetailsModal("<i class='fa-solid fa-vials'></i> Control Sample Room", "Loading...");
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails`);
         const list = await response.json();
-        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Sample Room", list);
+        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Contorl Sample Room", list);
       } catch (e) {
-        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Sample Room", []);
+        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Contorl Sample Room", []);
       }
     }
 
-    // --- HELPER TO FORMAT LONG DATES INTO MM-YY ---
     function formatShortDate(rawStr) {
       if (!rawStr) return "";
       if (rawStr.includes("GMT") || rawStr.includes("Standard Time") || rawStr.length > 20) {
@@ -514,7 +513,6 @@
       return rawStr;
     }
 
-    // --- NEW: FETCH TODAY'S BILLS MODAL LOGIC ---
     async function showTodayBillsDetails() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -741,7 +739,7 @@
       
       if (userRole.toLowerCase() === "view-only") {
         actionButtons = `
-          <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
+          <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <div style="grid-column: span 1; display: flex; align-items: center;">
@@ -759,8 +757,9 @@
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-          <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Sample Room</button>
+          <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
         if (lowerWh === "qa (quality assurance)") {
@@ -770,6 +769,7 @@
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
             <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
           `;
         } else if (lowerWh === "main warehouse") {
           actionButtons = `
@@ -809,7 +809,6 @@
         }
       }
 
-      // ADDED SOP BUTTON HERE
       actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
       document.getElementById("app").innerHTML = `
@@ -886,7 +885,6 @@
       updateLiveDateTime();
     }
 
-    // --- ACTIVE USERS MODAL (ADMIN & VIEW ONLY) ---
     async function openActiveUsersModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -955,7 +953,6 @@
       }
     }
 
-    // --- DOWNLOAD LOGIN HISTORY EXCEL ---
     async function downloadUserLogs() {
       try {
         let btn = document.querySelector("#modal-container .btn-emerald");
@@ -991,6 +988,15 @@
       }
     }
 
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
     function openPurchaseModal() {
       let supplierSet = new Set();
       userScansCache.forEach(item => {
@@ -1007,7 +1013,6 @@
           <div class="modal-box" style="max-height: 90vh; overflow-y: auto; max-width: 800px;">
             <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> New Purchase Entry</h3>
             
-            <!-- Global Supplier Field -->
             <div class="field-group" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
               <label>Supplier Name (Applies to all items below) <span style="color:var(--danger);">*</span></label>
               <select id="global_supplier">
@@ -1043,9 +1048,7 @@
               </select>
             </div>
 
-            <!-- Dynamic Products Container -->
             <div id="purchase_items_container" style="display:flex; flex-direction:column; gap:16px;">
-              <!-- Product Row Template -->
               <div class="purchase-item-row" style="background: #ffffff; padding: 16px; border-radius: 6px; border: 1px dashed #94a3b8; position: relative;">
                 <div class="field-group">
                   <label>Category</label>
@@ -1215,6 +1218,10 @@
                   <div class="field-group"><label>MRP</label><input type="number" class="p_mrp" placeholder="MRP"></div>
                   <div class="field-group"><label>Quantity</label><input type="number" class="p_qty" value="1" min="1"></div>
                 </div>
+                <div class="field-group" style="margin-top:8px;">
+                  <label>Upload COA (PDF/JPG) <span style="color:var(--text-muted); font-weight:normal;">*Optional</span></label>
+                  <input type="file" class="p_coa" accept=".pdf, .jpg, .jpeg" style="padding: 6px;">
+                </div>
               </div>
             </div>
 
@@ -1236,11 +1243,9 @@
       const firstRow = container.querySelector(".purchase-item-row");
       const clone = firstRow.cloneNode(true);
       
-      // Clear values in cloned row
       clone.querySelectorAll("input, select").forEach(el => el.value = "");
-      clone.querySelector(".p_qty").value = "1"; // default qty
+      clone.querySelector(".p_qty").value = "1";
       
-      // Add a remove button for extra rows
       const removeDiv = document.createElement("div");
       removeDiv.style.textAlign = "right";
       removeDiv.style.marginTop = "8px";
@@ -1256,8 +1261,9 @@
 
       let rows = document.querySelectorAll(".purchase-item-row");
       let itemsArray = [];
+      let submitBtn = document.querySelector("#modal-container button.btn-success");
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Preparing Files..."; }
 
-      // Extract and validate data from all rows
       for (let i = 0; i < rows.length; i++) {
         let row = rows[i];
         let pCategory = row.querySelector(".p_category").value;
@@ -1267,51 +1273,56 @@
         let pExp = row.querySelector(".p_exp").value;
         let pMrp = row.querySelector(".p_mrp").value;
         let rawQty = parseInt(row.querySelector(".p_qty").value, 10) || 1;
+        let fileInput = row.querySelector(".p_coa");
 
         if (!pCategory || !pName || !pBatch) { 
           alert(`Please fill Category, Product Name, and Batch in Product #${i + 1}!`); 
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
           return; 
         }
 
-        // Apply exactly the same Tablet Logic
+        let fileData = null;
+        if (fileInput && fileInput.files.length > 0) {
+           let file = fileInput.files[0];
+           if (file.size > 5 * 1024 * 1024) { 
+              alert(`COA File for ${pName} is too large. Max 5MB allowed.`);
+              if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
+              return;
+           }
+           let base64Full = await readFileAsBase64(file);
+           fileData = {
+              filename: file.name,
+              mimeType: file.type,
+              base64: base64Full.split(",")[1]
+           };
+        }
+
         let finalQty = (pCategory.toLowerCase() === "tablets") ? rawQty * 10 : rawQty;
 
         itemsArray.push({
-          category: pCategory,
-          product: pName,
-          batch: pBatch,
-          mfg: pMfg,
-          exp: pExp,
-          mrp: pMrp,
-          qty: finalQty
+          category: pCategory, product: pName, batch: pBatch,
+          mfg: pMfg, exp: pExp, mrp: pMrp, qty: finalQty, coa: fileData
         });
       }
 
-      let submitBtn = document.querySelector("#modal-container button.btn-success");
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Saving All..."; }
+      if (submitBtn) { submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Saving Data to Cloud..."; }
 
       let payload = {
-        action: "Purchase Entry",
-        user: localStorage.getItem("employee") || "",
-        warehouse: localStorage.getItem("warehouse") || "",
-        type: "Purchase Entry",
-        supplier: globalSupplier,
-        items: itemsArray,
-        scanTime: new Date().toLocaleString()
+        action: "Purchase Entry", user: localStorage.getItem("employee") || "",
+        warehouse: localStorage.getItem("warehouse") || "", type: "Purchase Entry",
+        supplier: globalSupplier, items: itemsArray, scanTime: new Date().toLocaleString()
       };
 
       try {
         const response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
         const resData = JSON.parse(await response.text());
 
         if (resData.status === "success") {
           alert(`✅ All ${itemsArray.length} items saved successfully!`);
-          closeModalAndResume();
-          syncDataAndShowDashboard();
+          closeModalAndResume(); syncDataAndShowDashboard();
         } else {
           alert("❌ Error: " + resData.message);
           if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
@@ -1326,7 +1337,6 @@
     function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
     function triggerExpiryDamagePdfSelect() { document.getElementById("expiryDamagePdfInput").click(); }
 
-    // --- ADVANCE MARG ERP PARSER FOR EXPIRY/DAMAGE ---
     async function handleExpiryDamagePdfUpload(input) {
       if (!input.files || input.files.length === 0) return;
       let file = input.files[0];
@@ -1356,7 +1366,6 @@
 
         let itemsFound = [];
 
-        // Group by Page, then perfectly construct Lines by Y-coordinate
         let pagesMap = {};
         textItems.forEach(item => {
           if (!pagesMap[item.page]) pagesMap[item.page] = [];
@@ -1368,25 +1377,22 @@
           let rowsMap = {};
           
           pageItems.forEach(item => {
-            // Group items perfectly on the same visual line (tolerance of 4px)
             let yKey = Math.round(item.y / 4) * 4;
             if (!rowsMap[yKey]) rowsMap[yKey] = [];
             rowsMap[yKey].push(item);
           });
 
-          let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a); // Top to bottom
+          let sortedYKeys = Object.keys(rowsMap).sort((a, b) => b - a); 
 
           sortedYKeys.forEach(yKey => {
-            let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x); // Left to right
+            let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x); 
             let texts = rowElements.map(el => el.str).filter(str => str !== "");
             let rowString = texts.join(" ");
 
-            // Skip irrelevant header/footer lines
             if (/(E-Mail|Invoice|Due Date|L\.R\.|E-WAY|IRN|Party Name|DELIVERY AT|TOTAL|GST|Terms|A\/c|IFSC|Rs\.|Discount|@gmail\.com|Phone:|D\.L\.No|GSTIN|Bank Details|Grand Total|CLASS|TAXABLE AMT)/i.test(rowString)) {
               return;
             }
 
-            // Extreme strict Regex format extraction
             let itemRegex = /(?:(?:^|\s)(\d+)\s*\.\s+)?(\d+)\s+(.+?)\s+([A-Z0-9\-\/_]+)\s+(\d{1,2}\/\d{2,4})\s+(\d{6,10})\s+\d+(\.\d+)?/i;
             let match = rowString.match(itemRegex);
 
@@ -1395,7 +1401,6 @@
               let rawProd = match[3].trim();
               let batch = match[4].trim();
               
-              // Clean out the "ZZZZ" and Pack (e.g. 1*10, 30 ML)
               rawProd = rawProd.replace(/^[A-Z]{3,5}\s+/, ''); 
               rawProd = rawProd.replace(/^(1\*\d+|[0-9.]+\s*(ML|GM|MG|ml|gm|mg))\s+/i, '').trim();
 
@@ -1597,7 +1602,7 @@
       let batches = holdInvCache.filter(i => i.product === selProd);
       let opts = '<option value="">-- Select Batch --</option>';
       batches.forEach(b => {
-        opts += `<option value="${escapeHtml(b.batch)}" data-qty="${b.qty}">${escapeHtml(b.batch)} (Avail: ${b.qty})</option>`;
+        opts += `<option value="${escapeHtml(b.batch)}" data-qty="${b.qty}" data-reason="${escapeHtml(b.reason || 'No reason specified')}">${escapeHtml(b.batch)} (Avail: ${b.qty})</option>`;
       });
       document.getElementById('h_batch').innerHTML = opts;
       document.getElementById('h_max_qty_label').innerText = "";
@@ -1615,13 +1620,22 @@
     async function executeHoldAction() {
       let type = document.querySelector('input[name="holdActionType"]:checked').value;
       let prod = document.getElementById('h_product').value.trim();
-      let batch = document.getElementById('h_batch').value.trim();
+      let batchElement = document.getElementById('h_batch');
+      let batch = batchElement.value.trim();
       let qty = parseInt(document.getElementById('h_qty').value, 10) || 0;
       let reason = document.getElementById('h_reason').value.trim();
       
       if (!prod || !batch || qty <= 0 || !reason) {
         alert("Please fill all fields! Reason is mandatory.");
         return;
+      }
+
+      if (type === "UNHOLD") {
+         let holdReason = batchElement.options[batchElement.selectedIndex].getAttribute('data-reason') || "No reason specified";
+         let isResolved = confirm(`⚠️ UNHOLD CONFIRMATION\n\nThis product was originally held for the following reason:\n"${holdReason}"\n\nHas this issue been resolved? Are you sure you want to Unhold?`);
+         if (!isResolved) {
+            return; 
+         }
       }
       
       let submitBtn = document.querySelector("#modal-container button.btn-warning");
@@ -1659,7 +1673,6 @@
       }
     }
 
-    // --- NEW INTERNAL TRANSFER MODAL LOGIC ---
     function openTransferModal() {
       let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
       
@@ -2336,7 +2349,7 @@
                    let expDateObj = new Date(formattedExpDate);
                    let timeDiff = expDateObj.getTime() - currentDate.getTime();
                    let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                   if (daysDiff <= 270) {
+                   if (daysDiff <= 90) {
                      statusText = "Expired";
                      statusClass = "color:var(--danger); font-weight:700;";
                    }
@@ -2457,7 +2470,7 @@
         let currentDate = new Date();
         let timeDiff = expDateObj.getTime() - currentDate.getTime();
         let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        if (daysDiff <= 270) {
+        if (daysDiff <= 90) {
            statusText = "Expired";
            statusClass = "color:var(--danger); font-weight:700;";
         }
@@ -2546,7 +2559,7 @@
           let expDateObj = new Date(formattedExpDate);
           let timeDiff = expDateObj.getTime() - currentDate.getTime();
           let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-          if (daysDiff <= 270) {
+          if (daysDiff <= 90) {
              statusText = "Expired";
              statusClass = "color:var(--danger); font-weight:700;";
           }
@@ -2596,7 +2609,6 @@
       }
     }
 
-    // --- SALES RETURN - SUSPENSE ITEM FRONTEND LOGIC ---
     function openSalesReturnSuspenseModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -2653,8 +2665,7 @@
                 <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
                 <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
                 <option value="ONCORAJ TAB">ONCORAJ TAB</option>
-                <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-                <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+                <option value="PANTOHAT 40 TAB.">PANTOHAT-D TAB.</option>
                 <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
                 <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
                 <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
@@ -2803,7 +2814,7 @@
         
         daysText.innerText = daysDiff + " Days remaining";
 
-        if (daysDiff <= 270) {
+        if (daysDiff <= 90) {
            statusBox.innerText = "Near-Expiry";
            statusBox.style.color = "var(--danger)";
         } else {
@@ -2921,7 +2932,6 @@
       }
     }
 
-    // --- STOCK REPORT MODAL LOGIC ---
     function openStockReportModal() {
       const userRole = localStorage.getItem("role") || "Standard";
       const wh = localStorage.getItem("warehouse") || "";
@@ -3149,7 +3159,6 @@
       }
     }
 
-    // --- ADDED NEW USER MANUAL (SOP) FUNCTION HERE ---
     function showUserManual() {
       const userRole = (localStorage.getItem("role") || "Standard").toLowerCase();
       const currentWh = (localStorage.getItem("warehouse") || "").toLowerCase();
@@ -3172,10 +3181,10 @@
         sopTitle = "VIEW-ONLY (MANAGEMENT) USER SOP";
         sopHtml = `
           <b>Access Level:</b> Executive Monitoring and Analytical Reporting.<br>
-          <b>Available Modules:</b> Sample Room, Stock Report, Active Users, Stock Shortages, Bills Received Today.<br><br>
+          <b>Available Modules:</b> Control Sample Room, Stock Report, Active Users, Stock Shortages, Bills Received Today.<br><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
             <li style="margin-bottom: 8px;"><b>Functionality:</b> View-Only accounts are restricted from altering system data. All data entry forms, transfer functions, and PDF upload workflows are disabled.</li>
-            <li style="margin-bottom: 8px;"><b>Sample Room Access:</b> Management can view the dedicated Sample Room inventory table.</li>
+            <li style="margin-bottom: 8px;"><b>Control Sample Room Access:</b> Management can view the dedicated Control Sample Room inventory table.</li>
             <li style="margin-bottom: 8px;"><b>Daily Analytics:</b> By clicking the BILLS RECEIVED TODAY metric card, management can open a detailed popup table displaying all inward supply records timestamped for the current day, complete with supplier names, batches, and quantities.</li>
             <li style="margin-bottom: 8px;"><b>Report Exporting:</b> Management users retain full authorization to extract and download the Full Stock Report and Active Users session logs into Excel for external auditing and compliance checks.</li>
           </ul>
@@ -3203,7 +3212,7 @@
             </li>
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Submit Entry.</li>
           </ul>
-          <i style="color: var(--text-muted);"><b>System Logic:</b> The entry is recorded in the 'QA (Quality Assurance)' database sheet. If the product does not already exist in the Sample Room, a maximum of 2 units will be automatically allocated to the Sample Room, and the remaining quantity will be added to the QA inventory.</i><br><br>
+          <i style="color: var(--text-muted);"><b>System Logic:</b> The entry is recorded in the 'QA (Quality Assurance)' database sheet. If the product does not already exist in the Control Sample Room, a maximum of 1 unit will be automatically allocated to the Contol Sample Room, and the remaining quantity will be added to the QA inventory.</i><br><br>
 
           <b>B. Internal Stock Transfer</b><br>
           This function routes verified stock from the QA department to other warehouse locations.<br>
@@ -3262,10 +3271,10 @@
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Dispatch Return (PDF) and select the return document.</li>
             <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed details (Batch, Expiry Date, Billed Qty, Free Qty, MRP) in the confirmation popup.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review the Status Indicator: The system calculates the days remaining until expiry. If the remaining time is 270 days or less, the status is flagged as Expired (red); otherwise, it is marked as Usable (green).</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review the Status Indicator: The system calculates the days remaining until expiry. If the remaining time is 90 days or less, the status is flagged as Expired (red); otherwise, it is marked as Usable (green).</li>
             <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Confirm & Sync.</li>
           </ul>
-          <i style="color: var(--text-muted);"><b>System Logic:</b> Usable items are automatically routed back to the 'QA (Quality Assurance)' warehouse, while items nearing expiry (<= 270 days) are routed strictly to the 'Near-Expiry' warehouse.</i><br><br>
+          <i style="color: var(--text-muted);"><b>System Logic:</b> Usable items are automatically routed back to the 'QA (Quality Assurance)' warehouse, while items nearing expiry (<= 90 days) are routed strictly to the 'Near-Expiry' warehouse.</i><br><br>
 
           <b>C. Upload Expiry/Damage Bill</b><br>
           This module processes invoices explicitly dealing with expired or damaged goods.<br>
@@ -3283,7 +3292,7 @@
             <li style="margin-bottom: 4px;"><b>Step 2:</b> Input the Product Name, Batch No, and MRP.</li>
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Input the Exp. Date. The system will dynamically calculate and display the remaining days on the screen.</li>
             <li style="margin-bottom: 4px;"><b>Step 4:</b> Enter the Billed Qty and Free Qty.</li>
-            <li style="margin-bottom: 4px;"><b>Step 5:</b> Click Submit Entry. The stock is automatically routed to QA or Near-Expiry based on the 270-day expiry threshold logic.</li>
+            <li style="margin-bottom: 4px;"><b>Step 5:</b> Click Submit Entry. The stock is automatically routed to QA or Near-Expiry based on the 90-day expiry threshold logic.</li>
           </ul><br>
 
           <b>E. Internal Stock Transfer</b><br>
@@ -3368,6 +3377,111 @@
           </div>
         </div>
       `;
+    }
+
+    async function openPendingCOAModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="color: #be123c;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Pending COAs...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        let res = await fetch(`${GOOGLE_SHEET_URL}?action=getPendingCOA`);
+        let data = await res.json();
+        
+        if (data.length === 0) {
+          document.getElementById("modal-container").innerHTML = `
+            <div class="modal-overlay">
+              <div class="modal-box" style="max-width: 600px; text-align: center;">
+                <h3 style="color:var(--success);"><i class="fa-solid fa-check-circle"></i> No Pending COAs!</h3>
+                <p>All products have their COAs uploaded successfully.</p>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 15px;">Close</button>
+              </div>
+            </div>`;
+          return;
+        }
+
+        let rows = data.map(item => `
+          <tr id="pending_row_${item.rowIdx}">
+            <td><b>${escapeHtml(item.product)}</b></td>
+            <td>${escapeHtml(item.batch)}</td>
+            <td>${escapeHtml(item.supplier)}</td>
+            <td>${escapeHtml(formatShortDate(item.date))}</td>
+            <td style="text-align:center;">
+               <input type="file" id="inline_coa_${item.rowIdx}" accept=".pdf, .jpg, .jpeg" style="display:none;" onchange="executeInlineCOAUpload(${item.rowIdx})">
+               <button onclick="document.getElementById('inline_coa_${item.rowIdx}').click()" class="btn-indigo" style="padding: 6px 12px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-upload"></i> Upload COA</button>
+            </td>
+          </tr>
+        `).join("");
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+              <h3 style="color: #be123c;"><i class="fa-solid fa-file-circle-xmark"></i> Missing COA Approvals</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted);">Upload COA PDFs or Images for the following pending entries.</p>
+              
+              <table class="pdf-item-table" style="font-size: 0.85rem;">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Batch</th>
+                    <th>Supplier</th>
+                    <th>Entry Date</th>
+                    <th style="text-align:center;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 15px;">Close Panel</button>
+            </div>
+          </div>
+        `;
+      } catch(e) {
+        alert("Error loading pending COAs: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
+    async function executeInlineCOAUpload(rowIdx) {
+      let fileInput = document.getElementById(`inline_coa_${rowIdx}`);
+      if (!fileInput || fileInput.files.length === 0) return;
+      
+      let file = fileInput.files[0];
+      if (file.size > 5 * 1024 * 1024) { alert(`File too large. Max 5MB allowed.`); return; }
+      
+      let btn = fileInput.nextElementSibling;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
+
+      try {
+        let base64Full = await readFileAsBase64(file);
+        let payload = {
+          action: "uploadPendingCOA",
+          rowIdx: rowIdx,
+          coa: { filename: file.name, mimeType: file.type, base64: base64Full.split(",")[1] }
+        };
+
+        let response = await fetch(GOOGLE_SHEET_URL, {
+          method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        
+        let resData = JSON.parse(await response.text());
+        if (resData.status === "success") {
+           alert("✅ COA Uploaded and saved to Server!");
+           let rowElement = document.getElementById(`pending_row_${rowIdx}`);
+           if (rowElement) rowElement.remove();
+        } else {
+           alert("❌ Upload Error: " + resData.message);
+           btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-upload"></i> Retry Upload`;
+        }
+      } catch(e) {
+        alert("Upload Failed: " + e.message);
+        btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-upload"></i> Retry Upload`;
+      }
     }
 
     async function logout() { 
