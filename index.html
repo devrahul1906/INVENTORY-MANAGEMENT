@@ -3084,54 +3084,93 @@
       }
     }
 
-    function renderFullStockReport(data) {
-      let tbody = "";
-      if (!data || data.length === 0) {
-        tbody = `<tr><td colspan="8" style="text-align:center;">No stock available</td></tr>`;
-      } else {
-        data.forEach((item, idx) => {
-          tbody += `<tr>
-            <td>${idx + 1}</td>
-            <td><b>${escapeHtml(item.product)}</b></td>
-            <td>${formatNumber(item.qa)}</td>
-            <td>${formatNumber(item.main)}</td>
-            <td>${formatNumber(item.packing)}</td>
-            <td>${formatNumber(item.expired)}</td>
-            <td>${formatNumber(item.damaged)}</td>
-            <td>${formatNumber(item.hold)}</td>
-          </tr>`;
-        });
+function renderFullStockReport(data) {
+  // 1. Data ko Group aur Add karne ka logic
+  let groupedData = {};
+  
+  if (data && data.length > 0) {
+    data.forEach(item => {
+      // Date ko yahi short format me kar lenge taaki grouping sahi ho
+      let shortExp = item.exp ? formatShortDate(item.exp.toString()) : "";
+      let loc = item.location ? item.location.toString().trim() : "";
+      let prod = item.product ? item.product.toString().trim() : "";
+      let batch = item.batch ? item.batch.toString().trim() : "";
+      let mrp = item.mrp ? item.mrp.toString().trim() : "";
+      
+      // Ek unique key banayenge check karne ke liye ki item same hai ya nahi
+      let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp;
+      
+      // Agar ye combination pehli baar aaya hai to naya record banayenge
+      if (!groupedData[key]) {
+        groupedData[key] = {
+          location: loc,
+          product: prod,
+          batch: batch,
+          exp: shortExp, // Yaha hum direct short date save kar rahe hain
+          mrp: mrp,
+          qty: 0
+        };
       }
+      
+      // Agar item pehle se hai to sirf Quantity (qty) add kar denge
+      let itemQty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
+      groupedData[key].qty += itemQty;
+    });
+  }
+  
+  // 2. Object ko wapas Array me badalna
+  let aggregatedArray = Object.values(groupedData);
+  
+  // Excel Export ke liye global cache ko bhi update kar denge
+  // Isse Excel me bhi automatically merged aur short date wala data aayega
+  fullStockDataCache = aggregatedArray;
 
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Full Stock Report</h3>
-            <div style="display:flex; justify-content:space-between; margin-top:8px;">
-              <button onclick="downloadFullStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-              <button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
-            </div>
-            <table class="pdf-item-table" style="margin-top:16px; font-size: 0.8rem;">
-              <thead>
-                <tr>
-                  <th style="width: 5%;">Sr.No</th>
-                  <th>Product Name</th>
-                  <th>QA</th>
-                  <th>Main Warehouse</th>
-                  <th>Packing Area</th>
-                  <th>Near-Expiry</th>
-                  <th>Damaged</th>
-                  <th>Hold</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${tbody}
-              </tbody>
-            </table>
-          </div>
+  // 3. Table banane ka logic
+  let tbody = "";
+  if (aggregatedArray.length === 0) {
+    tbody = `<tr><td colspan="7" style="text-align:center;">No stock available</td></tr>`;
+  } else {
+    aggregatedArray.forEach((item, idx) => {
+      tbody += `<tr>
+        <td>${idx + 1}</td>
+        <td>${escapeHtml(item.location)}</td>
+        <td><b>${escapeHtml(item.product)}</b></td>
+        <td>${escapeHtml(item.batch)}</td>
+        <td>${escapeHtml(item.exp)}</td>
+        <td style="text-align:right; font-weight:bold; color:var(--primary);">${formatNumber(item.qty)}</td>
+        <td>${escapeHtml(item.mrp)}</td>
+      </tr>`;
+    });
+  }
+
+  document.getElementById("modal-container").innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+        <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Full Stock Report</h3>
+        <div style="display:flex; justify-content:space-between; margin-top:8px;">
+          <button onclick="downloadFullStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+          <button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
         </div>
-      `;
-    }
+        <table class="pdf-item-table" style="margin-top:16px; font-size: 0.8rem;">
+          <thead>
+            <tr>
+              <th style="width: 5%;">Sr.No</th>
+              <th>Location</th>
+              <th>Product Name</th>
+              <th>Batch No.</th>
+              <th>Expiry Date</th>
+              <th style="text-align:right;">Available Qty</th>
+              <th>MRP</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tbody}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
 
     function downloadFullStockExcel() {
       try {
@@ -3144,13 +3183,12 @@
           let item = fullStockDataCache[i];
           exportData.push({
             "Sr.No": i + 1,
+            "Location": item.location ? item.location.toString() : "N/A",
             "Product Name": item.product ? item.product.toString() : "N/A",
-            "QA": parseInt(item.qa) || 0,
-            "Main": parseInt(item.main) || 0,
-            "Packing Area": parseInt(item.packing) || 0,
-            "Near-Expiry": parseInt(item.expired) || 0,
-            "Damaged": parseInt(item.damaged) || 0,
-            "Hold": parseInt(item.hold) || 0
+            "Batch No.": item.batch ? item.batch.toString() : "N/A",
+            "Expiry Date": item.exp ? formatShortDate(item.exp.toString()) : "N/A",
+            "Available Qty": parseInt(item.qty) || 0,
+            "MRP": item.mrp ? item.mrp.toString() : "N/A"
           });
         }
         let ws = XLSX.utils.json_to_sheet(exportData);
