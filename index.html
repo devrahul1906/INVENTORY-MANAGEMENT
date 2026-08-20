@@ -348,6 +348,19 @@
       }
       updateLiveDateTime();
     };
+// --- AUTO-LOGOUT ON TAB CLOSE ---
+    window.addEventListener('beforeunload', function (e) {
+      let emp = localStorage.getItem("employee");
+      let sessionId = localStorage.getItem("sessionId");
+      if (emp) {
+        // Backend ko turant logout signal bhejna (keepalive: true ensures tab close hone par bhi request poori ho)
+        let url = `${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(emp)}&sessionId=${encodeURIComponent(sessionId || '')}`;
+        fetch(url, { keepalive: true }).catch(err => {});
+      }
+      // Local storage clear karna taaki dobara tab open karne par seedha dashboard na khule
+      localStorage.clear();
+      userScansCache = [];
+    });
 
     function loadScansFromLocalStorage() {
       const stored = localStorage.getItem("userScansCache");
