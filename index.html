@@ -329,7 +329,7 @@
         if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
         fetch(url).catch(e => {});
       }
-    }, 120000); // Send ping every 2 minutes
+    }, 120000); 
 
     window.onload = function () {
       loadScansFromLocalStorage();
@@ -338,7 +338,6 @@
       let sessionId = localStorage.getItem("sessionId");
       
       if (emp && wh) {
-        // INSTANT PING TO MARK USER ACTIVE IMMEDIATELY ON LOAD OR REFRESH
         let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
         if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
         fetch(url).catch(e => {});
@@ -736,8 +735,10 @@
       const userRole = localStorage.getItem("role") || "Standard";
       let actionButtons = "";
       const lowerWh = currentWh.trim().toLowerCase();
+      const roleLower = userRole.toLowerCase();
       
-      if (userRole.toLowerCase() === "view-only") {
+      // NEW ROLE LOGIC
+      if (roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
         actionButtons = `
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
@@ -746,7 +747,7 @@
             <p style="color:var(--text-muted); font-size: 0.9rem; margin: 0;">You have View-Only access. Operations disabled.</p>
           </div>
         `;
-      } else if (userRole.toLowerCase() === "admin") {
+      } else if (roleLower === "admin" || roleLower === "master user") {
         actionButtons = `
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
@@ -762,6 +763,7 @@
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
+        // STANDARD USERS LOGIC
         if (lowerWh === "qa (quality assurance)") {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
@@ -825,7 +827,7 @@
           </div>
 
           <div class="metrics-grid">
-            ${(userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only" || lowerWh === "qa (quality assurance)") 
+            ${(roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager") || lowerWh === "qa (quality assurance)") 
               ? `<div class="metric-card clickable" onclick="showTodayBillsDetails()" title="Click to view today's bills details">
                   <span>BILLS RECEIVED TODAY</span>
                   <h3 id="todayBillsVal">Loading...</h3>
@@ -1121,8 +1123,7 @@
                     <option value="KETOHAT 200 MG TAB.">KETOHAT 200 MG TAB.</option>
                     <option value="METROHAT 300 MG TAB">METROHAT 300 MG TAB</option>
                     <option value="ONCORAJ TAB">ONCORAJ TAB</option>
-                    <option value="PANTOHAT 40 TAB.">PANTOHAT 40 TAB.</option>
-                    <option value="PANTOHAT-D TAB.">PANTOHAT-D TAB.</option>
+                    <option value="PANTOHAT 40 TAB.">PANTOHAT-D TAB.</option>
                     <option value="RAJDOX-100 TAB">RAJDOX-100 TAB</option>
                     <option value="RAJDOX-200 TAB">RAJDOX-200 TAB</option>
                     <option value="RAJDOX-LB 300 TAB">RAJDOX-LB 300 TAB</option>
@@ -2935,7 +2936,10 @@
     function openStockReportModal() {
       const userRole = localStorage.getItem("role") || "Standard";
       const wh = localStorage.getItem("warehouse") || "";
-      if (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only") {
+      const roleLower = userRole.toLowerCase();
+
+      // NEW ROLE LOGIC FOR REPORT MODAL
+      if (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
         let currentWhBtn = wh === "All View" ? "" : `<button onclick="loadCurrentWarehouseReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">1. Current Warehouse Stock Report</button>`;
         let titleNum = wh === "All View" ? "1." : "2.";
         
@@ -3008,8 +3012,9 @@
       }
 
       const userRole = localStorage.getItem("role") || "Standard";
+      const roleLower = userRole.toLowerCase();
       let backBtnHtml = "";
-      if (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "view-only") {
+      if (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
          backBtnHtml = `<button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>`;
       } else {
          backBtnHtml = `<button onclick="closeModalAndResume()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-xmark"></i> Close</button>`;
@@ -3165,20 +3170,20 @@
       let sopTitle = "";
       let sopHtml = "";
 
-      if (userRole === "admin") {
-        sopTitle = "ADMIN USER SOP";
+      if (userRole === "admin" || userRole === "master user") {
+        sopTitle = "ADMIN / MASTER USER SOP";
         sopHtml = `
           <b>Access Level:</b> Unrestricted System Control & Global Oversight.<br>
           <b>Available Modules:</b> ALL operational features, modules, and system reports.<br><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-            <li style="margin-bottom: 8px;"><b>Global Operations:</b> Admins can execute any operation (Purchases, Transfers, PDF Parsing, Suspense Items, Holds) regardless of their designated warehouse.</li>
+            <li style="margin-bottom: 8px;"><b>Global Operations:</b> Admins & Master Users can execute any operation (Purchases, Transfers, PDF Parsing, Suspense Items, Holds) regardless of their designated warehouse.</li>
             <li style="margin-bottom: 8px;"><b>Active Users Status:</b> Admins possess an exclusive module to monitor real-time user activity (Active/Inactive statuses) and download comprehensive historical login session logs in Excel format.</li>
             <li style="margin-bottom: 8px;"><b>Full Stock Reporting:</b> In the Stock Report module, Admins are presented with a choice to either generate a localized 'Current Warehouse Report' or a highly detailed 'Full Stock Report' that consolidates inventory data across all existing warehouses concurrently.</li>
             <li style="margin-bottom: 8px;"><b>Bills Received Today:</b> Admins can view an aggregated, detailed table of all inward invoices logged on the current date.</li>
           </ul>
         `;
-      } else if (userRole === "view-only" || userRole === "view only") {
-        sopTitle = "VIEW-ONLY (MANAGEMENT) USER SOP";
+      } else if (userRole.includes("view-only") || userRole.includes("view only") || userRole.includes("manager")) {
+        sopTitle = "VIEW-ONLY (MANAGER) SOP";
         sopHtml = `
           <b>Access Level:</b> Executive Monitoring and Analytical Reporting.<br>
           <b>Available Modules:</b> Control Sample Room, Stock Report, Active Users, Stock Shortages, Bills Received Today.<br><br>
