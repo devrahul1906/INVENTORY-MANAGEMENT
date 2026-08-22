@@ -1225,8 +1225,8 @@
                   <input type="text" class="p_batch" placeholder="Enter Batch Number">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
-                  <div class="field-group"><label>Mfg Date</label><input type="text" class="p_mfg" placeholder="MM-YYYY"></div>
-                  <div class="field-group"><label>Exp Date</label><input type="text" class="p_exp" placeholder="MM-YYYY"></div>
+                  <div class="field-group"><label>Mfg Date</label><input type="text" class="p_mfg" placeholder="MM/YYYY"></div>
+                  <div class="field-group"><label>Exp Date</label><input type="text" class="p_exp" placeholder="MM/YYYY"></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
                   <div class="field-group"><label>MRP</label><input type="number" class="p_mrp" placeholder="MRP"></div>
@@ -2769,7 +2769,7 @@
                 </div>
                 <div class="field-group">
                   <label>Exp. Date</label>
-                  <input type="text" id="sr_exp" placeholder="MM/YY or YYYY-MM-DD" oninput="updateSuspenseStatus()">
+                  <input type="text" id="sr_exp" placeholder="MM/YY" oninput="updateSuspenseStatus()">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                   <div class="field-group">
@@ -3260,7 +3260,7 @@ function renderFullStockReport(data) {
                 <li><b>Category:</b> Select the appropriate item type from the dropdown (e.g., Tablets, Syrup).</li>
                 <li><b>Product Name:</b> Select the specific product from the dropdown.</li>
                 <li><b>Batch No:</b> Manually enter the batch number provided on the physical stock/Purchase Invoice.</li>
-                <li><b>Mfg. Date & Exp Date:</b> Enter dates in the required MM-YYYY format.</li>
+                <li><b>Mfg. Date & Exp Date:</b> Enter dates in the required MM/YYYY format.</li>
                 <li><b>MRP:</b> Enter the Maximum Retail Price.</li>
                 <li><b>Quantity:</b> Enter the total number of items. Note: If the category is "Tablets", the system will automatically multiply the entered quantity by 10.</li>
                 <li><b>Supplier Name:</b> Select the vendor from the dropdown list.</li>
@@ -3460,18 +3460,29 @@ function renderFullStockReport(data) {
           return;
         }
 
-        let rows = data.map(item => `
+let rows = data.map(item => {
+          // Date ko DD-MM-YY format me convert karne ka logic
+          let formattedDate = item.date;
+          let d = new Date(item.date);
+          if (!isNaN(d.getTime())) {
+            let dd = String(d.getDate()).padStart(2, '0');
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let yy = String(d.getFullYear()).slice(-2);
+            formattedDate = dd + "-" + mm + "-" + yy;
+          }
+
+          return `
           <tr id="pending_row_${item.rowIdx}">
             <td><b>${escapeHtml(item.product)}</b></td>
             <td>${escapeHtml(item.batch)}</td>
             <td>${escapeHtml(item.supplier)}</td>
-            <td>${escapeHtml(formatShortDate(item.date))}</td>
+            <td>${escapeHtml(formattedDate)}</td>
             <td style="text-align:center;">
                <input type="file" id="inline_coa_${item.rowIdx}" accept=".pdf, .jpg, .jpeg" style="display:none;" onchange="executeInlineCOAUpload(${item.rowIdx})">
                <button onclick="document.getElementById('inline_coa_${item.rowIdx}').click()" class="btn-indigo" style="padding: 6px 12px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-upload"></i> Upload COA</button>
             </td>
           </tr>
-        `).join("");
+        `}).join("");
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
