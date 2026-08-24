@@ -670,7 +670,7 @@
               <h3 style="color: var(--primary); text-align: center; font-size: 1.3rem;"><i class="fa-solid fa-lock"></i> Warehouse Sign In</h3>
               <div class="field-group">
                 <label for="employee">Employee ID / Username</label>
-                <input type="text" id="employee" placeholder="Enter Employee ID / Username">
+                <input type="text" id="employee" placeholder="Enter Employee ID / Username" onblur="fetchUserWarehouses()">
               </div>
               <div class="field-group">
                 <label for="password">Password</label>
@@ -682,14 +682,7 @@
               <div class="field-group">
                 <label for="warehouse">Warehouse</label>
                 <select id="warehouse">
-                  <option value="">-- Select Warehouse --</option>
-                  <option value="All View">All View (For Management Use Only)</option>
-                  <option value="QA (Quality Assurance)">QA (Quality Assurance)</option>
-                  <option value="Main Warehouse">Main Warehouse</option>
-                  <option value="Packing Area">Packing Area</option>
-                  <option value="Near-Expiry">Near-Expiry</option>
-                  <option value="Damaged">Damaged</option>
-                  <option value="Other Location">Other Location</option>
+                  <option value="">-- Enter Username to Load Warehouses --</option>
                 </select>
               </div>
               <button id="loginBtn" onclick="login()" style="margin-top: 8px;">Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
@@ -699,6 +692,40 @@
         ${getFooter()}
       `;
       updateLiveDateTime();
+    }
+
+    async function fetchUserWarehouses() {
+      let emp = document.getElementById("employee").value.trim();
+      let whSelect = document.getElementById("warehouse");
+      
+      if (!emp) {
+        whSelect.innerHTML = '<option value="">-- Enter Username to Load Warehouses --</option>';
+        return;
+      }
+      
+      whSelect.innerHTML = '<option value="">-- Loading Warehouses... --</option>';
+      
+      try {
+        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getUserWarehouses&employee=${encodeURIComponent(emp)}`);
+        let warehouses = await response.json();
+        
+        if (warehouses.length === 0) {
+          whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
+        } else {
+          let opts = '<option value="">-- Select Warehouse --</option>';
+          warehouses.forEach(wh => {
+            let displayText = wh === "All View" ? "All View (For Management Use Only)" : wh;
+            opts += `<option value="${escapeHtml(wh)}">${escapeHtml(displayText)}</option>`;
+          });
+          whSelect.innerHTML = opts;
+          
+          if (warehouses.length === 1) {
+             whSelect.value = warehouses[0];
+          }
+        }
+      } catch (e) {
+        whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
+      }
     }
 
     async function login() {
@@ -777,7 +804,7 @@
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
-        // STANDARD USERS LOGIC (Stock Shortages removed)
+        // STANDARD USERS LOGIC (Stock Shortages removed from standard roles)
         if (lowerWh === "qa (quality assurance)") {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
@@ -1712,7 +1739,7 @@
           <option value="Damaged">Damaged</option>
         `;
       } else if (currentWarehouse === 'Near-Expiry') {
-        // Feature 2 implementation: Only Packing Area available
+        // Sirf Packing Area dikhega Near-Expiry user ko
         warehouseToOptions = `
           <option value="Packing Area" selected>Packing Area</option>
         `;
@@ -3249,7 +3276,7 @@ function renderFullStockReport(data) {
         sopTitle = "QUALITY ASSURANCE (QA) USER SOP";
         sopHtml = `
           <b>Access Level:</b> Core Inventory Inward and Quality Assurance.<br>
-          <b>Available Modules:</b> New Purchase Entry, Internal Stock Transfer, Hold / Unhold Item, Stock Shortages, Stock Report & Bills Received Today.<br><br>
+          <b>Available Modules:</b> New Purchase Entry, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
           
           <b>A. New Purchase Entry (Inwarding Stock)</b><br>
           This module is used to record newly received inventory.<br>
@@ -3304,7 +3331,7 @@ function renderFullStockReport(data) {
         sopTitle = "PACKING AREA USER SOP";
         sopHtml = `
           <b>Access Level:</b> Dispatch Operations, Return Processing, and Automated Bill Document Parsing.<br>
-          <b>Available Modules:</b> Upload Dispatch Bill (PDF), Upload Dispatch Return (PDF), Upload Expiry/Damage Bill, Internal Stock Transfer, Sales Return-Suspense Item, Stock Shortages & Stock Report.<br><br>
+          <b>Available Modules:</b> Upload Dispatch Bill (PDF), Upload Dispatch Return (PDF), Upload Expiry/Damage Bill, Internal Stock Transfer, Sales Return-Suspense Item, & Stock Report.<br><br>
           
           <b>A. Upload Dispatch Bill (PDF) - Outward Dispatch</b><br>
           This module automates the deduction of stock based on digital dispatch invoices.<br>
@@ -3358,7 +3385,7 @@ function renderFullStockReport(data) {
         sopTitle = "MAIN WAREHOUSE USER SOP";
         sopHtml = `
           <b>Access Level:</b> Internal Routing and Bulk Stock Maintenance.<br>
-          <b>Available Modules:</b> Internal Stock Transfer, Stock Shortages, and Stock Report.<br><br>
+          <b>Available Modules:</b> Internal Stock Transfer, and Stock Report.<br><br>
 
           <b>A. Internal Stock Transfer</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
@@ -3372,14 +3399,13 @@ function renderFullStockReport(data) {
           <b>B. Reports</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
             <li style="margin-bottom: 4px;">Users can access the Stock Report to view the live inventory of the Main Warehouse and export it to Excel.</li>
-            <li style="margin-bottom: 4px;">Users can view the Stock Shortages report to identify items falling below the 1000-unit minimum threshold.</li>
           </ul>
         `;
       } else if (currentWh === "near-expiry") {
         sopTitle = "NEAR-EXPIRY USER SOP";
         sopHtml = `
           <b>Access Level:</b> Management of soon-to-expire inventory.<br>
-          <b>Available Modules:</b> Internal Stock Transfer, Stock Shortages, and Stock Report.<br><br>
+          <b>Available Modules:</b> Internal Stock Transfer, and Stock Report.<br><br>
 
           <b>A. Internal Stock Transfer</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
@@ -3399,7 +3425,7 @@ function renderFullStockReport(data) {
         sopTitle = "DAMAGED USER SOP";
         sopHtml = `
           <b>Access Level:</b> Segregation and control of physically damaged stock.<br>
-          <b>Available Modules:</b> Internal Stock Transfer, Stock Shortages, and Stock Report.<br><br>
+          <b>Available Modules:</b> Internal Stock Transfer, and Stock Report.<br><br>
 
           <b>A. Internal Stock Transfer</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
