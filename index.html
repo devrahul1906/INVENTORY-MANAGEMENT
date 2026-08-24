@@ -322,8 +322,8 @@
 
     // --- AUTO-PING (HEARTBEAT) FOR ACTIVE USERS & DURATIONS ---
     setInterval(() => {
-      let emp = localStorage.getItem("employee");
-      let sessionId = localStorage.getItem("sessionId");
+      let emp = sessionStorage.getItem("employee");
+      let sessionId = sessionStorage.getItem("sessionId");
       if (emp) {
         let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
         if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
@@ -332,10 +332,10 @@
     }, 120000); 
 
     window.onload = function () {
-      loadScansFromLocalStorage();
-      let emp = localStorage.getItem("employee");
-      let wh = localStorage.getItem("warehouse");
-      let sessionId = localStorage.getItem("sessionId");
+      loadScansFromsessionStorage();
+      let emp = sessionStorage.getItem("employee");
+      let wh = sessionStorage.getItem("warehouse");
+      let sessionId = sessionStorage.getItem("sessionId");
       
       if (emp && wh) {
         let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
@@ -350,25 +350,25 @@
     };
 // --- AUTO-LOGOUT ON TAB CLOSE ---
     window.addEventListener('beforeunload', function (e) {
-      let emp = localStorage.getItem("employee");
-      let sessionId = localStorage.getItem("sessionId");
+      let emp = sessionStorage.getItem("employee");
+      let sessionId = sessionStorage.getItem("sessionId");
       if (emp) {
         // Backend ko turant logout signal bhejna (keepalive: true ensures tab close hone par bhi request poori ho)
         let url = `${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(emp)}&sessionId=${encodeURIComponent(sessionId || '')}`;
         fetch(url, { keepalive: true }).catch(err => {});
       }
       // Local storage clear karna taaki dobara tab open karne par seedha dashboard na khule
-      localStorage.clear();
+      sessionStorage.clear();
       userScansCache = [];
     });
 
-    function loadScansFromLocalStorage() {
-      const stored = localStorage.getItem("userScansCache");
+    function loadScansFromsessionStorage() {
+      const stored = sessionStorage.getItem("userScansCache");
       if (stored) { try { userScansCache = JSON.parse(stored); } catch (e) { userScansCache = []; } }
     }
 
-    function saveScansToLocalStorage() {
-      localStorage.setItem("userScansCache", JSON.stringify(userScansCache));
+    function saveScansTosessionStorage() {
+      sessionStorage.setItem("userScansCache", JSON.stringify(userScansCache));
     }
 
     async function fetchUserScansFromCloud() {
@@ -377,7 +377,7 @@
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
           userScansCache = data;
-          saveScansToLocalStorage();
+          saveScansTosessionStorage();
         }
         return userScansCache;
       } catch (e) {
@@ -716,11 +716,11 @@
         const data = await response.json();
 
         if (data.status === "success") {
-          localStorage.setItem("employee", data.employeeName || emp);
-          localStorage.setItem("warehouse", wh);
-          localStorage.setItem("role", data.role || "Standard");
+          sessionStorage.setItem("employee", data.employeeName || emp);
+          sessionStorage.setItem("warehouse", wh);
+          sessionStorage.setItem("role", data.role || "Standard");
           if (data.sessionId) {
-            localStorage.setItem("sessionId", data.sessionId);
+            sessionStorage.setItem("sessionId", data.sessionId);
           }
           syncDataAndShowDashboard();
         } else {
@@ -744,8 +744,8 @@
     }
 
     function showDashboard() {
-      const currentWh = localStorage.getItem("warehouse") || "";
-      const userRole = localStorage.getItem("role") || "Standard";
+      const currentWh = sessionStorage.getItem("warehouse") || "";
+      const userRole = sessionStorage.getItem("role") || "Standard";
       let actionButtons = "";
       const lowerWh = currentWh.trim().toLowerCase();
       const roleLower = userRole.toLowerCase();
@@ -831,8 +831,8 @@
         <div class="card">
           <div class="user-info-bar">
             <div class="user-details">
-              <b><i class="fa-solid fa-user"></i> </b> ${escapeHtml(localStorage.getItem("employee"))} &nbsp; | &nbsp; 
-              <b><i class="fa-solid fa-industry"></i> </b> ${escapeHtml(localStorage.getItem("warehouse"))}
+              <b><i class="fa-solid fa-user"></i> </b> ${escapeHtml(sessionStorage.getItem("employee"))} &nbsp; | &nbsp; 
+              <b><i class="fa-solid fa-industry"></i> </b> ${escapeHtml(sessionStorage.getItem("warehouse"))}
             </div>
             <div>
               <button onclick="logout()" class="btn-danger" style="width: auto; padding: 6px 14px; font-size: 0.82rem; font-weight: 700;"><i class="fa-solid fa-power-off"></i> Log out</button>
@@ -1322,8 +1322,8 @@
       if (submitBtn) { submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Saving Data to Cloud..."; }
 
       let payload = {
-        action: "Purchase Entry", user: localStorage.getItem("employee") || "",
-        warehouse: localStorage.getItem("warehouse") || "", type: "Purchase Entry",
+        action: "Purchase Entry", user: sessionStorage.getItem("employee") || "",
+        warehouse: sessionStorage.getItem("warehouse") || "", type: "Purchase Entry",
         supplier: globalSupplier, items: itemsArray, scanTime: new Date().toLocaleString()
       };
 
@@ -1440,7 +1440,7 @@
 
         pendingExpiryDamagePayload = {
           action: "expiry_damage_dispatch",
-          user: localStorage.getItem("employee") || "",
+          user: sessionStorage.getItem("employee") || "",
           invoiceNo: invoiceNo,
           items: itemsFound
         };
@@ -1657,7 +1657,7 @@
       
       let payload = {
         action: "hold_action",
-        user: localStorage.getItem("employee") || "",
+        user: sessionStorage.getItem("employee") || "",
         holdType: type,
         product: prod,
         batch: batch,
@@ -1688,7 +1688,7 @@
     }
 
     function openTransferModal() {
-      let currentWarehouse = localStorage.getItem("warehouse") || "QA (Quality Assurance)";
+      let currentWarehouse = sessionStorage.getItem("warehouse") || "QA (Quality Assurance)";
       
       let qaRemarkHtml = "";
       let warehouseToOptions = "";
@@ -1850,7 +1850,7 @@
 
       pendingTransferPayload = {
         action: "transfer",
-        user: localStorage.getItem("employee") || "",
+        user: sessionStorage.getItem("employee") || "",
         product: prod,
         batch: batch,
         qty: qty,
@@ -2106,8 +2106,8 @@
 
         pendingDispatchPayload = {
           action: "dispatch",
-          user: localStorage.getItem("employee") || "",
-          warehouse: localStorage.getItem("warehouse") || "",
+          user: sessionStorage.getItem("employee") || "",
+          warehouse: sessionStorage.getItem("warehouse") || "",
           invoiceNo: invoiceNo,
           items: itemsFound
         };
@@ -2452,8 +2452,8 @@
 
         pendingDispatchReturnPayload = {
           action: "dispatch_return",
-          user: localStorage.getItem("employee") || "",
-          warehouse: localStorage.getItem("warehouse") || "",
+          user: sessionStorage.getItem("employee") || "",
+          warehouse: sessionStorage.getItem("warehouse") || "",
           invoiceNo: invoiceNo,
           items: itemsFound
         };
@@ -2858,8 +2858,8 @@
 
       let payload = {
         action: "sales_return_suspense",
-        user: localStorage.getItem("employee") || "",
-        warehouse: localStorage.getItem("warehouse") || "",
+        user: sessionStorage.getItem("employee") || "",
+        warehouse: sessionStorage.getItem("warehouse") || "",
         product: product,
         batch: batch,
         expDate: formattedExpDate,
@@ -2947,8 +2947,8 @@
     }
 
     function openStockReportModal() {
-      const userRole = localStorage.getItem("role") || "Standard";
-      const wh = localStorage.getItem("warehouse") || "";
+      const userRole = sessionStorage.getItem("role") || "Standard";
+      const wh = sessionStorage.getItem("warehouse") || "";
       const roleLower = userRole.toLowerCase();
 
       // NEW ROLE LOGIC FOR REPORT MODAL
@@ -2974,7 +2974,7 @@
     }
 
     async function loadCurrentWarehouseReport() {
-      let wh = localStorage.getItem("warehouse") || "";
+      let wh = sessionStorage.getItem("warehouse") || "";
       let lowerWh = wh.trim().toLowerCase();
       let actionUrl = "";
 
@@ -3024,7 +3024,7 @@
         });
       }
 
-      const userRole = localStorage.getItem("role") || "Standard";
+      const userRole = sessionStorage.getItem("role") || "Standard";
       const roleLower = userRole.toLowerCase();
       let backBtnHtml = "";
       if (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
@@ -3068,7 +3068,7 @@
       let ws = XLSX.utils.json_to_sheet(exportData);
       let wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Current Stock");
-      let whName = (localStorage.getItem("warehouse") || "Warehouse").replace(/[^a-zA-Z0-9]/g, '_');
+      let whName = (sessionStorage.getItem("warehouse") || "Warehouse").replace(/[^a-zA-Z0-9]/g, '_');
       XLSX.writeFile(wb, `Current_Stock_${whName}_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
@@ -3216,8 +3216,8 @@ function renderFullStockReport(data) {
     }
 
     function showUserManual() {
-      const userRole = (localStorage.getItem("role") || "Standard").toLowerCase();
-      const currentWh = (localStorage.getItem("warehouse") || "").toLowerCase();
+      const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
+      const currentWh = (sessionStorage.getItem("warehouse") || "").toLowerCase();
       let sopTitle = "";
       let sopHtml = "";
 
@@ -3552,12 +3552,12 @@ let rows = data.map(item => {
     }
 
     async function logout() { 
-      let user = localStorage.getItem("employee");
-      let sessionId = localStorage.getItem("sessionId");
+      let user = sessionStorage.getItem("employee");
+      let sessionId = sessionStorage.getItem("sessionId");
       if (user) {
         try { await fetch(`${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(user)}&sessionId=${encodeURIComponent(sessionId || '')}`); } catch(e){}
       }
-      localStorage.clear(); userScansCache = []; showLoginPage(); 
+      sessionStorage.clear(); userScansCache = []; showLoginPage(); 
     }
     
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
