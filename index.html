@@ -546,6 +546,7 @@
         if (!Array.isArray(list) || list.length === 0) {
           content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No bills received today.</p>`;
         } else {
+          list.sort((a, b) => a.product.localeCompare(b.product));
           let rows = list.map(item => `
             <tr>
               <td>${escapeHtml(item.user)}</td>
@@ -602,6 +603,7 @@
       if (!Array.isArray(list) || list.length === 0) {
         content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No products found.</p>`;
       } else {
+        list.sort((a, b) => a.product.localeCompare(b.product));
         let rows = list.map(item => `
           <tr>
             <td><b>${escapeHtml(item.product)}</b></td>
@@ -804,10 +806,12 @@
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
-        // STANDARD USERS LOGIC (Stock Shortages removed from standard roles)
+        // STANDARD USERS LOGIC
         if (lowerWh === "qa (quality assurance)") {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
+            <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
+            <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
@@ -821,10 +825,8 @@
         } else if (lowerWh === "packing area") {
           actionButtons = `
             <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
-            <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
             <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
-            <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else if (lowerWh === "near-expiry") {
@@ -1719,7 +1721,14 @@
         qaRemarkHtml = `
           <div class="field-group" style="margin-top: 8px;">
             <label>QA Remarks <span style="color:var(--danger);">*</span></label>
-            <input type="text" id="t_qa_remark" placeholder="Enter QA Remarks (Mandatory)">
+            <select id="t_qa_remark_select" onchange="toggleQaRemarkOther(this)">
+              <option value="">-- Select Remark --</option>
+              <option value="Approved for Packing">Approved for Packing</option>
+              <option value="Quality Checked - OK">Quality Checked - OK</option>
+              <option value="Non Repairable - Damaged">Non Repairable - Damaged</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" id="t_qa_remark_other" placeholder="Type your custom remark here..." style="display:none; margin-top:8px;">
           </div>
         `;
         warehouseToOptions = `
@@ -1809,6 +1818,16 @@
       loadTransferInventory(currentWarehouse);
     }
 
+    function toggleQaRemarkOther(selectElem) {
+      let otherInput = document.getElementById("t_qa_remark_other");
+      if (selectElem.value === "Other") {
+        otherInput.style.display = "block";
+      } else {
+        otherInput.style.display = "none";
+        otherInput.value = ""; 
+      }
+    }
+
     async function loadTransferInventory(currentWarehouse) {
       let submitBtn = document.querySelector("#modal-container button.btn-indigo");
       if (submitBtn) submitBtn.disabled = true;
@@ -1865,9 +1884,14 @@
       if (fromWh === toWh) { alert("From and To Warehouse cannot be the same!"); return; }
 
       if (fromWh === "QA (Quality Assurance)") {
-        let remarkInput = document.getElementById("t_qa_remark");
-        if (remarkInput) {
-          qaRemark = remarkInput.value.trim();
+        let remarkSelect = document.getElementById("t_qa_remark_select");
+        if (remarkSelect) {
+          if (remarkSelect.value === "Other") {
+            qaRemark = document.getElementById("t_qa_remark_other").value.trim();
+          } else {
+            qaRemark = remarkSelect.value.trim();
+          }
+          
           if (!qaRemark) {
             alert("QA Remarks is mandatory when transferring from QA (Quality Assurance)!");
             return;
@@ -3042,6 +3066,7 @@
       if (!data || data.length === 0) {
         tbody = `<tr><td colspan="3" style="text-align:center;">No stock available</td></tr>`;
       } else {
+        data.sort((a, b) => a.product.localeCompare(b.product)); // Added Product Name sorting
         data.forEach((item, idx) => {
           tbody += `<tr>
             <td>${idx + 1}</td>
@@ -3161,6 +3186,9 @@ function renderFullStockReport(data) {
   // 2. Object ko wapas Array me badalna
   let aggregatedArray = Object.values(groupedData);
   
+  // Sort by Product Name alphabetically
+  aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+  
   // Excel Export ke liye global cache ko bhi update kar denge
   // Isse Excel me bhi automatically merged aur short date wala data aayega
   fullStockDataCache = aggregatedArray;
@@ -3276,62 +3304,57 @@ function renderFullStockReport(data) {
         sopTitle = "QUALITY ASSURANCE (QA) USER SOP";
         sopHtml = `
           <b>Access Level:</b> Core Inventory Inward and Quality Assurance.<br>
-          <b>Available Modules:</b> New Purchase Entry, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
+          <b>Available Modules:</b> New Purchase Entry, Upload Dispatch Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
           
           <b>A. New Purchase Entry (Inwarding Stock)</b><br>
           This module is used to record newly received inventory.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the New Purchase Entry button.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Complete the mandatory fields in the entry form:
-              <ul style="padding-left: 20px; margin-top: 4px; margin-bottom: 4px;">
-                <li><b>Category:</b> Select the appropriate item type from the dropdown (e.g., Tablets, Syrup).</li>
-                <li><b>Product Name:</b> Select the specific product from the dropdown.</li>
-                <li><b>Batch No:</b> Manually enter the batch number provided on the physical stock/Purchase Invoice.</li>
-                <li><b>Mfg. Date & Exp Date:</b> Enter dates in the required MM/YYYY format.</li>
-                <li><b>MRP:</b> Enter the Maximum Retail Price.</li>
-                <li><b>Quantity:</b> Enter the total number of items. Note: If the category is "Tablets", the system will automatically multiply the entered quantity by 10.</li>
-                <li><b>Supplier Name:</b> Select the vendor from the dropdown list.</li>
-              </ul>
-            </li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Complete the mandatory fields in the entry form. Note: If the category is "Tablets", the system will automatically multiply the entered quantity by 10.</li>
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Submit Entry.</li>
           </ul>
-          <i style="color: var(--text-muted);"><b>System Logic:</b> The entry is recorded in the 'QA (Quality Assurance)' database sheet. If the product does not already exist in the Control Sample Room, a maximum of 1 unit will be automatically allocated to the Contol Sample Room, and the remaining quantity will be added to the QA inventory.</i><br><br>
+          <i style="color: var(--text-muted);"><b>System Logic:</b> The entry is recorded in the 'QA (Quality Assurance)' database sheet. If the product does not already exist in the Control Sample Room, a maximum of 1 unit will be automatically allocated to the Control Sample Room, and the remaining quantity will be added to the QA inventory.</i><br><br>
 
-          <b>B. Internal Stock Transfer</b><br>
+          <b>B. Upload Dispatch Return (PDF) - Processing Returns</b><br>
+          This module handles automated inwarding of stock returned from dispatch via Credit Notes or Return PDFs.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Dispatch Return (PDF) and select the return document.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed details (Batch, Expiry Date, Billed Qty, Free Qty, MRP) in the confirmation popup.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review the Status Indicator: The system calculates the days remaining until expiry. If the remaining time is 90 days or less, the status is flagged as Expired (red); otherwise, it is marked as Usable (green).</li>
+            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Confirm & Sync.</li>
+          </ul>
+          <i style="color: var(--text-muted);"><b>System Logic:</b> Usable items are automatically routed to 'QA (Quality Assurance)', while items nearing expiry (<= 90 days) are routed strictly to the 'Near-Expiry' warehouse.</i><br><br>
+
+          <b>C. Sales Return - Suspense Item (Manual Return)</b><br>
+          This form allows manual entry of returned goods lacking a proper digital invoice.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Sales Return-Suspense Item.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Input the Product Name, Batch No, and MRP.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Input the Exp. Date. The system will dynamically calculate and display the remaining days.</li>
+            <li style="margin-bottom: 4px;"><b>Step 4:</b> Enter the Billed Qty and Free Qty. Click Submit Entry.</li>
+          </ul><br>
+
+          <b>D. Internal Stock Transfer</b><br>
           This function routes verified stock from the QA department to other warehouse locations.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Internal Stock Transfer.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Fill in the transfer details:
-              <ul style="padding-left: 20px; margin-top: 4px; margin-bottom: 4px;">
-                <li><b>Product Name:</b> Select the product (the dropdown will only display products currently available in the QA warehouse).</li>
-                <li><b>Batch No:</b> Select the corresponding batch. The system will display the maximum available quantity for reference.</li>
-                <li><b>Qty:</b> Input the number of units to transfer.</li>
-                <li><b>QA Remarks:</b> This is a MANDATORY field for QA users. A valid remark must be entered to proceed.</li>
-                <li><b>Warehouse To:</b> Select the destination warehouse (e.g., Main Warehouse, Packing Area, Damaged).</li>
-              </ul>
-            </li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Transfer Stock to finalize the movement.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select the product and batch.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Input quantity and <b>QA Remarks</b> (MANDATORY).</li>
+            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Transfer Stock to finalize the movement.</li>
           </ul><br>
 
-          <b>C. Hold / Unhold Item</b><br>
+          <b>E. Hold / Unhold Item</b><br>
           This function temporarily blocks items from regular circulation or releases previously held items.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Hold / Unhold Item.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select the desired action:
-              <ul style="padding-left: 20px; margin-top: 4px; margin-bottom: 4px;">
-                <li><b>Hold Item:</b> Transfers stock from the active QA inventory to the 'Hold Items' database.</li>
-                <li><b>Unhold Item:</b> Releases stock from 'Hold Items' and routes it directly to the 'Main Warehouse'.</li>
-              </ul>
-            </li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Select the Product Name and Batch No, and enter the Quantity.</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Reason / Remarks: This is a mandatory field. Provide a detailed reason for holding or unholding the stock. Click Submit.</li>
+            <li style="margin-bottom: 4px;"><b>Hold Item:</b> Transfers stock from active QA to 'Hold Items'.</li>
+            <li style="margin-bottom: 4px;"><b>Unhold Item:</b> Releases stock from 'Hold Items' and routes it to the 'Main Warehouse'.</li>
           </ul>
         `;
       } else if (currentWh === "packing area") {
         sopTitle = "PACKING AREA USER SOP";
         sopHtml = `
-          <b>Access Level:</b> Dispatch Operations, Return Processing, and Automated Bill Document Parsing.<br>
-          <b>Available Modules:</b> Upload Dispatch Bill (PDF), Upload Dispatch Return (PDF), Upload Expiry/Damage Bill, Internal Stock Transfer, Sales Return-Suspense Item, & Stock Report.<br><br>
+          <b>Access Level:</b> Dispatch Operations, and Automated Bill Document Parsing.<br>
+          <b>Available Modules:</b> Upload Dispatch Bill (PDF), Upload Expiry/Damage Bill, Internal Stock Transfer, & Stock Report.<br><br>
           
           <b>A. Upload Dispatch Bill (PDF) - Outward Dispatch</b><br>
           This module automates the deduction of stock based on digital dispatch invoices.<br>
@@ -3349,17 +3372,7 @@ function renderFullStockReport(data) {
           </ul>
           <i style="color: var(--text-muted);"><b>System Logic:</b> The system validates the stock availability, deducts the specified quantities directly from the 'Packing Area' sheet, and logs the transaction in the 'Dispatch Inventory' sheet.</i><br><br>
 
-          <b>B. Upload Dispatch Return (PDF) - Processing Returns</b><br>
-          This module handles automated inwarding of stock returned from dispatch via Credit Notes or Return PDFs.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Dispatch Return (PDF) and select the return document.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed details (Batch, Expiry Date, Billed Qty, Free Qty, MRP) in the confirmation popup.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review the Status Indicator: The system calculates the days remaining until expiry. If the remaining time is 90 days or less, the status is flagged as Expired (red); otherwise, it is marked as Usable (green).</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Confirm & Sync.</li>
-          </ul>
-          <i style="color: var(--text-muted);"><b>System Logic:</b> Usable items are automatically routed back to the 'QA (Quality Assurance)' warehouse, while items nearing expiry (<= 90 days) are routed strictly to the 'Near-Expiry' warehouse.</i><br><br>
-
-          <b>C. Upload Expiry/Damage Bill</b><br>
+          <b>B. Upload Expiry/Damage Bill</b><br>
           This module processes invoices explicitly dealing with expired or damaged goods.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Expiry/Damage Bill and select the PDF.</li>
@@ -3368,17 +3381,7 @@ function renderFullStockReport(data) {
           </ul>
           <i style="color: var(--text-muted);"><b>System Logic:</b> The verified quantities are strictly deducted from the 'Near-Expiry' warehouse and logged in the Dispatch Inventory.</i><br><br>
 
-          <b>D. Sales Return - Suspense Item (Manual Return)</b><br>
-          This form allows manual entry of returned goods lacking a proper digital invoice.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Sales Return-Suspense Item.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Input the Product Name, Batch No, and MRP.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Input the Exp. Date. The system will dynamically calculate and display the remaining days on the screen.</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Enter the Billed Qty and Free Qty.</li>
-            <li style="margin-bottom: 4px;"><b>Step 5:</b> Click Submit Entry. The stock is automatically routed to QA or Near-Expiry based on the 90-day expiry threshold logic.</li>
-          </ul><br>
-
-          <b>E. Internal Stock Transfer</b><br>
+          <b>C. Internal Stock Transfer</b><br>
           <p style="margin-top: 4px;">Packing Area users can manually transfer available stock to the Near-Expiry or Damaged warehouses.</p>
         `;
       } else if (currentWh === "main warehouse") {
