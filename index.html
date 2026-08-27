@@ -2170,7 +2170,7 @@
       input.value = "";
     }
 
-    function openDispatchConfirmationModal() {
+function openDispatchConfirmationModal() {
       if (!pendingDispatchPayload) return;
       let itemsRows = pendingDispatchPayload.items.map((item, idx) => `
         <tr>
@@ -2192,20 +2192,25 @@
           <div class="modal-box" style="max-width: 650px;">
             <h3 style="color:var(--primary);"><i class="fa-solid fa-clipboard-check"></i> Verify Dispatch PDF</h3>
             <p style="font-size:0.9rem;"><b>Invoice No:</b> ${escapeHtml(pendingDispatchPayload.invoiceNo)}</p>
-            <table class="pdf-item-table" style="width:100%;">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Batch no</th>
-                  <th>Qty</th>
-                  <th>Free</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsRows}
-              </tbody>
-            </table>
-            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Are you sure to proceed? You can edit Batch, Qty & Free before submitting.</p>
+            
+            <!-- SCROLLER DIV ADDED HERE -->
+            <div style="max-height: 45vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 10px;">
+              <table class="pdf-item-table" style="width:100%; margin-top: 0; border: none;">
+                <thead style="position: sticky; top: 0; z-index: 1; background: var(--primary-light);">
+                  <tr>
+                    <th>Product</th>
+                    <th>Batch no</th>
+                    <th>Qty</th>
+                    <th>Free</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsRows}
+                </tbody>
+              </table>
+            </div>
+
+            <p style="font-weight:700; color:var(--danger); margin-top:10px;">Are you sure to proceed? You can edit Batch, Qty & Free before submitting.</p>
             <div style="display:flex; gap:12px; margin-top:8px;">
               <button onclick="confirmAndProceedDispatch()" class="btn-success">Yes, Proceed</button>
               <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
