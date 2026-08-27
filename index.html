@@ -794,7 +794,7 @@
         actionButtons = `
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Dispatch Bill (PDF)</button>
-          <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
+          <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Sales Return (PDF)</button>
           <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
           <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
@@ -810,7 +810,7 @@
         if (lowerWh === "qa (quality assurance)") {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
-            <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Dispatch Return (PDF)</button>
+            <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Sales Return (PDF)</button>
             <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
@@ -2496,7 +2496,7 @@
         });
 
         if (itemsFound.length === 0) {
-          alert("⚠️ Failed to extract items from Dispatch Return PDF. Please check the PDF layout.");
+          alert("⚠️ Failed to extract items from Sales Return PDF. Please check the PDF layout.");
           input.value = "";
           return;
         }
@@ -2565,7 +2565,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-box-archive"></i> Verify Dispatch Return PDF</h3>
+            <h3 style="color:var(--primary);"><i class="fa-solid fa-box-archive"></i> Verify Sales Return PDF</h3>
             <p style="font-size:0.9rem;"><b>Invoice / Credit Note No:</b> ${escapeHtml(pendingDispatchReturnPayload.invoiceNo)}</p>
             
             <table class="pdf-item-table" style="font-size:0.88rem; width:100%;">
@@ -3304,7 +3304,7 @@ function renderFullStockReport(data) {
         sopTitle = "QUALITY ASSURANCE (QA) USER SOP";
         sopHtml = `
           <b>Access Level:</b> Core Inventory Inward and Quality Assurance.<br>
-          <b>Available Modules:</b> New Purchase Entry, Upload Dispatch Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
+          <b>Available Modules:</b> New Purchase Entry, Upload Sales Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
           
           <b>A. New Purchase Entry (Inwarding Stock)</b><br>
           This module is used to record newly received inventory.<br>
@@ -3315,10 +3315,10 @@ function renderFullStockReport(data) {
           </ul>
           <i style="color: var(--text-muted);"><b>System Logic:</b> The entry is recorded in the 'QA (Quality Assurance)' database sheet. If the product does not already exist in the Control Sample Room, a maximum of 1 unit will be automatically allocated to the Control Sample Room, and the remaining quantity will be added to the QA inventory.</i><br><br>
 
-          <b>B. Upload Dispatch Return (PDF) - Processing Returns</b><br>
+          <b>B. Upload Sales Return (PDF) - Processing Returns</b><br>
           This module handles automated inwarding of stock returned from dispatch via Credit Notes or Return PDFs.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Dispatch Return (PDF) and select the return document.</li>
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Sales Return (PDF) and select the return document.</li>
             <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed details (Batch, Expiry Date, Billed Qty, Free Qty, MRP) in the confirmation popup.</li>
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Review the Status Indicator: The system calculates the days remaining until expiry. If the remaining time is 90 days or less, the status is flagged as Expired (red); otherwise, it is marked as Usable (green).</li>
             <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Confirm & Sync.</li>
