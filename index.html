@@ -924,19 +924,19 @@
       try {
         let res = await fetch(`${GOOGLE_SHEET_URL}?action=getAuditLogs`);
         let logs = await res.json();
+        
+        let currentUser = (sessionStorage.getItem("employee") || "").trim();
+        let roleLower = (sessionStorage.getItem("role") || "").toLowerCase().trim();
 
-        let currentUser = sessionStorage.getItem("employee") || "";
-        let roleLower = (sessionStorage.getItem("role") || "").toLowerCase();
-
-        logs = logs.filter(log => (log.role || "").toLowerCase() !== "admin");
+        logs = logs.filter(log => (log.role || "").toLowerCase().trim() !== "admin");
 
         if (roleLower !== "admin" && roleLower !== "master user" && !roleLower.includes("view")) {
-          logs = logs.filter(log => log.user === currentUser);
+          logs = logs.filter(log => (log.user || "").trim() === currentUser);
         }
 
         let tbody = "";
-        if(logs.length === 0) {
-            tbody = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">No historical audit logs found.</td></tr>`;
+        if(!logs || logs.length === 0) {
+            tbody = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No historical audit logs found.</td></tr>`;
         } else {
             tbody = logs.map(log => `
               <tr>
@@ -974,7 +974,8 @@
           </div>
         `;
       } catch (e) {
-        alert("Error loading Audit Logs: " + e.message);
+        console.error("Audit Log Error:", e);
+        alert("Error loading Audit Logs: Make sure you deployed the App Script as a 'New Version'.");
         closeModalAndResume();
       }
     }
