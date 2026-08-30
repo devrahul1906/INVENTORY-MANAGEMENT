@@ -237,8 +237,14 @@
     }
 
     .modal-box {
-      background: var(--card-bg); width: 100%; max-width: 600px; border-radius: var(--radius-md); padding: 32px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 20px; animation: modalPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border-color);
+      background: var(--card-bg); width: 100%; max-width: 600px; border-radius: var(--radius-md); padding: 32px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 20px; animation: modalPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--border-color); position: relative;
     }
+
+    /* TOP CLOSE BUTTON STYLES */
+    .modal-close-btn {
+      position: absolute; top: 16px; right: 16px; background: #f1f5f9; color: var(--danger); border: 1px solid var(--border-color); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: var(--shadow-sm); z-index: 50; transition: all 0.2s ease;
+    }
+    .modal-close-btn:hover { background: #fee2e2; color: #b91c1c; transform: scale(1.1); }
 
     .pdf-item-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
     .pdf-item-table th, .pdf-item-table td { border: 1px solid var(--border-color); padding: 12px 14px; text-align: left; }
@@ -277,6 +283,7 @@
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+    // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzFNgSlKJEXJlyvdgrdFfgTCsp5h5WysaUrl6OoMTq-3K_E5PmGBayKwHtJuw_6w7b-/exec";
 
     let userScansCache = [];
@@ -523,6 +530,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 850px; max-height: 85vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Today's Received Bills</h3>
             <div id="stockDetailsContent" style="margin-top: 12px; text-align:center;">
               <i class="fa-solid fa-spinner fa-spin"></i> Loading today's data...
@@ -586,6 +594,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 85vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);">${title}</h3>
             <div id="stockDetailsContent" style="margin-top: 4px;">${contentHtml}</div>
             <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
@@ -917,6 +926,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Audit Logs...</h3>
           </div>
         </div>
@@ -951,6 +961,7 @@
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs</h3>
               <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Showing access-based historical operations log.</p>
               
@@ -984,6 +995,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:#0284c7; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Active Users...</h3>
           </div>
         </div>
@@ -1008,6 +1020,7 @@
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:#0284c7;"><i class="fa-solid fa-users-viewfinder"></i> System User Status</h3>
               
               <div style="display: flex; gap: 20px; margin-top: 10px; margin-bottom: 15px;">
@@ -1106,6 +1119,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 90vh; overflow-y: auto; max-width: 800px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> New Purchase Entry</h3>
             
             <div class="field-group" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
@@ -1152,12 +1166,11 @@
 		<option value="Oral Powder">Oral Powder</option>
 		<option value="Oral Spray">Oral Spray</option>
 		<option value="Injection">Injection</option>
-		<option value="Syrup">Syrup</option>
-		<option value="Suspension">Suspension</option>
+		<option value="Syrup / Suspension">Syrup / Suspension</option>
 		<option value="Eye Drop">Eye Drop</option>
-		<option value="Cream">Cream</option>
+		<option value="Topical Cream / Ointment">Topical Cream / Ointment</option>
 		<option value="Topical Spray">Topical Spray</option>
-		<option value="Ointment">Ointment</option>
+		<option value="Topical Solution">Topical Solution</option>
 		<option value="Ear Drop">Ear Drop</option>
 		<option value="Ear Cleanser">Ear Cleanser</option>
 		<option value="Shampoo">Shampoo</option>
@@ -1549,6 +1562,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--danger);"><i class="fa-solid fa-file-circle-exclamation"></i> Verify Expiry/Damage PDF</h3>
             <p style="font-size:0.9rem;"><b>Invoice/Challan No:</b> ${escapeHtml(pendingExpiryDamagePayload.invoiceNo)}</p>
             <table class="pdf-item-table" style="width:100%;">
@@ -1622,6 +1636,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:#d97706;"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</h3>
             
             <div style="display:flex; gap:16px; margin-bottom:12px; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fde68a;">
@@ -1826,6 +1841,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:#4f46e5;"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</h3>
             
             <div class="field-group">
@@ -1970,6 +1986,7 @@
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:#4f46e5;"><i class="fa-solid fa-triangle-exclamation"></i> Confirm Stock Transfer</h3>
             <div style="background:#f8fafc; padding:16px; border-radius:8px; font-size:0.92rem; line-height:1.6; border: 1px solid var(--border-color);">
               <b>Product:</b> ${escapeHtml(prod.toUpperCase())}<br>
@@ -2246,6 +2263,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 650px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-clipboard-check"></i> Verify Dispatch PDF</h3>
             <p style="font-size:0.9rem;"><b>Invoice No:</b> ${escapeHtml(pendingDispatchPayload.invoiceNo)}</p>
             
@@ -2626,6 +2644,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-box-archive"></i> Verify Sales Return PDF</h3>
             <p style="font-size:0.9rem;"><b>Invoice / Credit Note No:</b> ${escapeHtml(pendingDispatchReturnPayload.invoiceNo)}</p>
             
@@ -2739,6 +2758,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 700px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--warning);"><i class="fa-solid fa-box-open"></i> Sales Return - Suspense Item</h3>
             
             <div style="display: flex; gap: 20px; align-items: stretch; margin-top: 10px;">
@@ -3072,6 +3092,7 @@ function openDispatchConfirmationModal() {
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Select Stock Report</h3>
               <div style="display:flex; flex-direction:column; gap:16px; margin-top:10px;">
                 ${currentWhBtn}
@@ -3101,6 +3122,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Report...</h3>
           </div>
         </div>
@@ -3151,6 +3173,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Current Warehouse Stock Report<br><small style="font-size:0.9rem; color:var(--text-muted);">${escapeHtml(wh)}</small></h3>
             <div style="display:flex; justify-content:space-between; margin-top:8px;">
               <button onclick="downloadCurrentStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
@@ -3191,6 +3214,7 @@ function openDispatchConfirmationModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Full Report...</h3>
           </div>
         </div>
@@ -3267,6 +3291,7 @@ function renderFullStockReport(data) {
   document.getElementById("modal-container").innerHTML = `
     <div class="modal-overlay">
       <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+        <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
         <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Full Stock Report</h3>
         <div style="display:flex; justify-content:space-between; margin-top:8px;">
           <button onclick="downloadFullStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
@@ -3415,6 +3440,7 @@ function renderFullStockReport(data) {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-height: 85vh; overflow-y: auto; max-width: 800px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
               <i class="fa-solid fa-book-open"></i> ${sopTitle}
             </h3>
@@ -3431,6 +3457,7 @@ function renderFullStockReport(data) {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color: #be123c;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Pending COAs...</h3>
           </div>
         </div>
@@ -3444,6 +3471,7 @@ function renderFullStockReport(data) {
           document.getElementById("modal-container").innerHTML = `
             <div class="modal-overlay">
               <div class="modal-box" style="max-width: 600px; text-align: center;">
+                <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
                 <h3 style="color:var(--success);"><i class="fa-solid fa-check-circle"></i> No Pending COAs!</h3>
                 <p>All products have their COAs uploaded successfully.</p>
                 <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 15px;">Close</button>
@@ -3478,6 +3506,7 @@ function renderFullStockReport(data) {
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color: #be123c;"><i class="fa-solid fa-file-circle-xmark"></i> Missing COA Approvals</h3>
               <p style="font-size:0.85rem; color:var(--text-muted);">Upload COA PDFs or Images for the following pending entries.</p>
               
