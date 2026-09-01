@@ -326,15 +326,26 @@
 
     setInterval(updateLiveDateTime, 1000);
 
-    setInterval(() => {
+setInterval(async () => {
       let emp = sessionStorage.getItem("employee");
       let sessionId = sessionStorage.getItem("sessionId");
       if (emp) {
         let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
         if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
-        fetch(url).catch(e => {});
+        
+        try {
+          let response = await fetch(url);
+          let data = await response.json();
+          
+          // Agar backend se force logout ka status aaye toh session clear kardo
+          if (data.status === "force_logged_out") {
+            alert("⚠️ Admin has logged you out.");
+            sessionStorage.clear();
+            showLoginPage();
+          }
+        } catch (e) {}
       }
-    }, 120000); 
+    }, 30000);
 
     window.onload = function () {
       loadScansFromLocalStorage();
@@ -991,7 +1002,7 @@
       }
     }
 
-    async function openActiveUsersModal() {
+async function openActiveUsersModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
@@ -1007,6 +1018,7 @@
         let activeCount = data.filter(u => u.status.includes("Active")).length;
         let inactiveCount = data.length - activeCount;
 
+        // YAHAN ROW MAPPING UPDATE HUI HAI (Action Button add kiya gaya hai)
         let rows = data.map((u, i) => `
           <tr>
             <td>${i+1}</td>
@@ -1014,12 +1026,15 @@
             <td>${escapeHtml(u.role)}</td>
             <td>${escapeHtml(u.warehouse)}</td>
             <td style="font-weight:bold; color: ${u.status.includes('Active') ? 'var(--success)' : 'var(--danger)'};">${escapeHtml(u.status)}</td>
+            <td style="text-align: center;">
+              ${u.status.includes('Active') ? `<button onclick="forceUserLogout('${escapeHtml(u.user)}')" class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-power-off"></i> Logout</button>` : '-'}
+            </td>
           </tr>
         `).join("");
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:#0284c7;"><i class="fa-solid fa-users-viewfinder"></i> System User Status</h3>
               
@@ -1042,6 +1057,7 @@
                     <th>Role</th>
                     <th>Assigned Warehouse</th>
                     <th>Status</th>
+                    <th style="text-align: center;">Action</th> <!-- YAHAN NAYA COLUMN ADD HUA HAI -->
                   </tr>
                 </thead>
                 <tbody>
@@ -1060,7 +1076,6 @@
         closeModalAndResume();
       }
     }
-
     async function downloadUserLogs() {
       try {
         let btn = document.querySelector("#modal-container .btn-emerald");
@@ -5733,6 +5748,28 @@ function renderFullStockReport(data) {
     }
     
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
+
+async function forceUserLogout(username) {
+      if (!confirm(`Are you sure you want to force logout ${username}?`)) return;
+      
+      try {
+        let response = await fetch(`${GOOGLE_SHEET_URL}?action=forceLogout&targetUser=${encodeURIComponent(username)}`);
+        let resData = await response.json();
+        
+        if(resData.status === "success") {
+          alert(`✅ Logout signal sent to ${username}`);
+          openActiveUsersModal(); 
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+
+    function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
+  </script>
+
+</body>
+</html>
   </script>
 
 </body>
