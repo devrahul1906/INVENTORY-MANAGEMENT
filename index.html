@@ -330,7 +330,8 @@ setInterval(async () => {
       let emp = sessionStorage.getItem("employee");
       let sessionId = sessionStorage.getItem("sessionId");
       if (emp) {
-        let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}`;
+        // yahan &t=${new Date().getTime()} add kiya hai taaki browser request ko cache na kare
+        let url = `${GOOGLE_SHEET_URL}?action=ping&user=${encodeURIComponent(emp)}&t=${new Date().getTime()}`;
         if (sessionId) url += `&sessionId=${encodeURIComponent(sessionId)}`;
         
         try {
@@ -339,9 +340,9 @@ setInterval(async () => {
           
           // Agar backend se force logout ka status aaye toh session clear kardo
           if (data.status === "force_logged_out") {
-            alert("⚠️ Admin has logged you out.");
+            alert("⚠️ Admin has forced you to log out.");
             sessionStorage.clear();
-            showLoginPage();
+            window.location.reload(); // showLoginPage() ki jagah reload karna zyada safe hai
           }
         } catch (e) {}
       }
