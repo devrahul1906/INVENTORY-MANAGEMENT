@@ -2847,7 +2847,7 @@ async function handleDispatchPdfUpload(input) {
 
             if (
                 serial < 1 ||
-                serial > 9999
+                serial > 200
             ) {
                 continue;
             }
@@ -2867,7 +2867,7 @@ async function handleDispatchPdfUpload(input) {
         // IGNORED ROWS
         // ========================================================
 
-        const ignoredWords = [
+const ignoredWords = [
 
             "CLASS TOTAL",
             "TOTAL",
@@ -2884,10 +2884,11 @@ async function handleDispatchPdfUpload(input) {
             "AUTHORIZED SIGNATORY",
             "AUTHORISED SIGNATORY",
             "IMPORT PURCHASE",
-            "MARG ERP"
-
+            "MARG ERP",
+            "HSN",         // <-- Added this
+            "FREIGHT",     // <-- Added this
+            "SUMMARY"      // <-- Added this
         ];
-
 
         const isIgnoredRow = text => {
 
