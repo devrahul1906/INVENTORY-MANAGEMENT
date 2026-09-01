@@ -2806,12 +2806,11 @@ async function handleDispatchPdfUpload(input) {
         }
 
 
-        // ========================================================
+// ========================================================
         // SERIAL DETECTION
         // ========================================================
 
         const serialRows = [];
-
 
         for (const row of rows) {
 
@@ -2820,48 +2819,38 @@ async function handleDispatchPdfUpload(input) {
                     .map(x => x.str)
                     .join(" ");
 
+            // Strict match: expects a dot after the number (e.g., "1.")
+            const strictMatch = rowText.match(/^\s*(\d{1,4})\s*[.)]/);
+            
+            // Loose match: any number at the start (e.g., "83 Aggarsain...")
+            const looseMatch = rowText.match(/^\s*(\d{1,4})\b/);
 
-            const serialMatch =
+            let serial = null;
 
-                rowText.match(
-                    /^\s*(\d{1,4})\s*[.)]/
-                )
+            if (strictMatch) {
+                serial = parseInt(strictMatch[1], 10);
+            } else if (looseMatch) {
+                // If no dot is found, VERIFY if the line actually contains a product
+                // This prevents addresses like "83 Aggarsain Nagar" from being caught
+                const rowAlphaNum = alphaNum(rowText);
+                const hasProduct = PRODUCT_MAP.some(p => rowAlphaNum.includes(p.base));
+                
+                if (hasProduct) {
+                    serial = parseInt(looseMatch[1], 10);
+                }
+            }
 
-                ||
-
-                rowText.match(
-                    /^\s*(\d{1,4})\b/
-                );
-
-
-            if (!serialMatch)
-                continue;
-
-
-            const serial =
-                parseInt(
-                    serialMatch[1],
-                    10
-                );
-
-
-            if (
-                serial < 1 ||
-                serial > 200
-            ) {
+            // Reject invalid serials or numbers over 200 (like HSN codes)
+            if (serial === null || serial < 1 || serial > 200) {
                 continue;
             }
 
-
             serialRows.push({
-
                 ...row,
                 serial
-
             });
 
         }
-
 
         // ========================================================
         // IGNORED ROWS
