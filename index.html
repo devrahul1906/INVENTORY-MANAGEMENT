@@ -2835,8 +2835,8 @@ async function handleDispatchPdfUpload(input) {
                     .map(x => x.str)
                     .join(" ");
 
-            // Strict match: expects a dot after the number (e.g., "1.")
-            const strictMatch = rowText.match(/^\s*(\d{1,4})\s*[.)]/);
+            // Strict match: expects a dot/bracket but NOT followed by another digit (prevents 77.00 being caught)
+            const strictMatch = rowText.match(/^\s*(\d{1,4})\s*[.)](?!\d)/);
             
             // Loose match: any number at the start (e.g., "83 Aggarsain...")
             const looseMatch = rowText.match(/^\s*(\d{1,4})\b/);
