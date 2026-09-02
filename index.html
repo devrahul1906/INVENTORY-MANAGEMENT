@@ -4502,245 +4502,228 @@ function openDispatchConfirmationModal() {
     }
 
 async function handleDispatchReturnPdfUpload(input) {
-      if (!input.files || input.files.length === 0) return;
-      let file = input.files[0];
-      
-      try {
-        let arrayBuffer = await file.arrayBuffer();
-        let pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let textItems = [];
+    if (!input.files || input.files.length === 0) return;
 
-        // 1. HARDCODED Master Product List (Exact match to dropdowns)
+    const file = input.files[0];
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({
+            data: arrayBuffer,
+            disableAutoFetch: false,
+            disableStream: false
+        }).promise;
+
         const PRODUCT_OPTIONS = [
-          "MR.INJECT(Disposable Syringe)", "(BLISTER PACK) WITHOUT NEEDLE 5ML", "AMOXYHAT-SL INJ. 300 MG", "AZITHROHAT SYRUP 30 ML", "AZITHROHAT-300 1*6", "CARDIOHAT TAB 1*30", "CARPOHAT-100 TAB 1*10", "CARPOHAT-50 TAB. 1*10", "CLINDAHAT 600MG TAB. 1*10", "CLINDAHAT SYRUP 60 ML", "CLINDAHAT-250 TAB 1*10", "CORTIHAT TOPICAL SPRAY 50 ML", "DIGEHAT PLUS SYRUP 100 ML", "ECTOCOVER PNC SHAMPOO 200 ML", "ECTOCOVER-F ANTI-TICKS POWDER 100 GM", "ECTOCOVER-PP ANTI-TICKS POWDER 100 GM", "ECTOCOVER-CM 24 SHAMPOO 200 ML", "ECTOCOVER-BPSS SHAMPOO 200ML", "ENROHAT-10 SYRUP 60 ML", "ENROHAT-50 SYRUP 60 ML", "ENROHAT-DT 200 1*10", "EPIHAT-KBR SYP 100 ml", "EPIHAT-LC SYP 100 ml", "HATCAL JUNIOR SYRUP 100 ML", "HATCAL-D TAB 1*30", "HATCAL-RENAL TAB 1*10", "HATCEF-100 DT TAB 1*10", "HATCEF-200 DT TAB 1*10", "HATCLAV 500 TAB 1*10", "HATCLAV DS D/S 30 ML", "HATCLAV-250 DRY SYP 30 ML", "HATCLAV-375 TAB 1*10", "HATCORT MP TAB 1*10", "HATCORT SYP 60 ml", "HATCORT-DS SYP 60 ML", "HATCURE INJ 100 ML", "HATDERM KC TOPICAL SPRAY 100 ML", "HATDERM MC TOPICAL SPRAY 100 ML", "HATDERM-KCN CREAM 30 GM", "HATDOTE INJ. 5 ml", "HATFUR OMEGA TAB 1*10", "HATFUR TAB 1*10", "HATFUR-Z TAB. 1*10", "HATGAT EYE DROP 5 ml", "HATGAT-P EYE DROP 5 ml", "HATGROW PLUS POWDER 200 GM", "HATJOINT PLUS TAB 1*10", "HATLAC PLUS TAB. 1*10", "HATLAC PLUS D/S 60 ML", "HATLAC SUSP 60 ml", "HATLAC TAB 1*10", "HATLEXIN-1000 TAB 1*10", "HATLEXIN-250 SYRUP 60 ML", "HATLEXIN-300 TAB. 1*10", "HATLEXIN-600 TAB. 1*10", "HATLOOSE SYP 100 ml", "HATMOIST EYE DROP 10 ml", "HATMOX EYE DROP 5 ml", "HATMOX-D EYE DROP 5 ml", "HATMOX-KT EYE DROP 5 ml", "HATODINE AQUA SOLUTION 60 ML", "HATODINE OINT 1*30 G", "HATODINE SCRUB TOPICAL SPRAY 100 ML", "HATODINE TOPICAL SPRAY 100 ML", "HATODINE-M OINT 1*30 G", "HATOTIC-ES EAR DROP 15 ML", "HATOTIC-GBC E/D 15 ML", "HATOTIC-NBC E/D 15ML", "HATPAN TAB 1*10", "HATPLAT SYRUP 100 ML", "HATPLAT TAB. (HERBAL) 1*10", "HATPOD 100 DT TAB 1*10", "HATPOD 200 DT TAB 1*10", "HATPOD-100 D/S 30 ml", "HATPOD-200 TAB 1*10", "HATPYRIN SYP 60 ML", "HATPYRIN TAB 1*10", "HATVET'S ALL IN ONE SHAMPOO 200 ML", "HATVET'S ANTI DANDRUFF SHAMPOO 200 ML", "HATVET'S ALL IN ONE SHAMPOO 30 ML", "HATVET'S DRY FOAM SHAMPOO 150 ML", "HATVET'S HATGROOM POWDER 100 GM", "HATVIT-A TAB 1*10", "VITnMIN-H TAB 1*10", "HATWORM KITTY TAB 1*1", "HATWORM PLUS TAB. 1*2", "HATZAPINE TAB 1*10", "HATZINE-25 1*10", "HATZINE-50 1*10", "HEPARAJ ADVANCE TAB 1*10", "HEPARAJ JUNIOR SYRUP 100 ML", "HEPARAJ PLUS TAB. 1*10", "HEPARAJ TAB 1*10", "IMMUNOHAT SYP 100 ML", "INFLAHAT-TBR TAB 1*10", "ITRARAJ SYP 60 ml", "ITRARAJ-100MG TAB 1*10", "IVERRAJ-10MG TAB. 1*10", "IVERRAJ-3MG TAB. 1*10", "IVERRAJ-DT 16 TAB 1*10", "KETOHAT 200 MG TAB. 1*10", "METROHAT 300 MG TAB 1*10", "METROHAT SYP 60 ml", "NASOVET NASAL DROP 10 ml", "ONDAHAT ORAL SPRAY 20 ML", "ONDAHAT ORAL SPRAY 30ML", "OPTHORAJ-DT EYE DROP 5 ml", "OTIHAT TeN EAR CLEANSER 50 ML", "OTIHAT-EC 60 ML", "PANTOHAT 40 TAB. 1*10", "PANTOHAT-D TAB. 1*10", "PANTOHAT-I.V. INJ. 10ML", "PULMOHAT SYRUP 100 ML", "RAJCPM SYP 60 ml", "RAJDOX 100 INJ. 100 MG", "RAJDOX 200 INJ. 200 MG", "RAJDOX SUSP 60 ml", "RAJDOX-100 TAB 1*10", "RAJDOX-200 TAB 1*10", "RAJDOX-LB 100 1*10", "RAJDOX-LB 200 1*10", "RAJDOX-LB 300 TAB 1*10", "RAJDROXIL-500 DT TAB 1*10", "RAJDROXIL-250 TAB 1*10", "RAJDROXIL-600 DT TAB 1*10", "RAJFAN TAB 1*3", "RAJFAN-50 SYRUP 60 ML", "RAJMET SYP 60 ml", "RAJMET-DP SYRUP 60 ML", "RAJPARA SUSP 60 ml", "RAJPARA TAB 1*10", "RANTIRAJ SYP 100 ml", "RANTIRAJ TAB 1*10", "RENALRAJ SUSP 170 ml", "RENOHAT PLUS TABLET 1*30", "RENOHAT-H SYRUP 100 ML", "SCABHAT OINTMENT 30 GM", "TERBIRAJ 250 TAB 1*10", "TERBIRAJ 500 TAB 1*10", "TORSOHAT 7.5 TAB 1*10", "TRAMAHAT 100 DT TAB 1*10", "TRAMAHAT 50 DT TAB 1*10", "VETAXONE-SL INJ. 750 MG", "VETAXONE-TAZO INJ. 562.5", "VETTAX-SL INJ. 750 MG"
+            "MR.INJECT(Disposable Syringe)", "(BLISTER PACK) WITHOUT NEEDLE 5ML", "AMOXYHAT-SL INJ. 300 MG", "AZITHROHAT SYRUP 30 ML", "AZITHROHAT-300 1*6", "CARDIOHAT TAB 1*30", "CARPOHAT-100 TAB 1*10", "CARPOHAT-50 TAB. 1*10", "CLINDAHAT 600MG TAB. 1*10", "CLINDAHAT SYRUP 60 ML", "CLINDAHAT-250 TAB 1*10", "CORTIHAT TOPICAL SPRAY 50 ML", "DIGEHAT PLUS SYRUP 100 ML", "ECTOCOVER PNC SHAMPOO 200 ML", "ECTOCOVER-F ANTI-TICKS POWDER 100 GM", "ECTOCOVER-PP ANTI-TICKS POWDER 100 GM", "ECTOCOVER-CM 24 SHAMPOO 200 ML", "ECTOCOVER-BPSS SHAMPOO 200ML", "ENROHAT-10 SYRUP 60 ML", "ENROHAT-50 SYRUP 60 ML", "ENROHAT-DT 200 1*10", "EPIHAT-KBR SYP 100 ml", "EPIHAT-LC SYP 100 ml", "HATCAL JUNIOR SYRUP 100 ML", "HATCAL-D TAB 1*30", "HATCAL-RENAL TAB 1*10", "HATCEF-100 DT TAB 1*10", "HATCEF-200 DT TAB 1*10", "HATCLAV 500 TAB 1*10", "HATCLAV DS D/S 30 ML", "HATCLAV-250 DRY SYP 30 ML", "HATCLAV-375 TAB 1*10", "HATCORT MP TAB 1*10", "HATCORT SYP 60 ml", "HATCORT-DS SYP 60 ML", "HATCURE INJ 100 ML", "HATDERM KC TOPICAL SPRAY 100 ML", "HATDERM MC TOPICAL SPRAY 100 ML", "HATDERM-KCN CREAM 30 GM", "HATDOTE INJ. 5 ml", "HATFUR OMEGA TAB 1*10", "HATFUR TAB 1*10", "HATFUR-Z TAB. 1*10", "HATGAT EYE DROP 5 ml", "HATGAT-P EYE DROP 5 ml", "HATGROW PLUS POWDER 200 GM", "HATJOINT PLUS TAB 1*10", "HATLAC PLUS TAB. 1*10", "HATLAC PLUS D/S 60 ML", "HATLAC SUSP 60 ml", "HATLAC TAB 1*10", "HATLEXIN-1000 TAB 1*10", "HATLEXIN-250 SYRUP 60 ML", "HATLEXIN-300 TAB. 1*10", "HATLEXIN-600 TAB. 1*10", "HATLOOSE SYP 100 ml", "HATMOIST EYE DROP 10 ml", "HATMOX EYE DROP 5 ml", "HATMOX-D EYE DROP 5 ml", "HATMOX-KT EYE DROP 5 ml", "HATODINE AQUA SOLUTION 60 ML", "HATODINE OINT 1*30 G", "HATODINE SCRUB TOPICAL SPRAY 100 ML", "HATODINE TOPICAL SPRAY 100 ML", "HATODINE-M OINT 1*30 G", "HATOTIC-ES EAR DROP 15 ML", "HATOTIC-GBC E/D 15 ML", "HATOTIC-NBC E/D 15ML", "HATPAN TAB 1*10", "HATPLAT SYRUP 100 ML", "HATPLAT TAB. (HERBAL) 1*10", "HATPOD 100 DT TAB 1*10", "HATPOD 200 DT TAB 1*10", "HATPOD-100 D/S 30 ml", "HATPOD-200 TAB 1*10", "HATPYRIN SYP 60 ML", "HATPYRIN TAB 1*10", "HATVET'S ALL IN ONE SHAMPOO 200 ML", "HATVET'S ANTI DANDRUFF SHAMPOO 200 ML", "HATVET'S ALL IN ONE SHAMPOO 30 ML", "HATVET'S DRY FOAM SHAMPOO 150 ML", "HATVET'S HATGROOM POWDER 100 GM", "HATVIT-A TAB 1*10", "VITnMIN-H TAB 1*10", "HATWORM KITTY TAB 1*1", "HATWORM PLUS TAB. 1*2", "HATZAPINE TAB 1*10", "HATZINE-25 1*10", "HATZINE-50 1*10", "HEPARAJ ADVANCE TAB 1*10", "HEPARAJ JUNIOR SYRUP 100 ML", "HEPARAJ PLUS TAB. 1*10", "HEPARAJ TAB 1*10", "IMMUNOHAT SYP 100 ML", "INFLAHAT-TBR TAB 1*10", "ITRARAJ SYP 60 ml", "ITRARAJ-100MG TAB 1*10", "IVERRAJ-10MG TAB. 1*10", "IVERRAJ-3MG TAB. 1*10", "IVERRAJ-DT 16 TAB 1*10", "KETOHAT 200 MG TAB. 1*10", "METROHAT 300 MG TAB 1*10", "METROHAT SYP 60 ml", "NASOVET NASAL DROP 10 ml", "ONDAHAT ORAL SPRAY 20 ML", "ONDAHAT ORAL SPRAY 30ML", "OPTHORAJ-DT EYE DROP 5 ml", "OTIHAT TeN EAR CLEANSER 50 ML", "OTIHAT-EC 60 ML", "PANTOHAT 40 TAB. 1*10", "PANTOHAT-D TAB. 1*10", "PANTOHAT-I.V. INJ. 10ML", "PULMOHAT SYRUP 100 ML", "RAJCPM SYP 60 ml", "RAJDOX 100 INJ. 100 MG", "RAJDOX 200 INJ. 200 MG", "RAJDOX SUSP 60 ml", "RAJDOX-100 TAB 1*10", "RAJDOX-200 TAB 1*10", "RAJDOX-LB 100 1*10", "RAJDOX-LB 200 1*10", "RAJDOX-LB 300 TAB 1*10", "RAJDROXIL-500 DT TAB 1*10", "RAJDROXIL-250 TAB 1*10", "RAJDROXIL-600 DT TAB 1*10", "RAJFAN TAB 1*3", "RAJFAN-50 SYRUP 60 ML", "RAJMET SYP 60 ml", "RAJMET-DP SYRUP 60 ML", "RAJPARA SUSP 60 ml", "RAJPARA TAB 1*10", "RANTIRAJ SYP 100 ml", "RANTIRAJ TAB 1*10", "RENALRAJ SUSP 170 ml", "RENOHAT PLUS TABLET 1*30", "RENOHAT-H SYRUP 100 ML", "SCABHAT OINTMENT 30 GM", "TERBIRAJ 250 TAB 1*10", "TERBIRAJ 500 TAB 1*10", "TORSOHAT 7.5 TAB 1*10", "TRAMAHAT 100 DT TAB 1*10", "TRAMAHAT 50 DT TAB 1*10", "VETAXONE-SL INJ. 750 MG", "VETAXONE-TAZO INJ. 562.5", "VETTAX-SL INJ. 750 MG"
         ];
 
-        // 2. Pure Alphanumeric Mapping (Keeps 'SYRUP', 'TAB', 'ML' intact for accurate differentiation)
-        const PRODUCT_MAP = PRODUCT_OPTIONS.map(opt => {
-            let base = opt.toUpperCase();
-            // Optional specific typo corrections
-            base = base.replace(/VITNMIN/g, "VITAMIN");
-            base = base.replace(/HATCAL-D/g, "HATCALD");
-            // Strip ALL non-alphanumeric chars
-            base = base.replace(/[^A-Z0-9]/g, '');
-            return { full: opt, base: base };
-        }).sort((a, b) => b.base.length - a.base.length);
+        const normalize = value => String(value || "").toUpperCase().replace(/₹/g, "").replace(/[‐-‒–—]/g, "-").replace(/\s+/g, " ").trim();
+        const alphaNum = value => normalize(value).replace(/[^A-Z0-9]/g, "");
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-          let page = await pdf.getPage(i);
-          let textContent = await page.getTextContent();
-          
-          textContent.items.forEach(item => {
-            let parts = item.str.split(/\r?\n/);
-            parts.forEach((p, idx) => {
-               if(p.trim()) {
-                 textItems.push({ str: p.trim(), x: item.transform[4], y: item.transform[5] - (idx * 10), page: i });
-               }
+        const PRODUCT_MAP = PRODUCT_OPTIONS.map(name => ({
+            full: name, norm: normalize(name), base: alphaNum(name)
+        })).sort((a, b) => b.base.length - a.base.length);
+
+        const isNumber = value => /^[+-]?\d+(?:,\d{3})*(?:\.\d+)?$/.test(String(value || "").trim());
+        const numberValue = value => isNumber(value) ? Number(String(value).replace(/,/g, "").trim()) : null;
+        const isDateLike = value => /^\d{1,2}[\/-]\d{2,4}$/.test(String(value || "").trim());
+        const distance = (a, b) => (a === null || b === null) ? 99999 : Math.abs(a - b);
+
+        const pages = {};
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const page = await pdf.getPage(pageNo);
+            const content = await page.getTextContent();
+            pages[pageNo] = content.items.map((item, index) => ({
+                str: String(item.str || "").trim(),
+                x: Number(item.transform?.[4] || 0),
+                y: Number(item.transform?.[5] || 0),
+                index, page: pageNo
+            })).filter(item => item.str);
+        }
+
+        let allText = Object.values(pages).flat().map(x => x.str).join(" ");
+        let invoiceMatch = allText.match(/Invoice\s*No\.?\s*[:\-]?\s*([A-Z0-9\-]+)/i) || allText.match(/CN[0-9]+/i);
+        const invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "RET-" + Math.floor(Math.random() * 10000);
+
+        const pageHeaders = {};
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            pageHeaders[pageNo] = { serial: null, qty: null, free: null, batch: null, exp: null, mrp: null };
+            for (const item of pages[pageNo]) {
+                const t = normalize(item.str).replace(/\s+/g, "");
+                if (t === "SN." || t === "SN" || t === "S.NO." || t === "SNO.") pageHeaders[pageNo].serial = item.x;
+                if (t === "QTY" || t === "QTY.") pageHeaders[pageNo].qty = item.x;
+                if (t === "FREE" || t === "FREE." || t === "FREE..") pageHeaders[pageNo].free = item.x;
+                if (t === "BATCH" || t === "BATCHNO" || t === "BATCHNO." || t === "BATCHNO:") pageHeaders[pageNo].batch = item.x;
+                if (t === "EXP" || t === "EXP.") pageHeaders[pageNo].exp = item.x;
+                if (t === "M.R.P" || t === "MRP" || t === "M.R.P.") pageHeaders[pageNo].mrp = item.x;
+            }
+        }
+
+        let previousHeaders = { serial: null, qty: null, free: null, batch: null, exp: null, mrp: null };
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            Object.keys(pageHeaders[pageNo]).forEach(key => {
+                if (pageHeaders[pageNo][key] === null) pageHeaders[pageNo][key] = previousHeaders[key];
+                else previousHeaders[key] = pageHeaders[pageNo][key];
             });
-          });
         }
 
-        let fullText = textItems.map(item => item.str).join(" ");
-        let invoiceMatch = fullText.match(/Invoice\s*No\.?\s*([A-Z0-9\-]+)/i) || fullText.match(/CN[0-9]+/i);
-        let invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "RET-" + Math.floor(Math.random() * 10000);
-
-        // 3. Track strict column coordinates PER PAGE
-        let pageHeaders = {};
-        for(let i=1; i<=pdf.numPages; i++) pageHeaders[i] = { qty: null, free: null, batch: null, exp: null, mrp: null };
-        
-        textItems.forEach(item => {
-          let t = item.str.toUpperCase().replace(/\s+/g, '');
-          if (t === "QTY" || t === "QTY.") pageHeaders[item.page].qty = item.x;
-          if (t === "FREE" || t === "FREE." || t === "FREE..") pageHeaders[item.page].free = item.x;
-          if (t === "BATCHNO." || t === "BATCHNO" || t === "BATCH" || t === "BATCH NO.") pageHeaders[item.page].batch = item.x;
-          if (t === "EXP" || t === "EXP.") pageHeaders[item.page].exp = item.x;
-          if (t === "M.R.P" || t === "MRP" || t === "M.R.P.") pageHeaders[item.page].mrp = item.x;
-        });
-
-        // Inherit headers from previous page if missing
-        let lastQty = null, lastFree = null, lastBatch = null, lastExp = null, lastMrp = null;
-        for(let i=1; i<=pdf.numPages; i++) {
-            if (pageHeaders[i].qty !== null) lastQty = pageHeaders[i].qty; else pageHeaders[i].qty = lastQty;
-            if (pageHeaders[i].free !== null) lastFree = pageHeaders[i].free; else pageHeaders[i].free = lastFree;
-            if (pageHeaders[i].batch !== null) lastBatch = pageHeaders[i].batch; else pageHeaders[i].batch = lastBatch;
-            if (pageHeaders[i].exp !== null) lastExp = pageHeaders[i].exp; else pageHeaders[i].exp = lastExp;
-            if (pageHeaders[i].mrp !== null) lastMrp = pageHeaders[i].mrp; else pageHeaders[i].mrp = lastMrp;
+        const rows = [];
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const sorted = [...pages[pageNo]].sort((a, b) => Math.abs(a.y - b.y) < 2 ? a.x - b.x : b.y - a.y);
+            const pageRows = [];
+            for (const item of sorted) {
+                let row = pageRows.find(r => Math.abs(r.y - item.y) <= 2.8);
+                if (!row) { row = { page: pageNo, y: item.y, items: [] }; pageRows.push(row); }
+                row.items.push(item);
+            }
+            pageRows.sort((a, b) => b.y - a.y);
+            rows.push(...pageRows);
         }
 
-        let rowsMap = {};
-        textItems.forEach(item => {
-          let yKey = `${item.page}_${Math.round(item.y / 4) * 4}`; 
-          if (!rowsMap[yKey]) rowsMap[yKey] = [];
-          rowsMap[yKey].push(item);
-        });
+        const serialRows = [];
+        for (const row of rows) {
+            const rowText = row.items.map(x => x.str).join(" ");
+            const strictMatch = rowText.match(/^\s*(\d{1,4})\s*[.)](?!\d)/);
+            const looseMatch = rowText.match(/^\s*(\d{1,4})\b/);
+            let serial = null;
+
+            if (strictMatch) serial = parseInt(strictMatch[1], 10);
+            else if (looseMatch) {
+                const rowAlphaNum = alphaNum(rowText);
+                if (PRODUCT_MAP.some(p => rowAlphaNum.includes(p.base))) serial = parseInt(looseMatch[1], 10);
+            }
+
+            if (serial !== null && serial >= 1 && serial <= 200) {
+                serialRows.push({ ...row, serial });
+            }
+        }
+
+        const ignoredWords = ["CLASS TOTAL", "TOTAL", "GST", "IGST", "TERMS", "GRAND TOTAL", "TAXABLE AMT", "DIS AMT", "PAYBLE", "SUMMARY"];
+        const isIgnoredRow = text => ignoredWords.some(word => normalize(text).includes(word));
+
+        function findProduct(rowItems) {
+            const combined = rowItems.map(x => x.str).join(" ");
+            const combinedBase = alphaNum(combined);
+            for (const p of PRODUCT_MAP) { if (combinedBase.includes(p.base)) return { product: p.full, confidence: 1 }; }
+            
+            const tokens = normalize(combined).split(/\s+/).filter(Boolean);
+            let best = null;
+            for (const p of PRODUCT_MAP) {
+                const pTokens = p.norm.split(/\s+/);
+                let matched = 0;
+                for (const token of pTokens) {
+                    if (token.length >= 3 && tokens.some(t => t === token || t.includes(token) || token.includes(t))) matched++;
+                }
+                const score = matched / Math.max(pTokens.length, 1);
+                if (score >= 0.65 && (!best || score > best.score)) best = { product: p.full, confidence: score };
+            }
+            return best;
+        }
 
         let itemsFound = [];
-        let sortedYKeys = Object.keys(rowsMap).sort((a, b) => {
-            let [pA, yA] = a.split('_').map(Number);
-            let [pB, yB] = b.split('_').map(Number);
-            if(pA !== pB) return pA - pB;
-            return yB - yA;
-        });
-
         let currentDate = new Date();
 
-        sortedYKeys.forEach(yKey => {
-          let pageNum = parseInt(yKey.split('_')[0], 10);
-          let cols = pageHeaders[pageNum];
-          
-          let rowElements = rowsMap[yKey].sort((a, b) => a.x - b.x);
-          
-          // Pure alphanumeric string for PERFECT product differentiation
-          let rowAlphaNum = rowElements.map(el => el.str).join("").toUpperCase().replace(/[^A-Z0-9]/g, '');
+        for (const row of serialRows) {
+            const rowText = row.items.map(x => x.str).join(" ");
+            if (isIgnoredRow(rowText)) continue;
 
-          // Ignore header/footer rows
-          if (/(EMAIL|INVOICE|DUEDATE|EWAY|PARTYNAME|DELIVERYAT|TOTAL|GST|TERMS|IFSC|DISCOUNT|GMAILCOM|PHONE|DLNO|GSTIN|BANKDETAILS|GRANDTOTAL|TAXABLEAMT)/i.test(rowAlphaNum)) {
-            return;
-          }
+            const headers = pageHeaders[row.page];
+            const productResult = findProduct(row.items);
 
-          let matchedProduct = null;
-          for (let p of PRODUCT_MAP) {
-            if (rowAlphaNum.includes(p.base)) {
-                matchedProduct = p.full; 
-                break;
-            }
-          }
+            if (!productResult) continue;
 
-          if (matchedProduct) {
+            const numeric = row.items.map(item => ({ ...item, value: numberValue(item.str) })).filter(item => item.value !== null);
+
             let billedQty = 0, freeQty = 0;
-            let batchToken = "", expToken = "", mrpToken = "0.00";
-            let foundQty = false, foundFree = false, foundMrp = false;
+            let qtyFreeCandidates = numeric.filter(item => (headers.qty === null || item.x >= headers.qty - 10) && (headers.batch === null || item.x < headers.batch - 10)).sort((a, b) => a.x - b.x);
 
-            // 4. Strict Coordinate Extraction (Prevents grabbing '1' from '1*10' pack sizes)
-            rowElements.forEach(el => {
-                let str = el.str.trim();
-                if (!str) return;
-                
-                let isNum = /^\d+$/.test(str.replace(/,/g, ''));
-                let numVal = parseInt(str.replace(/,/g, ''), 10);
-                
-                // Qty
-                if (cols.qty !== null && Math.abs(el.x - cols.qty) < 25 && isNum) {
-                    billedQty = numVal;
-                    foundQty = true;
-                }
-                // Free (Removed overly aggressive fallback)
-                if (cols.free !== null && Math.abs(el.x - cols.free) < 25 && isNum) {
-                    freeQty = numVal;
-                    foundFree = true;
-                }
-                // Batch
-                if (cols.batch !== null && Math.abs(el.x - cols.batch) < 45) {
-                    if (!/^\d{1,2}\/\d{2,4}$/.test(str) && str.length >= 3 && str !== "0.00" && !/^\d+\.\d{2}$/.test(str)) {
-                        batchToken = str;
-                    } else if (/^[A-Z0-9\-\/_]+$/.test(str) && str.length >= 4) {
-                        batchToken = str;
-                    }
-                }
-                // Exp
-                if (cols.exp !== null && Math.abs(el.x - cols.exp) < 30) {
-                    if (/\d{1,2}\/\d{2,4}/.test(str)) {
-                        expToken = str.replace(/\$/g, '');
-                    }
-                }
-                // MRP
-                if (cols.mrp !== null && Math.abs(el.x - cols.mrp) < 30) {
-                    if (/^\d+\.\d{2}$/.test(str.replace(/,/g, ''))) {
-                        mrpToken = str.replace(/,/g, '');
-                        foundMrp = true;
-                    }
-                }
-            });
-
-            // Safe Fallback ONLY for Qty
-            if (!foundQty && cols.qty !== null) {
-                let numericElements = rowElements.filter(el => /^\d+$/.test(el.str.trim().replace(/,/g, '')));
-                let closestQty = numericElements.sort((a,b) => Math.abs(a.x - cols.qty) - Math.abs(b.x - cols.qty))[0];
-                if (closestQty && Math.abs(closestQty.x - cols.qty) < 40) {
-                    billedQty = parseInt(closestQty.str.replace(/,/g, ''), 10);
-                } else {
-                    billedQty = 1;
-                }
+            if (headers.qty !== null) {
+                const qtyCandidates = qtyFreeCandidates.map(item => ({ ...item, distance: Math.abs(item.x - headers.qty) })).filter(item => item.distance <= 35).sort((a, b) => a.distance - b.distance);
+                if (qtyCandidates.length) billedQty = qtyCandidates[0].value;
             }
 
-            // Fallback for Exp
-            if (!expToken) {
-                let expEl = rowElements.find(el => /\d{1,2}\/\d{2,4}/.test(el.str));
-                if (expEl) expToken = expEl.str.replace(/\$/g, '');
-                else expToken = "01/30"; // default
+            if (headers.free !== null) {
+                const freeCandidates = qtyFreeCandidates.filter(item => (headers.qty === null || item.x > headers.qty + 8) && (headers.batch === null || item.x < headers.batch - 10) && Math.abs(item.x - headers.free) <= 30).sort((a, b) => Math.abs(a.x - headers.free) - Math.abs(b.x - headers.free));
+                if (freeCandidates.length) freeQty = freeCandidates[0].value;
             }
 
-            // Fallback for Batch
-            if (!batchToken) {
-                let rowUpperRaw = rowElements.map(el => el.str).join(" ").toUpperCase();
-                let batchRegex = /\b[A-Z0-9\-\/_]{4,15}\b/g;
-                let matches = rowUpperRaw.match(batchRegex) || [];
-                let validBatches = matches.filter(b => 
-                    !/^\d{1,4}$/.test(b) && 
-                    !/^\d+\*\d+$/.test(b) && 
-                    !/^\d+\.\d{2}$/.test(b) &&
-                    !b.includes("MG") && 
-                    !b.includes("ML") &&
-                    !matchedProduct.toUpperCase().includes(b) 
-                );
-                batchToken = validBatches.length > 0 ? validBatches[0] : "UNKNOWN";
+            if (billedQty === 0) {
+                const productX = row.items.find(item => alphaNum(item.str).includes(alphaNum(productResult.product)))?.x ?? 0;
+                const afterProduct = numeric.filter(item => item.x > productX).sort((a, b) => a.x - b.x);
+                if (afterProduct.length) billedQty = afterProduct[0].value;
             }
 
-            let totalQty = billedQty + freeQty;
-            
-            let formattedExpDate = parsePdfExpiryToDate(expToken);
-            let statusText = "Usable";
-            let statusClass = "color:var(--success); font-weight:700;";
+            let batch = "";
+            const batchCandidates = row.items.filter(item => !isDateLike(item.str) && item.str.toUpperCase() !== productResult.product.toUpperCase() && item.str.trim().length >= 3)
+                .map(item => ({ ...item, distance: distance(item.x, headers.batch) }))
+                .sort((a, b) => a.distance - b.distance);
+            if (batchCandidates.length && batchCandidates[0].distance <= 55) batch = batchCandidates[0].str.trim();
 
+            let exp = "";
+            const expiryCandidates = row.items.filter(item => isDateLike(item.str)).map(item => ({ ...item, distance: distance(item.x, headers.exp) })).sort((a, b) => a.distance - b.distance);
+            if (expiryCandidates.length) exp = expiryCandidates[0].str.trim();
+
+            let mrp = "0.00";
+            const mrpCandidates = row.items.filter(item => /^\d+\.\d{2}$/.test(item.str.trim().replace(/,/g, '')))
+                .map(item => ({ ...item, distance: distance(item.x, headers.mrp) })).sort((a, b) => a.distance - b.distance);
+            if (mrpCandidates.length && mrpCandidates[0].distance <= 45) mrp = mrpCandidates[0].str.trim().replace(/,/g, '');
+
+            let formattedExpDate = parsePdfExpiryToDate(exp);
+            let statusText = "Usable", statusClass = "color:var(--success); font-weight:700;";
             if (formattedExpDate) {
-              let expDateObj = new Date(formattedExpDate);
-              let timeDiff = expDateObj.getTime() - currentDate.getTime();
-              let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-              if (daysDiff <= 90) {
-                statusText = "Expired";
-                statusClass = "color:var(--danger); font-weight:700;";
-              }
+                let expDateObj = new Date(formattedExpDate);
+                let daysDiff = Math.ceil((expDateObj.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
+                if (daysDiff <= 90) { statusText = "Expired"; statusClass = "color:var(--danger); font-weight:700;"; }
             }
 
-            let exists = itemsFound.some(item => item.product === matchedProduct && item.batch === batchToken);
-            
-            if (!exists && batchToken !== "UNKNOWN") {
-              itemsFound.push({
-                product: matchedProduct,
-                batch: batchToken,
+            itemsFound.push({
+                product: productResult.product,
+                batch: batch || "UNKNOWN",
                 billedQty: billedQty,
                 freeQty: freeQty,
-                qty: totalQty,
-                exp: expToken,
-                mrp: mrpToken,
+                qty: Number(billedQty) + Number(freeQty),
+                exp: exp || "01/30",
+                mrp: mrp,
                 expDate: formattedExpDate,
                 status: statusText,
                 statusClass: statusClass
-              });
-            }
-          }
-        });
+            });
+        }
 
-        if (itemsFound.length === 0) {
-          alert("⚠️ Failed to read valid product items from Return PDF. Please ensure it's a standard Marg ERP Credit Note.");
-          input.value = "";
-          return;
+        // Deduplicate rows based on extracted contents to prevent exact double-reads
+        const uniqueRows = [];
+        const physicalRowKeys = new Set();
+        for (const item of itemsFound) {
+            const key = `${item.product}|${item.batch}|${item.qty}|${item.exp}`;
+            if (physicalRowKeys.has(key)) continue;
+            physicalRowKeys.add(key);
+            uniqueRows.push(item);
+        }
+
+        if (uniqueRows.length === 0) {
+            alert("⚠️ Failed to read valid product items from Return PDF. Please ensure it's a standard Marg ERP Credit Note.");
+            input.value = "";
+            return;
         }
 
         pendingDispatchReturnPayload = {
-          action: "dispatch_return",
-          user: sessionStorage.getItem("employee") || "",
-          warehouse: sessionStorage.getItem("warehouse") || "",
-          invoiceNo: invoiceNo,
-          items: itemsFound
+            action: "dispatch_return",
+            user: sessionStorage.getItem("employee") || "",
+            warehouse: sessionStorage.getItem("warehouse") || "",
+            invoiceNo: invoiceNo,
+            items: uniqueRows
         };
 
         openDispatchReturnConfirmationModal();
-      } catch (err) {
-        alert("⚠️ PDF Parsing Error: " + err.message);
-      }
-      input.value = "";
+
+    } catch (err) {
+        console.error("MARG PDF Parser Error:", err);
+        alert("❌ PDF Parsing Error\n\n" + err.message);
+    } finally {
+        input.value = "";
     }
+}
 
     function parsePdfExpiryToDate(expStr) {
       if (!expStr || !expStr.includes("/")) return "2030-01-01";
