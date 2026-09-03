@@ -934,7 +934,7 @@ setInterval(async () => {
       updateLiveDateTime();
     }
 
-    async function openAuditLogModal() {
+async function openAuditLogModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
@@ -977,7 +977,12 @@ setInterval(async () => {
               <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs</h3>
               <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Showing access-based historical operations log.</p>
               
-              <table class="pdf-item-table" style="font-size: 0.85rem;">
+              <!-- SEARCH BAR ADDED HERE -->
+              <div class="field-group" style="margin-bottom: 12px;">
+                <input type="text" id="auditSearchInput" placeholder="Search by User, Action Type, or Details..." onkeyup="filterAuditLogs()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              </div>
+              
+              <table class="pdf-item-table" style="font-size: 0.85rem;" id="auditLogTable">
                 <thead>
                   <tr>
                     <th style="width: 18%;">Timestamp</th>
@@ -1001,6 +1006,17 @@ setInterval(async () => {
         alert("Error loading Audit Logs: Make sure you deployed the App Script as a 'New Version'.");
         closeModalAndResume();
       }
+    }
+
+    // NEW FUNCTION TO HANDLE SEARCH FILTER
+    function filterAuditLogs() {
+      let filter = document.getElementById("auditSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#auditLogTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
     }
 
 async function openActiveUsersModal() {
