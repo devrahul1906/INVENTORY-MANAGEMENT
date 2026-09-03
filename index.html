@@ -4129,7 +4129,7 @@ const ignoredWords = [
         ) {
 
             alert(
-                "❌ PDF se koi valid MARG product read nahi hua.\n\n" +
+                "❌ Invalid PDF Format\n\n" +
                 "Please check the invoice format."
             );
 
@@ -4707,15 +4707,25 @@ async function handleDispatchReturnPdfUpload(input) {
             return;
         }
 
-        pendingDispatchReturnPayload = {
-            action: "dispatch_return",
-            user: sessionStorage.getItem("employee") || "",
-            warehouse: sessionStorage.getItem("warehouse") || "",
-            invoiceNo: invoiceNo,
-            items: uniqueRows
-        };
+pendingDispatchReturnPayload = {
+    action: "dispatch_return",
+    user: sessionStorage.getItem("employee") || "",
+    warehouse: sessionStorage.getItem("warehouse") || "",
+    invoiceNo: invoiceNo,
+    items: uniqueRows
+};
 
-        openDispatchReturnConfirmationModal();
+// SUCCESS POPUP
+alert(
+    "✅ CN Invoice successfully verified.\n\n" +
+    `CN Invoice: ${invoiceNo}\n` +
+    `Items: ${uniqueRows.length}\n` +
+    `Total Qty: ${uniqueRows.reduce((sum, item) => sum + Number(item.qty || 0), 0)}\n\n` +
+    "All validation checks passed."
+);
+
+openDispatchReturnConfirmationModal();
+
 
     } catch (err) {
         console.error("MARG PDF Parser Error:", err);
