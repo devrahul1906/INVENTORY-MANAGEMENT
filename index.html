@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxKs8-MguyQXYPHSOuOasPCLoxVhRqtlRcZGEsemYTCNY61ndYKMTs3Tm0ZgWzXLBEH/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxB7r2lkswOD3m4jGlpQpkzLptDbDTiCkdYNncaH5QNXAx9vFo1s5vwmLfrKgXbd1bV/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -857,6 +857,7 @@ setInterval(async () => {
         }
       }
 
+	actionButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
       actionButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
       actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
@@ -932,6 +933,111 @@ setInterval(async () => {
         ${getFooter()}
       `;
       updateLiveDateTime();
+    }
+
+// 1. User se Date select karwane wala Modal
+    function openDailyWorkReportModal() {
+      // By default aaj ki date set karke rakhega taaki user ka time bache
+      let today = new Date().toISOString().split('T')[0];
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 450px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#8b5cf6;"><i class="fa-solid fa-calendar-day"></i> Select Report Date</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Kis date ki summary report dekhna chahte hain?</p>
+            
+            <div class="field-group" style="margin-top: 10px;">
+              <label>Select Date</label>
+              <input type="date" id="reportDateSelect" value="${today}" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:20px;">
+              <button onclick="fetchAndShowWorkReport()" class="btn-indigo"><i class="fa-solid fa-bolt"></i> Generate Report</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. Select ki hui date ka data cloud se laakar show karna
+    async function fetchAndShowWorkReport() {
+      let selectedDate = document.getElementById("reportDateSelect").value;
+      if (!selectedDate) {
+         alert("Please select a date!");
+         return;
+      }
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#8b5cf6; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Report...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        let emp = sessionStorage.getItem("employee") || "";
+        let role = sessionStorage.getItem("role") || "";
+        
+        // Date ko URL parameter me bhej raha hai
+        let res = await fetch(`${GOOGLE_SHEET_URL}?action=getDailyWorkReport&user=${encodeURIComponent(emp)}&role=${encodeURIComponent(role)}&date=${encodeURIComponent(selectedDate)}`);
+        let data = await res.json();
+        
+        // YYYY-MM-DD ko DD-MM-YYYY format me badalna for display
+        let dateParts = selectedDate.split("-");
+        let displayDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+
+        let tbody = "";
+        if (!data || data.length === 0) {
+          tbody = `<tr><td colspan="3" style="text-align:center; padding: 20px; color: var(--danger); font-weight: 500;">No work activity recorded on ${displayDate}.</td></tr>`;
+        } else {
+          data.forEach(userRecord => {
+             userRecord.records.forEach(rec => {
+                tbody += `
+                  <tr>
+                    <td><b>${escapeHtml(userRecord.user)}</b></td>
+                    <td><span style="color:var(--primary); font-weight: 600;">${escapeHtml(rec.action)}</span></td>
+                    <td style="text-align:center; font-weight: bold; color:var(--success); font-size: 1.1rem;">${rec.count}</td>
+                  </tr>
+                `;
+             });
+          });
+        }
+        
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:#8b5cf6;"><i class="fa-solid fa-chart-pie"></i> Work Summary Report</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Summary of successfully completed actions on <b>${displayDate}</b>.</p>
+              
+              <table class="pdf-item-table" style="font-size: 0.9rem; width:100%;">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Action Performed</th>
+                    <th style="text-align:center;">Total Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tbody}
+                </tbody>
+              </table>
+              <div style="display:flex; justify-content:space-between; margin-top: 15px;">
+                  <button onclick="openDailyWorkReportModal()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date</button>
+                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error(e);
+        alert("Error loading Work Report.");
+        closeModalAndResume();
+      }
     }
 
 async function openAuditLogModal() {
