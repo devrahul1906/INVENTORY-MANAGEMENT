@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwPrdWDJh-Ri-JCnFUxSH4-64vXEgd3cQutBzNnTxa52YGSZpE9Bg9iFSbzVhV5yVs/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxKs8-MguyQXYPHSOuOasPCLoxVhRqtlRcZGEsemYTCNY61ndYKMTs3Tm0ZgWzXLBEH/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -1410,7 +1410,7 @@ async function openActiveUsersModal() {
       container.appendChild(clone);
     }
 
-    async function savePurchaseModalData() {
+async function savePurchaseModalData() {
       let globalSupplier = document.getElementById("global_supplier").value.trim();
       if (!globalSupplier) { alert("Please select a Supplier Name!"); return; }
 
@@ -1419,13 +1419,16 @@ async function openActiveUsersModal() {
       let submitBtn = document.querySelector("#modal-container button.btn-success");
       if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Preparing Files..."; }
 
+      // Validation Regex for MM/YY or MM/YYYY (Allows '/' or '-')
+      let dateRegex = /^(0[1-9]|1[0-2])[\/\-](\d{2}|\d{4})$/;
+
       for (let i = 0; i < rows.length; i++) {
         let row = rows[i];
         let pCategory = row.querySelector(".p_category").value;
         let pName = row.querySelector(".p_name").value.trim();
         let pBatch = row.querySelector(".p_batch").value.trim();
-        let pMfg = row.querySelector(".p_mfg").value;
-        let pExp = row.querySelector(".p_exp").value;
+        let pMfg = row.querySelector(".p_mfg").value.trim();
+        let pExp = row.querySelector(".p_exp").value.trim();
         let pMrp = row.querySelector(".p_mrp").value;
         let rawQty = parseInt(row.querySelector(".p_qty").value, 10) || 1;
         let fileInput = row.querySelector(".p_coa");
@@ -1435,6 +1438,24 @@ async function openActiveUsersModal() {
           if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
           return; 
         }
+
+        // --- NEW: STRICT DATE VALIDATION ---
+        if (!pMfg || !dateRegex.test(pMfg)) {
+          alert(`❌ Invalid Mfg Date in Product #${i + 1}!\nPlease enter a valid date in MM/YY or MM/YYYY format (e.g., 08/24 or 08/2024).`);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
+          return;
+        }
+
+        if (!pExp || !dateRegex.test(pExp)) {
+          alert(`❌ Invalid Exp Date in Product #${i + 1}!\nPlease enter a valid date in MM/YY or MM/YYYY format (e.g., 10/26 or 10/2026).`);
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit All Entries"; }
+          return;
+        }
+        
+        // Standardize format to always use '/' before sending to backend
+        pMfg = pMfg.replace('-', '/');
+        pExp = pExp.replace('-', '/');
+        // ------------------------------------
 
         let fileData = null;
         if (fileInput && fileInput.files.length > 0) {
