@@ -961,7 +961,7 @@ setInterval(async () => {
       `;
     }
 
-    // 2. Select ki hui date ka data cloud se laakar show karna
+// 2. Select ki hui date ka data cloud se laakar show karna
     async function fetchAndShowWorkReport() {
       let selectedDate = document.getElementById("reportDateSelect").value;
       if (!selectedDate) {
@@ -982,7 +982,6 @@ setInterval(async () => {
         let emp = sessionStorage.getItem("employee") || "";
         let role = sessionStorage.getItem("role") || "";
         
-        // Date ko URL parameter me bhej raha hai
         let res = await fetch(`${GOOGLE_SHEET_URL}?action=getDailyWorkReport&user=${encodeURIComponent(emp)}&role=${encodeURIComponent(role)}&date=${encodeURIComponent(selectedDate)}`);
         let data = await res.json();
         
@@ -1014,7 +1013,13 @@ setInterval(async () => {
               <h3 style="color:#8b5cf6;"><i class="fa-solid fa-chart-pie"></i> Work Summary Report</h3>
               <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Summary of successfully completed actions on <b>${displayDate}</b>.</p>
               
-              <table class="pdf-item-table" style="font-size: 0.9rem; width:100%;">
+              <!-- NAYA SEARCH BAR YAHAN ADD HUA HAI -->
+              <div class="field-group" style="margin-bottom: 12px;">
+                <input type="text" id="workReportSearchInput" placeholder="Search by User Name or Action..." onkeyup="filterWorkReport()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); outline: none;">
+              </div>
+              
+              <!-- TABLE KO ID (workReportTable) DI GAYI HAI -->
+              <table class="pdf-item-table" id="workReportTable" style="font-size: 0.9rem; width:100%;">
                 <thead>
                   <tr>
                     <th>User</th>
@@ -1038,6 +1043,27 @@ setInterval(async () => {
         alert("Error loading Work Report.");
         closeModalAndResume();
       }
+    }
+
+// 3. Search Filter Function
+    function filterWorkReport() {
+      let filterValue = document.getElementById("workReportSearchInput").value.toLowerCase();
+      let tableRows = document.querySelectorAll("#workReportTable tbody tr");
+      
+      tableRows.forEach(row => {
+        // Agar table empty message wala row hai to use skip karein
+        if (row.cells.length < 3) return;
+        
+        let userName = row.cells[0].innerText.toLowerCase();
+        let action = row.cells[1].innerText.toLowerCase();
+        
+        // Agar user name ya action me search keyword hai to dikhao, warna chupao
+        if (userName.includes(filterValue) || action.includes(filterValue)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
     }
 
 async function openAuditLogModal() {
