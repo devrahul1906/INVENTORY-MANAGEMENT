@@ -302,6 +302,82 @@
       return num.toLocaleString('en-IN');
     }
 
+// Toggle Export Options Visibility
+    function toggleAuditExportOptions() {
+      const exportDiv = document.getElementById('auditExportOptions');
+      if (exportDiv.style.display === 'none') {
+        exportDiv.style.display = 'flex';
+        // Auto-set today's date to save user time
+        let today = new Date().toISOString().split('T')[0];
+        document.getElementById('auditToDate').value = today;
+      } else {
+        exportDiv.style.display = 'none';
+      }
+    }
+
+    // Process & Download Excel
+    function executeAuditExcelExport() {
+      let fromDateVal = document.getElementById("auditFromDate").value;
+      let toDateVal = document.getElementById("auditToDate").value;
+
+      if (!fromDateVal || !toDateVal) {
+        alert("Please select both 'From Date' and 'To Date' for export.");
+        return;
+      }
+
+      let fromDate = new Date(fromDateVal);
+      fromDate.setHours(0, 0, 0, 0); 
+      
+      let toDate = new Date(toDateVal);
+      toDate.setHours(23, 59, 59, 999); 
+
+      if (!window.currentAuditLogs || window.currentAuditLogs.length === 0) {
+        alert("No logs available to export.");
+        return;
+      }
+
+      // Date Range Filter Logic
+      let filteredLogs = window.currentAuditLogs.filter(log => {
+        if (!log.timestamp) return false;
+        let parts = log.timestamp.split(" ");
+        let dateParts = parts[0].split("-");
+        if(dateParts.length < 3) return false;
+        
+        let logDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+        return logDate >= fromDate && logDate <= toDate;
+      });
+
+      if (filteredLogs.length === 0) {
+        alert("No logs found in the selected date range.");
+        return;
+      }
+
+      let exportData = filteredLogs.map((item, idx) => ({
+        "S.No": idx + 1,
+        "Timestamp": item.timestamp,
+        "User Name": item.user,
+        "Role": item.role,
+        "Action Type": item.actionType,
+        "Details": item.details
+      }));
+
+      try {
+        let btn = document.querySelector("#auditExportOptions .btn-success");
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Audit Logs");
+        XLSX.writeFile(wb, `Audit_Logs_${fromDateVal}_to_${toDateVal}.xlsx`);
+        
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-download'></i> Download";
+        
+        toggleAuditExportOptions(); // Hide options after successful export
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      }
+    }
+
     function updateLiveDateTime() {
       const now = new Date();
       const day = String(now.getDate()).padStart(2, '0');
@@ -1088,6 +1164,9 @@ async function openAuditLogModal() {
           logs = logs.filter(log => (log.user || "").trim() === currentUser);
         }
 
+        // Global variable taaki export function data fetch kar sake
+        window.currentAuditLogs = logs;
+
         let tbody = "";
         if(!logs || logs.length === 0) {
             tbody = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No historical audit logs found.</td></tr>`;
@@ -1107,9 +1186,26 @@ async function openAuditLogModal() {
             <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Showing access-based historical operations log.</p>
               
-              <!-- SEARCH BAR ADDED HERE -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin: 0;">Showing access-based historical operations log.</p>
+                <button onclick="toggleAuditExportOptions()" class="btn-emerald" style="width: auto; padding: 6px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              </div>
+
+              <!-- HIDDEN EXPORT DATE SELECTOR -->
+              <div id="auditExportOptions" style="display: none; gap: 10px; align-items: flex-end; margin-bottom: 12px; background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: var(--radius-sm);">
+                <div class="field-group" style="flex: 1;">
+                  <label>From Date</label>
+                  <input type="date" id="auditFromDate">
+                </div>
+                <div class="field-group" style="flex: 1;">
+                  <label>To Date</label>
+                  <input type="date" id="auditToDate">
+                </div>
+                <button onclick="executeAuditExcelExport()" class="btn-success" style="width: auto; padding: 10px 16px;"><i class="fa-solid fa-download"></i> Download</button>
+                <button onclick="toggleAuditExportOptions()" class="btn-secondary" style="width: auto; padding: 10px 16px;">Cancel</button>
+              </div>
+
               <div class="field-group" style="margin-bottom: 12px;">
                 <input type="text" id="auditSearchInput" placeholder="Search by User, Action Type, or Details..." onkeyup="filterAuditLogs()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
               </div>
@@ -1135,8 +1231,75 @@ async function openAuditLogModal() {
         `;
       } catch (e) {
         console.error("Audit Log Error:", e);
-        alert("Error loading Audit Logs: Make sure you deployed the App Script as a 'New Version'.");
+        alert("Error loading Audit Logs.");
         closeModalAndResume();
+      }
+    }
+
+// NAYA FUNCTION: Date Range ke base par Audit Logs ka Excel Export
+    function exportAuditLogsToExcel() {
+      let fromDateVal = document.getElementById("auditFromDate").value;
+      let toDateVal = document.getElementById("auditToDate").value;
+
+      if (!fromDateVal || !toDateVal) {
+        alert("Please select both 'From Date' and 'To Date' for export.");
+        return;
+      }
+
+      let fromDate = new Date(fromDateVal);
+      fromDate.setHours(0, 0, 0, 0); // Start of day
+      
+      let toDate = new Date(toDateVal);
+      toDate.setHours(23, 59, 59, 999); // End of day
+
+      if (!window.currentAuditLogs || window.currentAuditLogs.length === 0) {
+        alert("No logs available to export.");
+        return;
+      }
+
+      // Filter logs by selected date range
+      let filteredLogs = window.currentAuditLogs.filter(log => {
+        // Log ka timestamp 'dd-MM-yyyy HH:mm:ss' format mein hai
+        let parts = log.timestamp.split(" ");
+        if(parts.length < 1) return false;
+        
+        let dateParts = parts[0].split("-");
+        if(dateParts.length < 3) return false;
+        
+        // Month 0-indexed hota hai JS mein isliye dateParts[1] - 1
+        let logDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+        
+        return logDate >= fromDate && logDate <= toDate;
+      });
+
+      if (filteredLogs.length === 0) {
+        alert("No logs found in the selected date range.");
+        return;
+      }
+
+      // Export data prepare karna
+      let exportData = filteredLogs.map((item, idx) => ({
+        "S.No": idx + 1,
+        "Timestamp": item.timestamp,
+        "User Name": item.user,
+        "Role": item.role,
+        "Action Type": item.actionType,
+        "Details": item.details
+      }));
+
+      // Excel (XLSX) format generate aur download karvana
+      try {
+        let btn = document.querySelector("#modal-container .btn-emerald");
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Audit Logs");
+        XLSX.writeFile(wb, `Audit_Logs_${fromDateVal}_to_${toDateVal}.xlsx`);
+        
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
+      } catch(e) {
+        alert("Export Error: " + e.message);
       }
     }
 
@@ -2620,7 +2783,7 @@ async function handleDispatchPdfUpload(input) {
         };
 
 
-        const isBatchLike = value => {
+	const isBatchLike = value => {
 
             const s =
                 String(value || "").trim();
@@ -2634,7 +2797,8 @@ async function handleDispatchPdfUpload(input) {
             if (isDateLike(s))
                 return false;
 
-            return /^[A-Z0-9][A-Z0-9._\/-]*$/i
+            // Updated regex to allow spaces inside the batch number
+            return /^[A-Z0-9][A-Z0-9._\/\- ]*$/i
                 .test(s);
 
         };
