@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxB7r2lkswOD3m4jGlpQpkzLptDbDTiCkdYNncaH5QNXAx9vFo1s5vwmLfrKgXbd1bV/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9A5fHqrDHq-SCtxUsl_zycHJPJDQqL3JQYosVb64Yibgygd12X5shvCDIBqvcQrsU/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -422,7 +422,7 @@ setInterval(async () => {
           }
         } catch (e) {}
       }
-    }, 30000);
+    }, 90000);
 
     window.onload = function () {
       loadScansFromLocalStorage();
