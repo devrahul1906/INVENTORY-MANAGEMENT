@@ -302,57 +302,14 @@
       return num.toLocaleString('en-IN');
     }
 
-// Toggle Export Options Visibility
-    function toggleAuditExportOptions() {
-      const exportDiv = document.getElementById('auditExportOptions');
-      if (exportDiv.style.display === 'none') {
-        exportDiv.style.display = 'flex';
-        // Auto-set today's date to save user time
-        let today = new Date().toISOString().split('T')[0];
-        document.getElementById('auditToDate').value = today;
-      } else {
-        exportDiv.style.display = 'none';
-      }
-    }
-
-    // Process & Download Excel
+// Process & Download Excel (Directly exports the already filtered data)
     function executeAuditExcelExport() {
-      let fromDateVal = document.getElementById("auditFromDate").value;
-      let toDateVal = document.getElementById("auditToDate").value;
-
-      if (!fromDateVal || !toDateVal) {
-        alert("Please select both 'From Date' and 'To Date' for export.");
-        return;
-      }
-
-      let fromDate = new Date(fromDateVal);
-      fromDate.setHours(0, 0, 0, 0); 
-      
-      let toDate = new Date(toDateVal);
-      toDate.setHours(23, 59, 59, 999); 
-
       if (!window.currentAuditLogs || window.currentAuditLogs.length === 0) {
         alert("No logs available to export.");
         return;
       }
 
-      // Date Range Filter Logic
-      let filteredLogs = window.currentAuditLogs.filter(log => {
-        if (!log.timestamp) return false;
-        let parts = log.timestamp.split(" ");
-        let dateParts = parts[0].split("-");
-        if(dateParts.length < 3) return false;
-        
-        let logDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-        return logDate >= fromDate && logDate <= toDate;
-      });
-
-      if (filteredLogs.length === 0) {
-        alert("No logs found in the selected date range.");
-        return;
-      }
-
-      let exportData = filteredLogs.map((item, idx) => ({
+      let exportData = window.currentAuditLogs.map((item, idx) => ({
         "S.No": idx + 1,
         "Timestamp": item.timestamp,
         "User Name": item.user,
@@ -362,17 +319,17 @@
       }));
 
       try {
-        let btn = document.querySelector("#auditExportOptions .btn-success");
+        let btn = document.querySelector(".btn-emerald");
         if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
 
         let ws = XLSX.utils.json_to_sheet(exportData);
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Audit Logs");
-        XLSX.writeFile(wb, `Audit_Logs_${fromDateVal}_to_${toDateVal}.xlsx`);
         
-        if (btn) btn.innerHTML = "<i class='fa-solid fa-download'></i> Download";
+        let dates = window.auditExportDateRange || {from: 'Export', to: 'Logs'};
+        XLSX.writeFile(wb, `Audit_Logs_${dates.from}_to_${dates.to}.xlsx`);
         
-        toggleAuditExportOptions(); // Hide options after successful export
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
       } catch(e) {
         alert("Export Error: " + e.message);
       }
@@ -1142,7 +1099,48 @@ setInterval(async () => {
       });
     }
 
-async function openAuditLogModal() {
+function openAuditLogModal() {
+      let today = new Date().toISOString().split('T')[0];
+      
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 450px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date to view and export Audit Logs.</p>
+            
+            <div class="field-group" style="margin-top: 10px;">
+              <label>From Date</label>
+              <input type="date" id="auditSelectFromDate" value="${today}" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            <div class="field-group" style="margin-top: 10px;">
+              <label>To Date</label>
+              <input type="date" id="auditSelectToDate" value="${today}" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:20px;">
+              <button onclick="fetchAndShowAuditLogs()" class="btn-primary" style="background-color: var(--primary); color: white;"><i class="fa-solid fa-list-check"></i> View Logs</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchAndShowAuditLogs() {
+      let fromDateVal = document.getElementById("auditSelectFromDate").value;
+      let toDateVal = document.getElementById("auditSelectToDate").value;
+
+      if (!fromDateVal || !toDateVal) {
+        alert("Please select both 'From Date' and 'To Date'.");
+        return;
+      }
+
+      let fromDate = new Date(fromDateVal);
+      fromDate.setHours(0, 0, 0, 0); 
+      let toDate = new Date(toDateVal);
+      toDate.setHours(23, 59, 59, 999); 
+
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box">
@@ -1151,6 +1149,7 @@ async function openAuditLogModal() {
           </div>
         </div>
       `;
+
       try {
         let res = await fetch(`${GOOGLE_SHEET_URL}?action=getAuditLogs`);
         let logs = await res.json();
@@ -1164,12 +1163,24 @@ async function openAuditLogModal() {
           logs = logs.filter(log => (log.user || "").trim() === currentUser);
         }
 
-        // Global variable taaki export function data fetch kar sake
+        // --- NEW LOGIC: Filter data by selected dates before showing ---
+        logs = logs.filter(log => {
+          if (!log.timestamp) return false;
+          let parts = log.timestamp.split(" ");
+          if(parts.length < 1) return false;
+          let dateParts = parts[0].split("-");
+          if(dateParts.length < 3) return false;
+          let logDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+          return logDate >= fromDate && logDate <= toDate;
+        });
+
+        // Set global variables so the Excel export button grabs exactly what is displayed
         window.currentAuditLogs = logs;
+        window.auditExportDateRange = { from: fromDateVal, to: toDateVal };
 
         let tbody = "";
         if(!logs || logs.length === 0) {
-            tbody = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--text-muted);">No historical audit logs found.</td></tr>`;
+            tbody = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger); font-weight: 500;">No historical audit logs found for the selected dates.</td></tr>`;
         } else {
             tbody = logs.map(log => `
               <tr>
@@ -1185,25 +1196,11 @@ async function openAuditLogModal() {
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs</h3>
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs <small style="font-size:0.9rem; color:var(--text-muted);">(${fromDateVal} to ${toDateVal})</small></h3>
               
               <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
                 <p style="font-size:0.85rem; color:var(--text-muted); margin: 0;">Showing access-based historical operations log.</p>
-                <button onclick="toggleAuditExportOptions()" class="btn-emerald" style="width: auto; padding: 6px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-              </div>
-
-              <!-- HIDDEN EXPORT DATE SELECTOR -->
-              <div id="auditExportOptions" style="display: none; gap: 10px; align-items: flex-end; margin-bottom: 12px; background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: var(--radius-sm);">
-                <div class="field-group" style="flex: 1;">
-                  <label>From Date</label>
-                  <input type="date" id="auditFromDate">
-                </div>
-                <div class="field-group" style="flex: 1;">
-                  <label>To Date</label>
-                  <input type="date" id="auditToDate">
-                </div>
-                <button onclick="executeAuditExcelExport()" class="btn-success" style="width: auto; padding: 10px 16px;"><i class="fa-solid fa-download"></i> Download</button>
-                <button onclick="toggleAuditExportOptions()" class="btn-secondary" style="width: auto; padding: 10px 16px;">Cancel</button>
+                <button onclick="executeAuditExcelExport()" class="btn-emerald" style="width: auto; padding: 6px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
               </div>
 
               <div class="field-group" style="margin-bottom: 12px;">
@@ -1223,7 +1220,8 @@ async function openAuditLogModal() {
                   ${tbody}
                 </tbody>
               </table>
-              <div style="text-align:right; margin-top: 15px;">
+              <div style="display:flex; justify-content:space-between; margin-top: 15px;">
+                  <button onclick="openAuditLogModal()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date</button>
                   <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
               </div>
             </div>
@@ -1233,73 +1231,6 @@ async function openAuditLogModal() {
         console.error("Audit Log Error:", e);
         alert("Error loading Audit Logs.");
         closeModalAndResume();
-      }
-    }
-
-// NAYA FUNCTION: Date Range ke base par Audit Logs ka Excel Export
-    function exportAuditLogsToExcel() {
-      let fromDateVal = document.getElementById("auditFromDate").value;
-      let toDateVal = document.getElementById("auditToDate").value;
-
-      if (!fromDateVal || !toDateVal) {
-        alert("Please select both 'From Date' and 'To Date' for export.");
-        return;
-      }
-
-      let fromDate = new Date(fromDateVal);
-      fromDate.setHours(0, 0, 0, 0); // Start of day
-      
-      let toDate = new Date(toDateVal);
-      toDate.setHours(23, 59, 59, 999); // End of day
-
-      if (!window.currentAuditLogs || window.currentAuditLogs.length === 0) {
-        alert("No logs available to export.");
-        return;
-      }
-
-      // Filter logs by selected date range
-      let filteredLogs = window.currentAuditLogs.filter(log => {
-        // Log ka timestamp 'dd-MM-yyyy HH:mm:ss' format mein hai
-        let parts = log.timestamp.split(" ");
-        if(parts.length < 1) return false;
-        
-        let dateParts = parts[0].split("-");
-        if(dateParts.length < 3) return false;
-        
-        // Month 0-indexed hota hai JS mein isliye dateParts[1] - 1
-        let logDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-        
-        return logDate >= fromDate && logDate <= toDate;
-      });
-
-      if (filteredLogs.length === 0) {
-        alert("No logs found in the selected date range.");
-        return;
-      }
-
-      // Export data prepare karna
-      let exportData = filteredLogs.map((item, idx) => ({
-        "S.No": idx + 1,
-        "Timestamp": item.timestamp,
-        "User Name": item.user,
-        "Role": item.role,
-        "Action Type": item.actionType,
-        "Details": item.details
-      }));
-
-      // Excel (XLSX) format generate aur download karvana
-      try {
-        let btn = document.querySelector("#modal-container .btn-emerald");
-        if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
-
-        let ws = XLSX.utils.json_to_sheet(exportData);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Audit Logs");
-        XLSX.writeFile(wb, `Audit_Logs_${fromDateVal}_to_${toDateVal}.xlsx`);
-        
-        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
-      } catch(e) {
-        alert("Export Error: " + e.message);
       }
     }
 
