@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyLhrxLtJbEwgehl0pJ_hWC48qQOAOhwtOM_4OsiTMv92-68VxNl3zuoWn0-NFk6MRZ/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxK0rM16I0Itl39aOTPqRcuFGQSS8YUY8rhbfKiFG3t3zLPhE-KyjF50XyM7wNKIVLz/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -1392,7 +1392,7 @@ async function openActiveUsersModal() {
         let activeCount = data.filter(u => u.status.includes("Active")).length;
         let inactiveCount = data.length - activeCount;
 
-        // YAHAN ROW MAPPING UPDATE HUI HAI (Action Button add kiya gaya hai)
+// YAHAN ROW MAPPING UPDATE HUI HAI (Action Button ke pass time add kiya hai)
         let rows = data.map((u, i) => `
           <tr>
             <td>${i+1}</td>
@@ -1400,8 +1400,8 @@ async function openActiveUsersModal() {
             <td>${escapeHtml(u.role)}</td>
             <td>${escapeHtml(u.warehouse)}</td>
             <td style="font-weight:bold; color: ${u.status.includes('Active') ? 'var(--success)' : 'var(--danger)'};">${escapeHtml(u.status)}</td>
-            <td style="text-align: center;">
-              ${u.status.includes('Active') ? `<button onclick="forceUserLogout('${escapeHtml(u.user)}')" class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-power-off"></i> Logout</button>` : '-'}
+            <td style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+              ${u.status.includes('Active') ? `<button onclick="forceUserLogout('${escapeHtml(u.user)}')" class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-power-off"></i> Logout</button>` : escapeHtml(u.lastActiveText || '-')}
             </td>
           </tr>
         `).join("");
