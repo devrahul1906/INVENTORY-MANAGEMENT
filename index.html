@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9A5fHqrDHq-SCtxUsl_zycHJPJDQqL3JQYosVb64Yibgygd12X5shvCDIBqvcQrsU/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyLhrxLtJbEwgehl0pJ_hWC48qQOAOhwtOM_4OsiTMv92-68VxNl3zuoWn0-NFk6MRZ/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -547,18 +547,7 @@ setInterval(async () => {
       }
     }
 
-    async function showSampleRoomStockDetails() {
-      openStockDetailsModal("<i class='fa-solid fa-vials'></i> Control Sample Room", "Loading...");
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails`);
-        const list = await response.json();
-        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Contorl Sample Room", list);
-      } catch (e) {
-        renderStockDetailsTable("<i class='fa-solid fa-vials'></i> Contorl Sample Room", []);
-      }
-    }
-
-    function formatShortDate(rawStr) {
+function formatShortDate(rawStr) {
       if (!rawStr) return "";
       if (rawStr.includes("GMT") || rawStr.includes("Standard Time") || rawStr.length > 20) {
         let d = new Date(rawStr);
@@ -569,6 +558,93 @@ setInterval(async () => {
         }
       }
       return rawStr;
+    }
+
+async function showSampleRoomStockDetails() {
+      // Loading screen
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails`);
+        const textData = await response.text(); 
+        
+        if (textData.includes("<!DOCTYPE") || textData.includes("<html")) {
+          throw new Error("Google blocked the request. Apps Script Deploy karte time 'Who has access' ko 'Anyone' zaroor karein.");
+        }
+
+        let list = JSON.parse(textData);
+        
+        if (list && list.status === "error") {
+            throw new Error("Backend Error: " + list.message);
+        }
+
+        let validList = (Array.isArray(list) ? list : []).filter(item => parseInt(item.qty, 10) > 0);
+        let tbody = "";
+        
+        if (validList.length === 0) {
+          tbody = `<tr><td colspan="6" style="text-align:center; padding: 20px; color:var(--text-muted);">No products found in Control Sample Room.</td></tr>`;
+        } else {
+          validList.sort((a, b) => String(a.product || "").localeCompare(String(b.product || "")));
+          tbody = validList.map(item => `
+            <tr>
+              <td><b>${escapeHtml(item.product)}</b></td>
+              <td>${escapeHtml(item.batch)}</td>
+              <td>${escapeHtml(formatShortDate(item.mfg))}</td>
+              <td>${escapeHtml(formatShortDate(item.exp))}</td>
+              <td>${escapeHtml(item.mrp)}</td>
+              <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)} pcs</td>
+            </tr>
+          `).join("");
+        }
+
+        // Custom Modal Layout with max-width: 900px
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
+              <div style="overflow-x: auto; margin-top: 12px;">
+                <table class="pdf-item-table" style="min-width: 650px; font-size: 0.85rem;">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th>Batch</th>
+                      <th>Mfg</th>
+                      <th>Exp</th>
+                      <th>MRP</th>
+                      <th style="text-align: right;">Total Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+              <div style="text-align:right; margin-top: 15px;">
+                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
+              <p style="color:var(--danger); text-align:center; padding: 20px;"><b>Error Details:</b><br><br>${escapeHtml(e.message)}</p>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
+            </div>
+          </div>
+        `;
+      }
     }
 
     async function showTodayBillsDetails() {
@@ -6154,9 +6230,4 @@ async function forceUserLogout(username) {
   </script>
 
 </body>
-</html>
-  </script>
-
-</body>
-
 </html>
