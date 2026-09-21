@@ -586,6 +586,10 @@ async function showSampleRoomStockDetails() {
         }
 
         let validList = (Array.isArray(list) ? list : []).filter(item => parseInt(item.qty, 10) > 0);
+        
+        // Global variable for Excel Export
+        window.currentSampleRoomData = validList;
+
         let tbody = "";
         
         if (validList.length === 0) {
@@ -604,14 +608,22 @@ async function showSampleRoomStockDetails() {
           `).join("");
         }
 
-        // Custom Modal Layout with max-width: 900px
+        // Custom Modal Layout with Search and Export
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color:var(--primary);"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
-              <div style="overflow-x: auto; margin-top: 12px;">
-                <table class="pdf-item-table" style="min-width: 650px; font-size: 0.85rem;">
+              
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 12px; gap: 10px;">
+                <div class="field-group" style="flex: 1;">
+                  <input type="text" id="sampleRoomSearchInput" placeholder="Search by Product, Batch, or MRP..." onkeyup="filterSampleRoom()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                </div>
+                <button onclick="exportSampleRoomExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table class="pdf-item-table" id="sampleRoomTable" style="min-width: 650px; font-size: 0.85rem;">
                   <thead>
                     <tr>
                       <th>Product Name</th>
@@ -644,6 +656,49 @@ async function showSampleRoomStockDetails() {
             </div>
           </div>
         `;
+      }
+    }
+
+// --- SEARCH FILTER FOR SAMPLE ROOM ---
+    function filterSampleRoom() {
+      let filter = document.getElementById("sampleRoomSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#sampleRoomTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    // --- EXCEL EXPORT FOR SAMPLE ROOM ---
+    function exportSampleRoomExcel() {
+      if (!window.currentSampleRoomData || window.currentSampleRoomData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+
+      let exportData = window.currentSampleRoomData.map((item, idx) => ({
+        "S.No": idx + 1,
+        "Product Name": item.product,
+        "Batch": item.batch,
+        "Mfg Date": formatShortDate(item.mfg),
+        "Exp Date": formatShortDate(item.exp),
+        "MRP": item.mrp,
+        "Total Qty": item.qty
+      }));
+
+      try {
+        let btn = document.querySelector("#modal-container .btn-emerald");
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sample Room Stock");
+        XLSX.writeFile(wb, `Control_Sample_Room_${new Date().toISOString().slice(0,10)}.xlsx`);
+        
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
+      } catch(e) {
+        alert("Export Error: " + e.message);
       }
     }
 
