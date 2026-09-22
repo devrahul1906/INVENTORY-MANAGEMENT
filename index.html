@@ -718,17 +718,32 @@ async function showTodayBillsDetails() {
 
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=getTodayBillsDetails`);
-        let list = await response.json();
+        const textData = await response.text(); 
         
-        // HATA DIYA GAYA HAI: filter(item => parseInt(item.qty, 10) > 0)
-        // Ab humein wo items bhi dekhne hain jinki available qty 0 ho gayi hai
+        // Security check: Agar JSON ki jagah HTML page return ho
+        if (textData.includes("<!DOCTYPE") || textData.includes("<html")) {
+          throw new Error("Google blocked the request. Apps Script Deploy karte time 'Who has access' ko 'Anyone' zaroor karein.");
+        }
+
+        let list = JSON.parse(textData);
+        
+        // Agar backend error bheje
+        if (list && list.status === "error") {
+            throw new Error("Backend Error: " + list.message);
+        }
+
+        // Safe filtering: Array verify karke RECEIVED QTY filter lagana
+        let validList = (Array.isArray(list) ? list : []).filter(item => {
+           let rQty = parseInt(item.receivedQty !== undefined ? item.receivedQty : item.qty, 10);
+           return rQty > 0;
+        });
 
         let content = "";
-        if (!Array.isArray(list) || list.length === 0) {
+        if (validList.length === 0) {
           content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No valid bills received today.</p>`;
         } else {
-          list.sort((a, b) => a.product.localeCompare(b.product));
-          let rows = list.map(item => `
+          validList.sort((a, b) => String(a.product || "").localeCompare(String(b.product || "")));
+          let rows = validList.map(item => `
             <tr>
               <td>${escapeHtml(item.user)}</td>
               <td>${escapeHtml(item.supplier)}</td>
@@ -736,7 +751,7 @@ async function showTodayBillsDetails() {
               <td>${escapeHtml(formatShortDate(item.mfg))}</td>
               <td>${escapeHtml(formatShortDate(item.exp))}</td>
               <td>${escapeHtml(item.mrp)}</td>
-              <td style="text-align: right; font-weight: 700; color: #059669;">${formatNumber(item.receivedQty)}</td>
+              <td style="text-align: right; font-weight: 700; color: #059669;">${formatNumber(item.receivedQty !== undefined ? item.receivedQty : item.qty)}</td>
               <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)}</td>
             </tr>
           `).join("");
@@ -765,7 +780,8 @@ async function showTodayBillsDetails() {
         }
         document.getElementById("stockDetailsContent").innerHTML = content;
       } catch (e) {
-        document.getElementById("stockDetailsContent").innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;">Error loading data.</p>`;
+        // Error ab screen par perfectly print hogi
+        document.getElementById("stockDetailsContent").innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;"><b>Error Details:</b><br><br>${escapeHtml(e.message)}</p>`;
       }
     }
 
