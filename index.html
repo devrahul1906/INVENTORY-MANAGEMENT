@@ -284,7 +284,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxK0rM16I0Itl39aOTPqRcuFGQSS8YUY8rhbfKiFG3t3zLPhE-KyjF50XyM7wNKIVLz/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx9C96x2hdKE7RI_KBtTtpXQo8fhg8zRV950yicCZv-D9Xz5Fdts8ws-7uOnslx4Lm6/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -702,10 +702,10 @@ async function showSampleRoomStockDetails() {
       }
     }
 
-    async function showTodayBillsDetails() {
+async function showTodayBillsDetails() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 850px; max-height: 85vh; overflow-y: auto;">
+          <div class="modal-box" style="max-width: 950px; max-height: 85vh; overflow-y: auto;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Today's Received Bills</h3>
             <div id="stockDetailsContent" style="margin-top: 12px; text-align:center;">
@@ -720,7 +720,8 @@ async function showSampleRoomStockDetails() {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=getTodayBillsDetails`);
         let list = await response.json();
         
-        list = (list || []).filter(item => parseInt(item.qty, 10) > 0);
+        // HATA DIYA GAYA HAI: filter(item => parseInt(item.qty, 10) > 0)
+        // Ab humein wo items bhi dekhne hain jinki available qty 0 ho gayi hai
 
         let content = "";
         if (!Array.isArray(list) || list.length === 0) {
@@ -735,13 +736,14 @@ async function showSampleRoomStockDetails() {
               <td>${escapeHtml(formatShortDate(item.mfg))}</td>
               <td>${escapeHtml(formatShortDate(item.exp))}</td>
               <td>${escapeHtml(item.mrp)}</td>
+              <td style="text-align: right; font-weight: 700; color: #059669;">${formatNumber(item.receivedQty)}</td>
               <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)}</td>
             </tr>
           `).join("");
 
           content = `
             <div style="overflow-x: auto;">
-              <table class="pdf-item-table" style="min-width: 750px; font-size: 0.82rem;">
+              <table class="pdf-item-table" style="min-width: 850px; font-size: 0.82rem;">
                 <thead>
                   <tr>
                     <th>USER</th>
@@ -750,7 +752,8 @@ async function showSampleRoomStockDetails() {
                     <th>MFG</th>
                     <th>EXP</th>
                     <th>MRP</th>
-                    <th style="text-align: right;">QTY</th>
+                    <th style="text-align: right;">RECEIVED QTY</th>
+                    <th style="text-align: right;">AVAILABLE QTY</th>
                   </tr>
                 </thead>
                 <tbody>
