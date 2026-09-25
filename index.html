@@ -285,7 +285,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxo23UYucsiX4tSDJEkFTA1eM96QzYWktDAZNEH7u9Z8Itb18A2KSRKFV8FiBx_8RqV/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyfxbRRfMI-8bRs-KRxZIwUl4Gi3aKVOUGhH78PA8PZWXtf0FGwMoDcqUHJA8-gRjzV/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -900,72 +900,106 @@ async function showTodayBillsDetails() {
       updateLiveDateTime();
     }
 
-    async function fetchUserWarehouses() {
-      let emp = document.getElementById("employee").value.trim();
-      let whSelect = document.getElementById("warehouse");
+async function fetchUserWarehouses() {
+  let emp = document.getElementById("employee").value.trim();
+  let whSelect = document.getElementById("warehouse");
+  
+  if (!emp) {
+    whSelect.innerHTML = '<option value="">-- Enter Username to Load Warehouses --</option>';
+    return;
+  }
+  
+  whSelect.innerHTML = '<option value="">-- Loading Warehouses... --</option>';
+  
+  try {
+    let payload = { action: "getUserWarehouses", employee: emp };
+    let response = await fetch(GOOGLE_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow" // <--- Ye line Google Apps Script ke redirects ke liye zaroori hai
+    });
+    
+    let text = await response.text();
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+        throw new Error("System is busy or URL is incorrect.");
+    }
+    let warehouses = JSON.parse(text);
+    
+    if (warehouses.length === 0) {
+      whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
+    } else {
+      let opts = '<option value="">-- Select Warehouse --</option>';
+      warehouses.forEach(wh => {
+        let displayText = wh === "All View" ? "All View (For Management Use Only)" : wh;
+        opts += `<option value="${escapeHtml(wh)}">${escapeHtml(displayText)}</option>`;
+      });
+      whSelect.innerHTML = opts;
       
-      if (!emp) {
-        whSelect.innerHTML = '<option value="">-- Enter Username to Load Warehouses --</option>';
-        return;
-      }
-      
-      whSelect.innerHTML = '<option value="">-- Loading Warehouses... --</option>';
-      
-      try {
-        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getUserWarehouses&employee=${encodeURIComponent(emp)}`);
-        let warehouses = await response.json();
-        
-        if (warehouses.length === 0) {
-          whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
-        } else {
-          let opts = '<option value="">-- Select Warehouse --</option>';
-          warehouses.forEach(wh => {
-            let displayText = wh === "All View" ? "All View (For Management Use Only)" : wh;
-            opts += `<option value="${escapeHtml(wh)}">${escapeHtml(displayText)}</option>`;
-          });
-          whSelect.innerHTML = opts;
-          
-          if (warehouses.length === 1) {
-             whSelect.value = warehouses[0];
-          }
-        }
-      } catch (e) {
-        whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
+      if (warehouses.length === 1) {
+         whSelect.value = warehouses[0];
       }
     }
+  } catch (e) {
+    console.error("Backend Error Details:", e); // <--- Ye exact galti pakadne ke liye hai
+    whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
+  }
+}
 
-    async function login() {
-      let emp = document.getElementById("employee").value.trim();
-      let pass = document.getElementById("password").value.trim();
-      let wh = document.getElementById("warehouse").value;
-      let loginBtn = document.getElementById("loginBtn");
+async function login() {
+  let emp = document.getElementById("employee").value.trim();
+  let pass = document.getElementById("password").value.trim();
+  let wh = document.getElementById("warehouse").value;
+  let loginBtn = document.getElementById("loginBtn");
 
-      if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
+  if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
 
-      if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Authenticating..."; }
+  if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Authenticating..."; }
 
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}&warehouse=${encodeURIComponent(wh)}`);
-        const data = await response.json();
+  try {
+    // 1. JSON Payload tayar karna jaisa backend expect kar raha hai
+    let payload = {
+        action: "login",
+        username: emp,
+        password: pass,
+        warehouse: wh
+    };
 
-        if (data.status === "success") {
-          sessionStorage.setItem("employee", data.employeeName || emp);
-          sessionStorage.setItem("warehouse", wh);
-          sessionStorage.setItem("role", data.role || "Standard");
-          if (data.sessionId) {
-            sessionStorage.setItem("sessionId", data.sessionId);
-          }
-          syncDataAndShowDashboard();
-        } else {
-          alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
-          if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
-        }
-      } catch (e) {
-        let msg = e.message;
-        alert("⚠️ Connection error: " + msg);
-        if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
-      }
+    // 2. GET ki jagah POST method use karke data bhejna
+    const response = await fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+        redirect: "follow"
+    });
+
+    let text = await response.text();
+    
+    // 3. HTML Error Protection
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+        throw new Error("System is busy or URL is incorrect. Please try again.");
     }
+
+    const data = JSON.parse(text);
+
+    if (data.status === "success") {
+      sessionStorage.setItem("employee", data.employeeName || emp);
+      sessionStorage.setItem("warehouse", wh);
+      sessionStorage.setItem("role", data.role || "Standard");
+      if (data.sessionId) {
+        sessionStorage.setItem("sessionId", data.sessionId);
+      }
+      syncDataAndShowDashboard();
+    } else {
+      alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
+    }
+  } catch (e) {
+    let msg = e.message;
+    alert("⚠️ Connection error: " + msg);
+    if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
+  }
+}
 
     async function syncDataAndShowDashboard() {
       showDashboard(); 
