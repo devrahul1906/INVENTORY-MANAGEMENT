@@ -285,7 +285,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx9C96x2hdKE7RI_KBtTtpXQo8fhg8zRV950yicCZv-D9Xz5Fdts8ws-7uOnslx4Lm6/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxo23UYucsiX4tSDJEkFTA1eM96QzYWktDAZNEH7u9Z8Itb18A2KSRKFV8FiBx_8RqV/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -380,7 +380,7 @@ setInterval(async () => {
           }
         } catch (e) {}
       }
-    }, 90000);
+    }, 300000);
 
     window.onload = function () {
       loadScansFromLocalStorage();
@@ -1870,11 +1870,15 @@ async function savePurchaseModalData() {
       };
 
       try {
-        const response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        const resData = JSON.parse(await response.text());
+const response = await fetch(GOOGLE_SHEET_URL, {
+  method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+  body: JSON.stringify(payload)
+});
+let text = await response.text();
+if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+    throw new Error("System is busy due to heavy traffic. Please wait 10 seconds and try again.");
+}
+const resData = JSON.parse(text);
 
         if (resData.status === "success") {
           alert(`✅ All ${itemsArray.length} items saved successfully!`);
@@ -2184,8 +2188,11 @@ async function handleExpiryDamagePdfUpload(input) {
           body: JSON.stringify(pendingExpiryDamagePayload)
         });
         
-        let text = await response.text();
-        let resData = JSON.parse(text);
+let text = await response.text();
+if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+    throw new Error("System is busy due to heavy traffic. Please wait 10 seconds and try again.");
+}
+let resData = JSON.parse(text);
 
         if (resData.status === "success") {
           alert("✅ Expiry/Damage Bill Proceeded Successfully!");
@@ -2295,61 +2302,67 @@ async function handleExpiryDamagePdfUpload(input) {
       }
     }
 
-    async function executeHoldAction() {
-      let type = document.querySelector('input[name="holdActionType"]:checked').value;
-      let prod = document.getElementById('h_product').value.trim();
-      let batchElement = document.getElementById('h_batch');
-      let batch = batchElement.value.trim();
-      let qty = parseInt(document.getElementById('h_qty').value, 10) || 0;
-      let reason = document.getElementById('h_reason').value.trim();
-      
-      if (!prod || !batch || qty <= 0 || !reason) {
-        alert("Please fill all fields! Reason is mandatory.");
-        return;
-      }
+async function executeHoldAction() {
+  let type = document.querySelector('input[name="holdActionType"]:checked').value;
+  let prod = document.getElementById('h_product').value.trim();
+  let batchElement = document.getElementById('h_batch');
+  let batch = batchElement.value.trim();
+  let qty = parseInt(document.getElementById('h_qty').value, 10) || 0;
+  let reason = document.getElementById('h_reason').value.trim();
+  
+  if (!prod || !batch || qty <= 0 || !reason) {
+    alert("Please fill all fields! Reason is mandatory.");
+    return;
+  }
 
-      if (type === "UNHOLD") {
-         let holdReason = batchElement.options[batchElement.selectedIndex].getAttribute('data-reason') || "No reason specified";
-         let isResolved = confirm(`⚠️ UNHOLD CONFIRMATION\n\nThis product was originally held for the following reason:\n"${holdReason}"\n\nHas this issue been resolved? Are you sure you want to Unhold?`);
-         if (!isResolved) {
-            return; 
-         }
-      }
-      
-      let submitBtn = document.querySelector("#modal-container button.btn-warning");
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing..."; }
-      
-      let payload = {
-        action: "hold_action",
-        user: sessionStorage.getItem("employee") || "",
-        holdType: type,
-        product: prod.toUpperCase(),
-        batch: batch.toUpperCase(),
-        qty: qty,
-        reason: reason
-      };
-      
-      try {
-        let response = await fetch(GOOGLE_SHEET_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        let resData = await response.json();
-        
-        if (resData.status === "success") {
-          alert("✅ " + resData.message);
-          closeModalAndResume();
-          syncDataAndShowDashboard();
-        } else {
-          alert("❌ ERROR: " + resData.message);
-          closeModalAndResume();
-        }
-      } catch (e) {
-        alert("⚠️ Connection Error: " + e.message);
-        closeModalAndResume();
-      }
+  if (type === "UNHOLD") {
+     let holdReason = batchElement.options[batchElement.selectedIndex].getAttribute('data-reason') || "No reason specified";
+     let isResolved = confirm(`⚠️ UNHOLD CONFIRMATION\n\nThis product was originally held for the following reason:\n"${holdReason}"\n\nHas this issue been resolved? Are you sure you want to Unhold?`);
+     if (!isResolved) {
+        return; 
+     }
+  }
+  
+  let submitBtn = document.querySelector("#modal-container button.btn-warning");
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing..."; }
+  
+  let payload = {
+    action: "hold_action",
+    user: sessionStorage.getItem("employee") || "",
+    holdType: type,
+    product: prod.toUpperCase(),
+    batch: batch.toUpperCase(),
+    qty: qty,
+    reason: reason
+  };
+  
+  try {
+    let response = await fetch(GOOGLE_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    
+    // NAYA CODE: JSON parse karne se pehle HTML error check karein
+    let text = await response.text();
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+        throw new Error("System is busy due to heavy traffic. Please wait 10 seconds and try again.");
     }
+    let resData = JSON.parse(text);
+    
+    if (resData.status === "success") {
+      alert("✅ " + resData.message);
+      closeModalAndResume();
+      syncDataAndShowDashboard();
+    } else {
+      alert("❌ ERROR: " + resData.message);
+      closeModalAndResume();
+    }
+  } catch (e) {
+    alert("⚠️ Connection Error: " + e.message);
+    closeModalAndResume();
+  }
+}
 
     function openTransferModal() {
       let currentWarehouse = sessionStorage.getItem("warehouse") || "QA (Quality Assurance)";
@@ -5709,8 +5722,11 @@ async function handleDispatchReturnPdfUpload(input) {
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
-        const resData = JSON.parse(await response.text());
-
+	let text = await response.text();
+	if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+	    throw new Error("System is busy due to heavy traffic. Please wait 10 seconds and try again.");
+	}
+	const resData = JSON.parse(text);
         if (resData.status === "success") {
           alert("✅ " + resData.message);
           closeModalAndResume();
@@ -5934,10 +5950,14 @@ async function handleDispatchReturnPdfUpload(input) {
            console.error("Not JSON:", text);
            throw new Error("Invalid response from server");
         }
-      } catch (e) {
-        alert("Error loading full report. It might be taking too long. " + e.message);
-        openStockReportModal();
-      }
+} catch (e) {
+  if (e.message.includes("Invalid response")) {
+    alert("Server is experiencing heavy load. Please try opening the report again after a few seconds.");
+  } else {
+    alert("Error loading full report: " + e.message);
+  }
+  closeModalAndResume(); // openStockReportModal() ki jagah modal close kar dein taaki user wait kare
+}
     }
 
 function renderFullStockReport(data) {
