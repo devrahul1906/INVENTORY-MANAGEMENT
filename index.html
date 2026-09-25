@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hatvet Pharma - Inventory Management Portal</title>
-  <link rel="icon" href="https://i.postimg.cc/XNwPRcH7/LOGO-2.jpg" type="image/jpeg">
 
   <!-- Font Awesome for Professional Enterprise Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -573,11 +572,13 @@ async function showSampleRoomStockDetails() {
       `;
 
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails`);
+	const response = await fetch(`${GOOGLE_SHEET_URL}?action=sampleRoomStockDetails&t=${new Date().getTime()}`, {
+  	redirect: "follow"
+	});
         const textData = await response.text(); 
         
         if (textData.includes("<!DOCTYPE") || textData.includes("<html")) {
-          throw new Error("Google blocked the request. Apps Script Deploy karte time 'Who has access' ko 'Anyone' zaroor karein.");
+          throw new Error("Google blocked the request.");
         }
 
         let list = JSON.parse(textData);
@@ -723,7 +724,7 @@ async function showTodayBillsDetails() {
         
         // Security check: Agar JSON ki jagah HTML page return ho
         if (textData.includes("<!DOCTYPE") || textData.includes("<html")) {
-          throw new Error("Google blocked the request. Apps Script Deploy karte time 'Who has access' ko 'Anyone' zaroor karein.");
+          throw new Error("Google blocked the request.");
         }
 
         let list = JSON.parse(textData);
@@ -917,7 +918,7 @@ async function fetchUserWarehouses() {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload),
-      redirect: "follow" // <--- Ye line Google Apps Script ke redirects ke liye zaroori hai
+      redirect: "follow" 
     });
     
     let text = await response.text();
@@ -925,6 +926,19 @@ async function fetchUserWarehouses() {
         throw new Error("System is busy or URL is incorrect.");
     }
     let warehouses = JSON.parse(text);
+    
+    // --- NEW: Handle backend error object gracefully ---
+    if (warehouses && warehouses.status === "error") {
+        console.error("Backend Error:", warehouses.message);
+        whSelect.innerHTML = '<option value="">-- Backend Error (Check Console) --</option>';
+        alert("Backend Error: " + warehouses.message); 
+        return;
+    }
+    
+    if (!Array.isArray(warehouses)) {
+        warehouses = [];
+    }
+    // ---------------------------------------------------
     
     if (warehouses.length === 0) {
       whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
@@ -941,7 +955,7 @@ async function fetchUserWarehouses() {
       }
     }
   } catch (e) {
-    console.error("Backend Error Details:", e); // <--- Ye exact galti pakadne ke liye hai
+    console.error("Backend Error Details:", e); 
     whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
   }
 }
