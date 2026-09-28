@@ -285,7 +285,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyVC61RilLVWH8y8WG2biTvJu2iV91APEplrIkvr_k2BPjz8qn2JVVB2NMJfMZKVqw/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwXWYwhOrvgqZ_RTakbh_96QdnBRUjvlfkbT81ge47lBAiBAsOa8154KXeBFHLEm_wl/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -376,11 +376,11 @@ setInterval(async () => {
           if (data.status === "force_logged_out") {
             alert("⚠️ Admin has forced you to log out.");
             sessionStorage.clear();
-            window.location.reload(); // showLoginPage() ki jagah reload karna zyada safe hai
+            window.location.reload(); 
           }
         } catch (e) {}
       }
-    }, 90000);
+    }, 300000); // <-- 90000 KI JAGAH 300000 KAR DIYA (5 MINUTES)
 
     window.onload = function () {
       loadScansFromLocalStorage();
