@@ -269,36 +269,29 @@
       .history-item { grid-template-columns: 1fr; gap: 6px; }
     }
 
-/* Innovative Logout Button Styles - COLOR FIX */
+/* Innovative Logout Button - 100% FIXED */
 .logout-btn-innovative {
-  display: flex;
-  align-items: center;
-  background-color: #fff1f2;
-  border: 1px solid #fecdd3;
-  border-radius: 50px;
-  padding: 0 !important; /* Global padding override */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important; /* Icon ko cut hone se rokiya */
+  gap: 0 !important; /* Global gap override kiya */
+  background-color: #fff1f2 !important;
+  border: 1px solid #fecdd3 !important;
+  border-radius: 50px !important;
+  padding: 0 !important;
   cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 38px !important; /* Global width override */
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 38px !important;
   height: 38px !important;
-  box-shadow: var(--shadow-sm);
 }
 
-.logout-btn-innovative .icon {
-  min-width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-}
-
-/* Force red color in default state */
-.logout-btn-innovative .icon i, 
-.logout-btn-innovative .text {
-  color: #e11d48 !important; 
-  transition: color 0.3s ease;
+.logout-btn-innovative i {
+  min-width: 38px !important; /* Icon ke liye exact space */
+  text-align: center !important;
+  font-size: 1.1rem !important;
+  color: #e11d48 !important; /* Default Red Icon */
+  transition: color 0.3s ease !important;
 }
 
 .logout-btn-innovative .text {
@@ -306,27 +299,24 @@
   font-size: 0.88rem;
   font-weight: 700;
   white-space: nowrap;
-  transform: translateX(-15px);
-  transition: all 0.3s ease;
-  padding-right: 14px;
+  color: #e11d48 !important;
+  transition: opacity 0.3s ease !important;
 }
 
 .logout-btn-innovative:hover {
-  width: 110px !important;
-  background-color: #e11d48;
-  border-color: #e11d48;
-  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+  width: 105px !important;
+  background-color: #e11d48 !important;
+  border-color: #e11d48 !important;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3) !important;
 }
 
-/* Force white color on hover */
-.logout-btn-innovative:hover .icon i,
+.logout-btn-innovative:hover i,
 .logout-btn-innovative:hover .text {
-  color: #ffffff !important; 
+  color: #ffffff !important; /* Hover par dono White honge */
 }
 
 .logout-btn-innovative:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
   </style>
@@ -1109,7 +1099,7 @@ function showDashboard() {
             </div>
             <div>
 		<button onclick="logout()" class="logout-btn-innovative" title="Log out">
-  		<span class="icon"><i class="fa-solid fa-power-off"></i></span>
+  		<i class="fa-solid fa-power-off"></i>
   		<span class="text">Log out</span>
 		</button>
             </div>
