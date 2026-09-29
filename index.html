@@ -984,7 +984,7 @@ function showDashboard() {
         actionButtons = `
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
-          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
+          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance</button>
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <div style="grid-column: span 1; display: flex; align-items: center;">
@@ -1004,7 +1004,7 @@ function showDashboard() {
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
-          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
+          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance</button>
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
@@ -6296,7 +6296,7 @@ async function forceUserLogout(username) {
 
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
 // =======================================================================
-    // DYNAMIC PRODUCT ANALYZER MODULE (LIVE DATE RANGE & SCROLL FIX)
+    // DYNAMIC Product Performance MODULE (LIVE DATE RANGE & SCROLL FIX)
     // =======================================================================
     
     let analyzerDataCache = null;
@@ -6335,7 +6335,7 @@ async function forceUserLogout(username) {
         <div class="modal-overlay">
           <div class="modal-box">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#0ea5e9; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Analytics...</h3>
+            <h3 style="color:#0ea5e9; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Performance...</h3>
             <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Calculating live data based on your selected dates. This may take few seconds...</p>
           </div>
         </div>
@@ -6358,7 +6358,7 @@ async function forceUserLogout(username) {
         analyzerDataCache = data;
         renderProductAnalyzerUI();
       } catch (e) {
-        alert("Failed to load Product Analyzer. " + e.message);
+        alert("Failed to load Product Performance. " + e.message);
         closeModalAndResume();
       }
     }
@@ -6419,7 +6419,7 @@ async function forceUserLogout(username) {
             
             <!-- HEADER (FIXED) -->
             <h3 style="color:#0ea5e9; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-shrink: 0;">
-              <i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer & ABC Classification
+              <i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance & ABC Classification
             </h3>
 
             <!-- TOP FILTERS & ACTIONS (FIXED) -->
