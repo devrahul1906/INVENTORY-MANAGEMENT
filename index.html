@@ -285,7 +285,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwXWYwhOrvgqZ_RTakbh_96QdnBRUjvlfkbT81ge47lBAiBAsOa8154KXeBFHLEm_wl/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzAYs0sSBw1cTwYMy2LBK987uGW_hPGWOnu2_K_PHJOo5i5pcAKNZIENdCZQ66E0yf8/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -973,7 +973,7 @@ async function showTodayBillsDetails() {
       fetchUserScansFromCloud(); 
     }
 
-    function showDashboard() {
+function showDashboard() {
       const currentWh = sessionStorage.getItem("warehouse") || "";
       const userRole = sessionStorage.getItem("role") || "Standard";
       let actionButtons = "";
@@ -984,6 +984,7 @@ async function showTodayBillsDetails() {
         actionButtons = `
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <div style="grid-column: span 1; display: flex; align-items: center;">
@@ -1003,6 +1004,7 @@ async function showTodayBillsDetails() {
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
@@ -1014,35 +1016,28 @@ async function showTodayBillsDetails() {
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
             <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
           `;
-        } else if (lowerWh === "main warehouse") {
+        } else if (lowerWh === "main warehouse" || lowerWh === "packing area" || lowerWh === "near-expiry" || lowerWh === "damaged") {
           actionButtons = `
+            ${lowerWh === "packing area" ? `<button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Sale Invoice (PDF)</button>
+            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>` : ""}
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
-          `;
-        } else if (lowerWh === "packing area") {
-          actionButtons = `
-            <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Sale Invoice (PDF)</button>
-            <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>
-            <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
-            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
-          `;
-        } else if (lowerWh === "near-expiry" || lowerWh === "damaged") {
-          actionButtons = `
-            <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
-            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
           `;
         } else {
           actionButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+            <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer</button>
           `;
         }
       }
 
-	actionButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
+      actionButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
       actionButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
       actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
@@ -6303,6 +6298,257 @@ async function forceUserLogout(username) {
     }
 
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
+// =======================================================================
+    // DYNAMIC PRODUCT ANALYZER MODULE (LIVE DATE RANGE & SCROLL FIX)
+    // =======================================================================
+    
+    let analyzerDataCache = null;
+
+    function openProductAnalyzerDateModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 450px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#0ea5e9;"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for the analysis. <b>Leave blank for "All Time" report.</b></p>
+            
+            <div class="field-group" style="margin-top: 10px;">
+              <label>From Date (Optional)</label>
+              <input type="date" id="analyzerFromDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            <div class="field-group" style="margin-top: 10px;">
+              <label>To Date (Optional)</label>
+              <input type="date" id="analyzerToDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:20px;">
+              <button onclick="fetchAndShowProductAnalyzer()" class="btn-primary" style="background-color: #0ea5e9; color: white; width:100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-bolt"></i> Generate Report</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width:100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; cursor: pointer; background: #f1f5f9;">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchAndShowProductAnalyzer() {
+      let fromDateVal = document.getElementById("analyzerFromDate").value;
+      let toDateVal = document.getElementById("analyzerToDate").value;
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#0ea5e9; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Analytics...</h3>
+            <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Calculating live data based on your selected dates. This may take 5-8 seconds...</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        let url = `${GOOGLE_SHEET_URL}?action=getProductAnalyzerReport`;
+        if (fromDateVal) url += `&fromDate=${encodeURIComponent(fromDateVal)}`;
+        if (toDateVal) url += `&toDate=${encodeURIComponent(toDateVal)}`;
+
+        let res = await fetch(url);
+        let data = await res.json();
+        
+        if (data.status === "error") {
+          alert("Error: " + data.message);
+          closeModalAndResume();
+          return;
+        }
+        
+        analyzerDataCache = data;
+        renderProductAnalyzerUI();
+      } catch (e) {
+        alert("Failed to load Product Analyzer. " + e.message);
+        closeModalAndResume();
+      }
+    }
+
+    function renderProductAnalyzerUI() {
+      if (!analyzerDataCache || !analyzerDataCache.items) return;
+      
+      let summary = analyzerDataCache.summary;
+      let headers = analyzerDataCache.headers;
+      
+      let tbody = "";
+      analyzerDataCache.items.forEach((item, idx) => {
+        let tagIcon = "";
+        let tagColor = "";
+        let displayTag = "";
+        
+        // FIX: Display Tags changed to 'Demand' while keeping colors accurate
+        if (item.tag === "High Moving") {
+          tagIcon = '<i class="fa-solid fa-circle" style="color: #16a34a;"></i>';
+          tagColor = "#16a34a"; // Green
+          displayTag = "High Demand";
+        } else if (item.tag === "Medium Moving") {
+          tagIcon = '<i class="fa-solid fa-circle" style="color: #d97706;"></i>';
+          tagColor = "#d97706"; // Yellow
+          displayTag = "Stable Demand";
+        } else {
+          tagIcon = '<i class="fa-solid fa-circle" style="color: #dc2626;"></i>';
+          tagColor = "#dc2626"; // Red
+          displayTag = "Low Demand";
+        }
+
+        let trendIcon = "";
+        if (item.trend === "Up") trendIcon = `<i class="fa-solid fa-arrow-trend-up" style="color: #16a34a;" title="Up"></i>`;
+        else if (item.trend === "Down") trendIcon = `<i class="fa-solid fa-arrow-trend-down" style="color: #dc2626;" title="Down"></i>`;
+        else if (item.trend === "Dead") trendIcon = `<i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;" title="Dead"></i>`;
+        else trendIcon = `<i class="fa-solid fa-arrow-right" style="color: #64748b;" title="Stable"></i>`;
+
+        let trendText = `${headers.m3}: ${formatNumber(item.m3)} | ${headers.m2}: ${formatNumber(item.m2)} | ${headers.m1}: ${formatNumber(item.m1)} ${trendIcon}`;
+
+        tbody += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td><b>${escapeHtml(item.product)}</b></td>
+            <td style="text-align:right; font-weight:700;">${formatNumber(item.stock)}</td>
+            <td style="text-align:right;">${formatNumber(item.totalSold)}</td>
+            <td style="text-align:center; font-weight:600;">${item.perc}%</td>
+            <td style="color:${tagColor}; font-weight:700;">${tagIcon} ${displayTag}</td>
+            <td style="font-size:0.8rem; color:var(--text-muted);">${trendText}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <!-- MODAL BOX FIXED HEIGHT FOR SCROLLING -->
+          <div class="modal-box" style="max-width: 1100px; height: 95vh; display: flex; flex-direction: column; padding: 24px; overflow: hidden;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            
+            <!-- HEADER (FIXED) -->
+            <h3 style="color:#0ea5e9; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-shrink: 0;">
+              <i class="fa-solid fa-magnifying-glass-chart"></i> Product Analyzer & ABC Classification
+            </h3>
+
+            <!-- TOP FILTERS & ACTIONS (FIXED) -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; flex-shrink: 0;">
+              <div style="display:flex; gap: 12px; flex: 1;">
+                <div class="field-group" style="flex: 1; max-width: 300px;">
+                  <label><i class="fa-solid fa-magnifying-glass"></i> Search Product</label>
+                  <input type="text" id="analyzerSearchInput" placeholder="Type Product Name or Tag..." onkeyup="filterAnalyzerTable()" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-solid fa-clock"></i> ${escapeHtml(analyzerDataCache.lastUpdated)}</span>
+                <button onclick="exportAnalyzerExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
+              </div>
+            </div>
+
+            <!-- SCROLLABLE AREA (CARDS + TABLE) -->
+            <div style="flex: 1 1 auto; overflow-y: auto; padding-right: 8px; min-height: 0;">
+              
+              <!-- SUMMARY CARDS -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                  <h4 style="color: #16a34a; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-bolt"></i> HIGH DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Top 80% Vol)</small></h4>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #15803d;">${summary.high.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.high.vol)} pcs</b></div>
+                  <div style="font-size: 0.75rem; font-style: italic; color: #16a34a; margin-top: 8px;">Action: Maintain optimal stock levels.</div>
+                </div>
+
+                <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                  <h4 style="color: #d97706; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-truck"></i> STABLE DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Next 15% Vol)</small></h4>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #b45309;">${summary.med.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.med.vol)} pcs</b></div>
+                  <div style="font-size: 0.75rem; font-style: italic; color: #d97706; margin-top: 8px;">Action: Monitor demand & replenish.</div>
+                </div>
+
+                <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                  <h4 style="color: #dc2626; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-hourglass-end"></i> LOW DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Bottom 5% Vol)</small></h4>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #b91c1c;">${summary.slow.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.slow.vol)} pcs</b></div>
+                  <div style="font-size: 0.75rem; font-style: italic; color: #dc2626; margin-top: 8px;">Action: Control replenishment & clear excess stock.</div>
+                </div>
+              </div>
+
+              <!-- DETAILED TABLE -->
+              <div style="border: 1px solid var(--border-color); border-radius: 4px;">
+                <table class="pdf-item-table" id="analyzerTable" style="margin-top: 0; min-width: 950px; font-size: 0.85rem; border: none; width: 100%;">
+                  <thead style="position: sticky; top: 0; z-index: 10; background: var(--primary-light); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <tr>
+                      <th style="width: 5%;">Sr. No</th>
+                      <th>Product Name</th>
+                      <th style="text-align:right;">Current Stock</th>
+                      <th style="text-align:right;">Total Sold</th>
+                      <th style="text-align:center;">% of Sales</th>
+                      <th>Classification Tag</th>
+                      <th>Monthly Trend (${headers.m3} » ${headers.m2} » ${headers.m1})</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+
+            </div> <!-- END SCROLLABLE AREA -->
+
+            <!-- BOTTOM BUTTONS (FIXED) -->
+            <div style="display:flex; justify-content:space-between; margin-top:15px; flex-shrink: 0;">
+              <button onclick="openProductAnalyzerDateModal()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date Range</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function filterAnalyzerTable() {
+      let filter = document.getElementById("analyzerSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#analyzerTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    function exportAnalyzerExcel() {
+      if (!analyzerDataCache || !analyzerDataCache.items || analyzerDataCache.items.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+
+      let btn = document.querySelector("#modal-container .btn-emerald");
+      if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+      try {
+        let headers = analyzerDataCache.headers;
+        let exportData = analyzerDataCache.items.map((item, idx) => {
+          let displayTag = item.tag === "High Moving" ? "High Demand" : (item.tag === "Medium Moving" ? "Stable Demand" : "Low Demand");
+          
+          return {
+            "Sr. No": idx + 1,
+            "Product Name": item.product,
+            "Current Stock": item.stock,
+            "Total Sold": item.totalSold,
+            "% of Total Sales": item.perc + "%",
+            "Classification Tag": displayTag,
+            "Trend Pattern": item.trend,
+            [headers.m3 + " (Month -3)"]: item.m3,
+            [headers.m2 + " (Month -2)"]: item.m2,
+            [headers.m1 + " (Current Month)"]: item.m1
+          };
+        });
+
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "ABC Analysis");
+        XLSX.writeFile(wb, `Product_Analyzer_Report_${new Date().toISOString().slice(0,10)}.xlsx`);
+        
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export to Excel";
+      } catch (e) {
+        alert("Export Error: " + e.message);
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export to Excel";
+      }
+    }
+
   </script>
 
 </body>
