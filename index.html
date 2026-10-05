@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx9CvUDl2fvSOst6pvJBD6wzoPK1SxiyZxqxSL1OSWs6kJUT8wr69PCtXV0zxTLD5Ll/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyhRbjcgVEqPHWoVneQ0Buar7e3_cZdyyOn38eHEXM5WgjbNbep8b-hNbvRuzRckH5r/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -5879,7 +5879,6 @@ async function handleDispatchReturnPdfUpload(input) {
       }
     }
 	
-
 // --- 1. LOAD CURRENT WAREHOUSE REPORT ---
 async function loadCurrentWarehouseReport() {
   let wh = sessionStorage.getItem("warehouse") || "";
@@ -5896,8 +5895,25 @@ async function loadCurrentWarehouseReport() {
   try {
     let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getStockReport&warehouse=${encodeURIComponent(wh)}`);
     let rawData = await res.json();
-    renderFullStockReport(rawData, wh); // Naya: Current report ko bhi full report wale UI me bhej rahe hain
+    
+    // Naya: Agar backend error bhejta hai, toh exact error dikhayega
+    if (rawData && rawData.status === "error") {
+        alert("Backend Issue: " + rawData.message);
+        closeModalAndResume();
+        return;
+    }
+
+    if(!Array.isArray(rawData)) {
+        console.error("Invalid data format received:", rawData);
+        alert("Server returned invalid data format. Please contact support.");
+        closeModalAndResume();
+        return;
+    }
+
+    renderFullStockReport(rawData, wh); 
   } catch (e) {
+    console.error("Current report fetch error:", e);
+    alert("Error loading current report. Please check console for details.");
     closeModalAndResume();
   }
 }
@@ -5915,9 +5931,25 @@ async function loadFullStockReport() {
   try {
     let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getStockReport&warehouse=All`);
     let rawData = await res.json();
+    
+    // Naya: Agar backend error bhejta hai, toh exact error dikhayega
+    if (rawData && rawData.status === "error") {
+        alert("Backend Issue: " + rawData.message);
+        closeModalAndResume();
+        return;
+    }
+
+    if(!Array.isArray(rawData)) {
+        console.error("Invalid data format received:", rawData);
+        alert("Server returned invalid data format. Please contact support.");
+        closeModalAndResume();
+        return;
+    }
+
     renderFullStockReport(rawData, "Full");
   } catch (e) {
-    alert("Error loading full report. Please check your internet connection.");
+    console.error("Full report fetch error:", e);
+    alert("Error loading full report. Please check console for details.");
     openStockReportModal();
   }
 }
@@ -6031,7 +6063,7 @@ function downloadStockExcel(type) {
   }
 }
 
-   function showUserManual() {
+	function showUserManual() {
       const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
       const currentWh = (sessionStorage.getItem("warehouse") || "").toLowerCase();
       let sopTitle = "";
@@ -6115,9 +6147,61 @@ function downloadStockExcel(type) {
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Yes, Proceed.</li>
           </ul>
         `;
+      } else if (currentWh === "main warehouse" || currentWh === "near-expiry" || currentWh === "damaged") {
+        // NAYA SECTION: Main Warehouse, Near-Expiry, and Damaged ke liye
+        let upperWh = currentWh.toUpperCase();
+        sopTitle = `${upperWh} USER SOP`;
+        sopHtml = `
+          <b>Access Level:</b> Standard Inventory Routing & Reporting.<br>
+          <b>Available Modules:</b> Internal Stock Transfer, Stock Report, Daily Work Report, View Audit Logs.<br><br>
+          
+          <b>A. Internal Stock Transfer</b><br>
+          This function allows you to route verified stock from your location to other designated warehouse locations.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>Internal Stock Transfer</b> button.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select the Product Name and its corresponding Batch No.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Enter the exact Quantity you wish to transfer.</li>
+            <li style="margin-bottom: 4px;"><b>Step 4:</b> Select the Destination Warehouse and click <b>Transfer Stock</b>.</li>
+          </ul>
+
+          <b>B. Stock Report & Auditing</b><br>
+          View and export your current inventory levels and personal operations.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>Stock Report</b> button to view available quantities.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Click on <b>Export Excel</b> if you need a downloaded sheet.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Use <b>View Audit Logs</b> or <b>Daily Work Report</b> to verify your past entries.</li>
+          </ul>
+        `;
       } else {
-        sopTitle = "GENERAL USER SOP";
-        sopHtml = `<b>Access Level:</b> Standard operations.<br><br>Please contact Admin for your specific warehouse operations guide.`;
+        // NAYA SECTION: Baki bache huye "Hold Items" ya kisi aur new location ke liye
+        let upperWh = currentWh ? currentWh.toUpperCase() : "GENERAL";
+        sopTitle = `${upperWh} USER SOP`;
+        sopHtml = `
+          <b>Access Level:</b> Inventory Management & Standard Operations.<br>
+          <b>Available Modules:</b> New Purchase Entry, Internal Stock Transfer, Stock Report, Daily Work Report, View Audit Logs.<br><br>
+          
+          <b>A. New Purchase Entry</b><br>
+          Used to record new stock directly into this location.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>New Purchase Entry</b> button.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Fill in Supplier, Product, Batch, Mfg, Exp, MRP, and Qty.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click <b>Submit All Entries</b>.</li>
+          </ul>
+
+          <b>B. Internal Stock Transfer</b><br>
+          Used to move verified stock to other locations.<br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on <b>Internal Stock Transfer</b>.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select Product Name, Batch No, and enter Quantity.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Select Destination Warehouse and submit.</li>
+          </ul>
+          
+          <b>C. Stock Report</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on <b>Stock Report</b> to view current availability.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Use the <b>Export Excel</b> button to download data.</li>
+          </ul>
+        `;
       }
 
       document.getElementById("modal-container").innerHTML = `
