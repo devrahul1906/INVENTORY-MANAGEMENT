@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzAYs0sSBw1cTwYMy2LBK987uGW_hPGWOnu2_K_PHJOo5i5pcAKNZIENdCZQ66E0yf8/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx9CvUDl2fvSOst6pvJBD6wzoPK1SxiyZxqxSL1OSWs6kJUT8wr69PCtXV0zxTLD5Ll/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -348,7 +348,29 @@
     let pendingDispatchReturnPayload = null;
     let pendingExpiryDamagePayload = null;
 
+    // Naya: Global State Data Leak ko rokne ke liye
+    const AppState = { stockData: [] };
+
+    // Naya: Smart Fetch function for Network Retries
+    async function safeFetch(url, options = {}, retries = 3) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          let response = await fetch(url, options);
+          if (!response.ok) throw new Error("Server response was not ok");
+          return response;
+        } catch (err) {
+          if (i === retries - 1) {
+            alert("⚠️ Network Error: Unable to reach the server. Please check your internet connection.");
+            throw err;
+          }
+          console.warn(`Fetch failed, retrying in ${i + 1} seconds...`);
+          await new Promise(res => setTimeout(res, 1000 * (i + 1))); 
+        }
+      }
+    }
+
     function formatNumber(val) {
+
       let num = parseInt(val, 10);
       if (isNaN(num)) num = 0;
       return num.toLocaleString('en-IN');
@@ -5856,158 +5878,66 @@ async function handleDispatchReturnPdfUpload(input) {
         loadCurrentWarehouseReport();
       }
     }
+	
 
-    async function loadCurrentWarehouseReport() {
-      let wh = sessionStorage.getItem("warehouse") || "";
-      let lowerWh = wh.trim().toLowerCase();
-      let actionUrl = "";
+// --- 1. LOAD CURRENT WAREHOUSE REPORT ---
+async function loadCurrentWarehouseReport() {
+  let wh = sessionStorage.getItem("warehouse") || "";
+  
+  document.getElementById("modal-container").innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Detailed Report...</h3>
+      </div>
+    </div>
+  `;
 
-      if (lowerWh === "main warehouse") actionUrl = "mainWarehouseStockDetails";
-      else if (lowerWh === "packing area") actionUrl = "packingStockDetails";
-      else if (lowerWh === "near-expiry") actionUrl = "expiredStockDetails";
-      else if (lowerWh === "damaged") actionUrl = "damageStockDetails";
-      else if (lowerWh === "other location") actionUrl = "warehouseStockDetails&warehouse=Other Location";
-      else actionUrl = "warehouseStockDetails&warehouse=" + encodeURIComponent(wh);
+  try {
+    let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getStockReport&warehouse=${encodeURIComponent(wh)}`);
+    let rawData = await res.json();
+    renderFullStockReport(rawData, wh); // Naya: Current report ko bhi full report wale UI me bhej rahe hain
+  } catch (e) {
+    closeModalAndResume();
+  }
+}
 
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Report...</h3>
-          </div>
-        </div>
-      `;
+// --- 2. LOAD FULL STOCK REPORT ---
+async function loadFullStockReport() {
+  document.getElementById("modal-container").innerHTML = `
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Full Report...</h3>
+      </div>
+    </div>
+  `;
+  try {
+    let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getStockReport&warehouse=All`);
+    let rawData = await res.json();
+    renderFullStockReport(rawData, "Full");
+  } catch (e) {
+    alert("Error loading full report. Please check your internet connection.");
+    openStockReportModal();
+  }
+}
 
-      try {
-        let res = await fetch(`${GOOGLE_SHEET_URL}?action=${actionUrl}`);
-        if (!res.ok) throw new Error("Network Error");
-        let text = await res.text();
-        try {
-           let parsedData = JSON.parse(text);
-           currentStockDataCache = parsedData.filter(item => parseInt(item.totalQty, 10) > 0);
-        } catch(e) {
-           console.error("Not JSON:", text);
-           throw new Error("Invalid response from server");
-        }
-        renderCurrentStockReport(wh, currentStockDataCache);
-      } catch (e) {
-        alert("Error loading report. " + e.message);
-        closeModalAndResume();
-      }
-    }
-
-    function renderCurrentStockReport(wh, data) {
-      let tbody = "";
-      if (!data || data.length === 0) {
-        tbody = `<tr><td colspan="3" style="text-align:center;">No stock available</td></tr>`;
-      } else {
-        data.sort((a, b) => a.product.localeCompare(b.product)); 
-        tbody = data.map((item, idx) => `
-          <tr>
-            <td>${idx + 1}</td>
-            <td><b>${escapeHtml(item.product)}</b></td>
-            <td>${formatNumber(item.totalQty)}</td>
-          </tr>
-        `).join("");
-      }
-
-      const userRole = sessionStorage.getItem("role") || "Standard";
-      const roleLower = userRole.toLowerCase();
-      let backBtnHtml = "";
-      if (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
-         backBtnHtml = `<button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>`;
-      } else {
-         backBtnHtml = `<button onclick="closeModalAndResume()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-xmark"></i> Close</button>`;
-      }
-
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Current Warehouse Stock Report<br><small style="font-size:0.9rem; color:var(--text-muted);">${escapeHtml(wh)}</small></h3>
-            <div style="display:flex; justify-content:space-between; margin-top:8px;">
-              <button onclick="downloadCurrentStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-              ${backBtnHtml}
-            </div>
-            <table class="pdf-item-table" style="margin-top:16px;">
-              <thead>
-                <tr>
-                  <th style="width: 10%;">Sr.No</th>
-                  <th>Product Name</th>
-                  <th style="width: 20%;">Available Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${tbody}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-
-    function downloadCurrentStockExcel() {
-      if(!currentStockDataCache || currentStockDataCache.length === 0) return alert("No data to export");
-      let exportData = currentStockDataCache.map((item, idx) => ({
-        "Sr.No": idx + 1,
-        "Product Name": item.product,
-        "Available Qty": item.totalQty
-      }));
-      let ws = XLSX.utils.json_to_sheet(exportData);
-      let wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Current Stock");
-      let whName = (sessionStorage.getItem("warehouse") || "Warehouse").replace(/[^a-zA-Z0-9]/g, '_');
-      XLSX.writeFile(wb, `Current_Stock_${whName}_${new Date().toISOString().slice(0,10)}.xlsx`);
-    }
-
-    async function loadFullStockReport() {
-      document.getElementById("modal-container").innerHTML = `
-        <div class="modal-overlay">
-          <div class="modal-box">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Full Report...</h3>
-          </div>
-        </div>
-      `;
-      try {
-        let res = await fetch(`${GOOGLE_SHEET_URL}?action=fullStockReport`);
-        if (!res.ok) throw new Error("Network Error");
-        let text = await res.text();
-        try {
-           let rawData = JSON.parse(text);
-           renderFullStockReport(rawData);
-        } catch(e) {
-           console.error("Not JSON:", text);
-           throw new Error("Invalid response from server");
-        }
-      } catch (e) {
-        alert("Error loading full report. It might be taking too long. " + e.message);
-        openStockReportModal();
-      }
-    }
-
-function renderFullStockReport(data) {
+// --- 3. UNIFIED RENDER FUNCTION (Dono Reports ke liye ek hi UI) ---
+function renderFullStockReport(data, reportType = "Full") {
   let groupedData = {};
   
   if (data && data.length > 0) {
     data.forEach(item => {
       let shortExp = item.exp ? formatShortDate(item.exp.toString()) : "";
-      let loc = item.location ? item.location.toString().trim() : "";
-      let prod = item.product ? item.product.toString().trim() : "";
-      let batch = item.batch ? item.batch.toString().trim() : "";
-      let mrp = item.mrp ? item.mrp.toString().trim() : "";
+      let loc = item.location ? item.location.toString().trim() : "N/A";
+      let prod = item.product ? item.product.toString().trim() : "N/A";
+      let batch = item.batch ? item.batch.toString().trim() : "N/A";
+      let mrp = item.mrp ? item.mrp.toString().trim() : "0.00";
       
       let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp;
       
       if (!groupedData[key]) {
-        groupedData[key] = {
-          location: loc,
-          product: prod,
-          batch: batch,
-          exp: shortExp, 
-          mrp: mrp,
-          qty: 0
-        };
+        groupedData[key] = { location: loc, product: prod, batch: batch, exp: shortExp, mrp: mrp, qty: 0 };
       }
       
       let itemQty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
@@ -6016,14 +5946,13 @@ function renderFullStockReport(data) {
   }
   
   let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
-  
   aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
   
-  fullStockDataCache = aggregatedArray;
+  AppState.stockData = aggregatedArray; // Data ko AppState me save kiya
 
   let tbody = "";
   if (aggregatedArray.length === 0) {
-    tbody = `<tr><td colspan="7" style="text-align:center;">No stock available</td></tr>`;
+    tbody = `<tr><td colspan="7" style="text-align:center; padding: 20px;">No stock available</td></tr>`;
   } else {
     tbody = aggregatedArray.map((item, idx) => `
       <tr>
@@ -6038,13 +5967,15 @@ function renderFullStockReport(data) {
     `).join("");
   }
 
+  let title = reportType === "Full" ? "Full Stock Report" : `Current Stock: ${escapeHtml(reportType)}`;
+
   document.getElementById("modal-container").innerHTML = `
     <div class="modal-overlay">
       <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
         <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-        <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Full Stock Report</h3>
+        <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> ${title}</h3>
         <div style="display:flex; justify-content:space-between; margin-top:8px;">
-          <button onclick="downloadFullStockExcel()" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+          <button onclick="downloadStockExcel('${escapeHtml(reportType)}')" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
           <button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
         </div>
         <table class="pdf-item-table" style="margin-top:16px; font-size: 0.8rem;">
@@ -6068,37 +5999,39 @@ function renderFullStockReport(data) {
   `;
 }
 
-    function downloadFullStockExcel() {
-      try {
-        if (!fullStockDataCache || fullStockDataCache.length === 0) {
-          alert("No data available to export.");
-          return;
-        }
-        let exportData = [];
-        for (let i = 0; i < fullStockDataCache.length; i++) {
-          let item = fullStockDataCache[i];
-          exportData.push({
-            "Sr.No": i + 1,
-            "Location": item.location ? item.location.toString() : "N/A",
-            "Product Name": item.product ? item.product.toString() : "N/A",
-            "Batch No.": item.batch ? item.batch.toString() : "N/A",
-            "Expiry Date": item.exp ? formatShortDate(item.exp.toString()) : "N/A",
-            "Available Qty": parseInt(item.qty) || 0,
-            "MRP": item.mrp ? item.mrp.toString() : "N/A"
-          });
-        }
-        let ws = XLSX.utils.json_to_sheet(exportData);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Full Stock Report");
-        let dateStr = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, "Full_Stock_Report_" + dateStr + ".xlsx");
-      } catch (err) {
-        console.error("Export Error: ", err);
-        alert("Export failed: " + err.message);
-      }
+// --- 4. UNIFIED EXCEL EXPORT (Aapke Screenshot ke Hisab Se) ---
+function downloadStockExcel(type) {
+  try {
+    if (!AppState.stockData || AppState.stockData.length === 0) {
+      alert("No data available to export.");
+      return;
     }
+    
+    let exportData = AppState.stockData.map((item, idx) => ({
+      "Sr.No": idx + 1,
+      "Location": item.location || "N/A",
+      "Product Name": item.product || "N/A",
+      "Batch No.": item.batch || "N/A",
+      "Expiry Date": item.exp || "N/A",
+      "Available Qty": parseInt(item.qty) || 0,
+      "MRP": item.mrp || "N/A"
+    }));
 
-    function showUserManual() {
+    let ws = XLSX.utils.json_to_sheet(exportData);
+    let wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Stock Report");
+    
+    let fileName = type === "Full" ? "Full_Stock_Report" : `Stock_${type.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    let dateStr = new Date().toISOString().slice(0, 10);
+    
+    XLSX.writeFile(wb, `${fileName}_${dateStr}.xlsx`);
+  } catch (err) {
+    console.error("Export Error: ", err);
+    alert("Export failed: " + err.message);
+  }
+}
+
+   function showUserManual() {
       const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
       const currentWh = (sessionStorage.getItem("warehouse") || "").toLowerCase();
       let sopTitle = "";
