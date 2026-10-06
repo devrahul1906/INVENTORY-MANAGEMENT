@@ -5965,9 +5965,8 @@ function renderFullStockReport(data, reportType = "Full") {
       let prod = item.product ? item.product.toString().trim() : "N/A";
       let batch = item.batch ? item.batch.toString().trim() : "N/A";
       let mrp = item.mrp ? item.mrp.toString().trim() : "0.00";
-      let sup = item.supplier ? item.supplier.toString().trim() : "N/A"; // Supplier Fetch
+      let sup = item.supplier ? item.supplier.toString().trim() : "N/A"; 
       
-      // Grouping key me supplier bhi add kiya
       let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp + "|" + sup;
       
       if (!groupedData[key]) {
@@ -5982,7 +5981,7 @@ function renderFullStockReport(data, reportType = "Full") {
   let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
   aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
   
-  AppState.stockData = aggregatedArray; // Data ko AppState me save kiya
+  AppState.stockData = aggregatedArray; 
 
   let tbody = "";
   if (aggregatedArray.length === 0) {
@@ -5992,9 +5991,9 @@ function renderFullStockReport(data, reportType = "Full") {
       <tr>
         <td>${idx + 1}</td>
         <td>${escapeHtml(item.location)}</td>
+        <td>${escapeHtml(item.supplier)}</td> <!-- Supplier Name yaha shift kiya -->
         <td><b>${escapeHtml(item.product)}</b></td>
         <td>${escapeHtml(item.batch)}</td>
-        <td>${escapeHtml(item.supplier)}</td> <!-- Supplier UI me print kiya -->
         <td>${escapeHtml(item.exp)}</td>
         <td style="text-align:right; font-weight:bold; color:var(--primary);">${formatNumber(item.qty)}</td>
         <td>${escapeHtml(item.mrp)}</td>
@@ -6018,9 +6017,9 @@ function renderFullStockReport(data, reportType = "Full") {
             <tr>
               <th style="width: 5%;">Sr.No</th>
               <th>Location</th>
+              <th>Supplier Name</th> <!-- Supplier Name yaha shift kiya -->
               <th>Product Name</th>
               <th>Batch No.</th>
-              <th>Supplier Name</th> <!-- Naya column ban gaya -->
               <th>Expiry Date</th>
               <th style="text-align:right;">Available Qty</th>
               <th>MRP</th>
@@ -6035,7 +6034,7 @@ function renderFullStockReport(data, reportType = "Full") {
   `;
 }
 
-	// --- 4. UNIFIED EXCEL EXPORT ---
+// --- 4. UNIFIED EXCEL EXPORT ---
 function downloadStockExcel(type) {
   try {
     if (!AppState.stockData || AppState.stockData.length === 0) {
@@ -6043,12 +6042,13 @@ function downloadStockExcel(type) {
       return;
     }
     
+    // Excel me column order aapke naye format ke hisaab se update kiya
     let exportData = AppState.stockData.map((item, idx) => ({
       "Sr.No": idx + 1,
       "Location": item.location || "N/A",
+      "Supplier Name": item.supplier || "N/A", 
       "Product Name": item.product || "N/A",
       "Batch No.": item.batch || "N/A",
-      "Supplier Name": item.supplier || "N/A", // Excel sheet me yaha se jayega
       "Expiry Date": item.exp || "N/A",
       "Available Qty": parseInt(item.qty) || 0,
       "MRP": item.mrp || "N/A"
