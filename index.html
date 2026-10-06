@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyhRbjcgVEqPHWoVneQ0Buar7e3_cZdyyOn38eHEXM5WgjbNbep8b-hNbvRuzRckH5r/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxeIf3rmDgFvbZz8IIq1Q43OoZpRMwRCyJuMCQ1Fq1DeOsegqWuj6f8gcvG95zpOjqW/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -5954,7 +5954,7 @@ async function loadFullStockReport() {
   }
 }
 
-// --- 3. UNIFIED RENDER FUNCTION (Dono Reports ke liye ek hi UI) ---
+	// --- 3. UNIFIED RENDER FUNCTION (Dono Reports ke liye ek hi UI) ---
 function renderFullStockReport(data, reportType = "Full") {
   let groupedData = {};
   
@@ -5965,11 +5965,13 @@ function renderFullStockReport(data, reportType = "Full") {
       let prod = item.product ? item.product.toString().trim() : "N/A";
       let batch = item.batch ? item.batch.toString().trim() : "N/A";
       let mrp = item.mrp ? item.mrp.toString().trim() : "0.00";
+      let sup = item.supplier ? item.supplier.toString().trim() : "N/A"; // Supplier Fetch
       
-      let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp;
+      // Grouping key me supplier bhi add kiya
+      let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp + "|" + sup;
       
       if (!groupedData[key]) {
-        groupedData[key] = { location: loc, product: prod, batch: batch, exp: shortExp, mrp: mrp, qty: 0 };
+        groupedData[key] = { location: loc, product: prod, batch: batch, supplier: sup, exp: shortExp, mrp: mrp, qty: 0 };
       }
       
       let itemQty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
@@ -5984,7 +5986,7 @@ function renderFullStockReport(data, reportType = "Full") {
 
   let tbody = "";
   if (aggregatedArray.length === 0) {
-    tbody = `<tr><td colspan="7" style="text-align:center; padding: 20px;">No stock available</td></tr>`;
+    tbody = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No stock available</td></tr>`;
   } else {
     tbody = aggregatedArray.map((item, idx) => `
       <tr>
@@ -5992,6 +5994,7 @@ function renderFullStockReport(data, reportType = "Full") {
         <td>${escapeHtml(item.location)}</td>
         <td><b>${escapeHtml(item.product)}</b></td>
         <td>${escapeHtml(item.batch)}</td>
+        <td>${escapeHtml(item.supplier)}</td> <!-- Supplier UI me print kiya -->
         <td>${escapeHtml(item.exp)}</td>
         <td style="text-align:right; font-weight:bold; color:var(--primary);">${formatNumber(item.qty)}</td>
         <td>${escapeHtml(item.mrp)}</td>
@@ -6003,7 +6006,7 @@ function renderFullStockReport(data, reportType = "Full") {
 
   document.getElementById("modal-container").innerHTML = `
     <div class="modal-overlay">
-      <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-box" style="max-width: 1050px; max-height: 90vh; overflow-y: auto;">
         <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
         <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> ${title}</h3>
         <div style="display:flex; justify-content:space-between; margin-top:8px;">
@@ -6017,6 +6020,7 @@ function renderFullStockReport(data, reportType = "Full") {
               <th>Location</th>
               <th>Product Name</th>
               <th>Batch No.</th>
+              <th>Supplier Name</th> <!-- Naya column ban gaya -->
               <th>Expiry Date</th>
               <th style="text-align:right;">Available Qty</th>
               <th>MRP</th>
@@ -6031,7 +6035,7 @@ function renderFullStockReport(data, reportType = "Full") {
   `;
 }
 
-// --- 4. UNIFIED EXCEL EXPORT (Aapke Screenshot ke Hisab Se) ---
+	// --- 4. UNIFIED EXCEL EXPORT ---
 function downloadStockExcel(type) {
   try {
     if (!AppState.stockData || AppState.stockData.length === 0) {
@@ -6044,6 +6048,7 @@ function downloadStockExcel(type) {
       "Location": item.location || "N/A",
       "Product Name": item.product || "N/A",
       "Batch No.": item.batch || "N/A",
+      "Supplier Name": item.supplier || "N/A", // Excel sheet me yaha se jayega
       "Expiry Date": item.exp || "N/A",
       "Available Qty": parseInt(item.qty) || 0,
       "MRP": item.mrp || "N/A"
