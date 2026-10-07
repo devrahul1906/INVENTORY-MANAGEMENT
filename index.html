@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwTRjZ-qBG_t9kapKiXlKIvmKy0zYzPqbAjz1_sZwRD6V_ck0O7boxIemUExkjqIxeN/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyxoBh_BlyYNxE7Uul94-2tNjWeOgxGHWdDx9ywp3B7rHICHEHrybrPZl63scIKBZm6/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -921,72 +921,73 @@ async function showTodayBillsDetails() {
       updateLiveDateTime();
     }
 
-    async function fetchUserWarehouses() {
-      let emp = document.getElementById("employee").value.trim();
-      let whSelect = document.getElementById("warehouse");
+	async function fetchUserWarehouses() {
+  let emp = document.getElementById("employee").value.trim();
+  let whSelect = document.getElementById("warehouse");
+  
+  if (!emp) {
+    whSelect.innerHTML = '<option value="">-- Enter Username to Load Warehouses --</option>';
+    return;
+  }
+  
+  whSelect.innerHTML = '<option value="">-- Loading Warehouses... --</option>';
+  
+  try {
+    // safeFetch direct parsed JSON data return karta hai
+    let warehouses = await safeFetch(`${GOOGLE_SHEET_URL}?action=getUserWarehouses&employee=${encodeURIComponent(emp)}`);
+    
+    if (!warehouses || warehouses.length === 0 || warehouses.status === "error") {
+      whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
+    } else {
+      let opts = '<option value="">-- Select Warehouse --</option>';
+      warehouses.forEach(wh => {
+        let displayText = wh === "All View" ? "All View (For Management Use Only)" : wh;
+        opts += `<option value="${escapeHtml(wh)}">${escapeHtml(displayText)}</option>`;
+      });
+      whSelect.innerHTML = opts;
       
-      if (!emp) {
-        whSelect.innerHTML = '<option value="">-- Enter Username to Load Warehouses --</option>';
-        return;
-      }
-      
-      whSelect.innerHTML = '<option value="">-- Loading Warehouses... --</option>';
-      
-      try {
-        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getUserWarehouses&employee=${encodeURIComponent(emp)}`);
-        let warehouses = await response.json();
-        
-        if (warehouses.length === 0) {
-          whSelect.innerHTML = '<option value="">-- Invalid User / No Access --</option>';
-        } else {
-          let opts = '<option value="">-- Select Warehouse --</option>';
-          warehouses.forEach(wh => {
-            let displayText = wh === "All View" ? "All View (For Management Use Only)" : wh;
-            opts += `<option value="${escapeHtml(wh)}">${escapeHtml(displayText)}</option>`;
-          });
-          whSelect.innerHTML = opts;
-          
-          if (warehouses.length === 1) {
-             whSelect.value = warehouses[0];
-          }
-        }
-      } catch (e) {
-        whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
+      if (warehouses.length === 1) {
+         whSelect.value = warehouses[0];
       }
     }
+  } catch (e) {
+    whSelect.innerHTML = '<option value="">-- Error loading warehouses --</option>';
+    console.error("Warehouse Load Error:", e);
+  }
+}
 
-    async function login() {
-      let emp = document.getElementById("employee").value.trim();
-      let pass = document.getElementById("password").value.trim();
-      let wh = document.getElementById("warehouse").value;
-      let loginBtn = document.getElementById("loginBtn");
+	async function login() {
+  let emp = document.getElementById("employee").value.trim();
+  let pass = document.getElementById("password").value.trim();
+  let wh = document.getElementById("warehouse").value;
+  let loginBtn = document.getElementById("loginBtn");
 
-      if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
+  if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
 
-      if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Authenticating..."; }
+  if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Authenticating..."; }
 
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}&warehouse=${encodeURIComponent(wh)}`);
-        const data = await response.json();
+  try {
+    // safeFetch direct parsed JSON data return karta hai
+    const data = await safeFetch(`${GOOGLE_SHEET_URL}?action=login&employee=${encodeURIComponent(emp)}&password=${encodeURIComponent(pass)}&warehouse=${encodeURIComponent(wh)}`);
 
-        if (data.status === "success") {
-          sessionStorage.setItem("employee", data.employeeName || emp);
-          sessionStorage.setItem("warehouse", wh);
-          sessionStorage.setItem("role", data.role || "Standard");
-          if (data.sessionId) {
-            sessionStorage.setItem("sessionId", data.sessionId);
-          }
-          syncDataAndShowDashboard();
-        } else {
-          alert("❌ Access Denied: " + (data.message || "Invalid Employee Name or Password!"));
-          if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
-        }
-      } catch (e) {
-        let msg = e.message;
-        alert("⚠️ Connection error: " + msg);
-        if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
+    if (data && data.status === "success") {
+      sessionStorage.setItem("employee", data.employeeName || emp);
+      sessionStorage.setItem("warehouse", wh);
+      sessionStorage.setItem("role", data.role || "Standard");
+      if (data.sessionId) {
+        sessionStorage.setItem("sessionId", data.sessionId);
       }
+      syncDataAndShowDashboard();
+    } else {
+      alert("❌ Access Denied: " + (data && data.message ? data.message : "Invalid Employee Name or Password!"));
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
     }
+  } catch (e) {
+    let msg = e.message;
+    alert("⚠️ Connection error: " + msg);
+    if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>'; }
+  }
+}
 
     async function syncDataAndShowDashboard() {
       showDashboard(); 
@@ -2172,31 +2173,34 @@ async function handleExpiryDamagePdfUpload(input) {
       loadHoldInventory('QA');
     }
 
-    async function loadHoldInventory(source) {
-      document.getElementById('h_product').innerHTML = '<option value="">Loading...</option>';
-      document.getElementById('h_batch').innerHTML = '<option value="">Select Product First</option>';
-      document.getElementById('h_qty').value = 1;
-      document.getElementById('h_max_qty_label').innerText = "";
-      
-      let submitBtn = document.querySelector("#modal-container button.btn-warning");
-      if (submitBtn) submitBtn.disabled = true;
+	async function loadHoldInventory(source) {
+  document.getElementById('h_product').innerHTML = '<option value="">Loading...</option>';
+  document.getElementById('h_batch').innerHTML = '<option value="">Select Product First</option>';
+  document.getElementById('h_qty').value = 1;
+  document.getElementById('h_max_qty_label').innerText = "";
+  
+  let submitBtn = document.querySelector("#modal-container button.btn-warning");
+  if (submitBtn) submitBtn.disabled = true;
 
-      try {
-        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getInventoryForHold&source=${source}`);
-        let data = await response.json();
-        holdInvCache = data.filter(item => parseInt(item.qty, 10) > 0);
-        
-        let uniqueProds = [...new Set(holdInvCache.map(i => i.product))].sort();
-        let opts = '<option value="">-- Select Product --</option>';
-        uniqueProds.forEach(p => {
-          opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
-        });
-        document.getElementById('h_product').innerHTML = opts;
-        if (submitBtn) submitBtn.disabled = false;
-      } catch (e) {
-        alert("Failed to load inventory. Please try again.");
-      }
-    }
+  try {
+    // safeFetch direct parsed JSON data return karta hai
+    let data = await safeFetch(`${GOOGLE_SHEET_URL}?action=getInventoryForHold&source=${source}`);
+    
+    if (data && data.status === "error") throw new Error(data.message);
+
+    holdInvCache = data.filter(item => parseInt(item.qty, 10) > 0);
+    
+    let uniqueProds = [...new Set(holdInvCache.map(i => i.product))].sort();
+    let opts = '<option value="">-- Select Product --</option>';
+    uniqueProds.forEach(p => {
+      opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
+    });
+    document.getElementById('h_product').innerHTML = opts;
+    if (submitBtn) submitBtn.disabled = false;
+  } catch (e) {
+    alert("Failed to load hold inventory: " + e.message);
+  }
+}
 
     function populateHoldBatches() {
       let selProd = document.getElementById('h_product').value;
@@ -2391,26 +2395,29 @@ async function handleExpiryDamagePdfUpload(input) {
       }
     }
 
-    async function loadTransferInventory(currentWarehouse) {
-      let submitBtn = document.querySelector("#modal-container button.btn-indigo");
-      if (submitBtn) submitBtn.disabled = true;
+	async function loadTransferInventory(currentWarehouse) {
+  let submitBtn = document.querySelector("#modal-container button.btn-indigo");
+  if (submitBtn) submitBtn.disabled = true;
 
-      try {
-        let response = await fetch(`${GOOGLE_SHEET_URL}?action=getInventoryForTransfer&warehouse=${encodeURIComponent(currentWarehouse)}`);
-        let data = await response.json();
-        transferInvCache = data.filter(item => parseInt(item.qty, 10) > 0);
-        
-        let uniqueProds = [...new Set(transferInvCache.map(i => i.product))].sort();
-        let opts = '<option value="">-- Select Product Name --</option>';
-        uniqueProds.forEach(p => {
-          opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
-        });
-        document.getElementById('t_product').innerHTML = opts;
-        if (submitBtn) submitBtn.disabled = false;
-      } catch (e) {
-        alert("Failed to load inventory for transfer. Please try again.");
-      }
-    }
+  try {
+    // safeFetch direct parsed JSON data return karta hai
+    let data = await safeFetch(`${GOOGLE_SHEET_URL}?action=getInventoryForTransfer&warehouse=${encodeURIComponent(currentWarehouse)}`);
+    
+    if (data && data.status === "error") throw new Error(data.message);
+
+    transferInvCache = data.filter(item => parseInt(item.qty, 10) > 0);
+    
+    let uniqueProds = [...new Set(transferInvCache.map(i => i.product))].sort();
+    let opts = '<option value="">-- Select Product Name --</option>';
+    uniqueProds.forEach(p => {
+      opts += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`;
+    });
+    document.getElementById('t_product').innerHTML = opts;
+    if (submitBtn) submitBtn.disabled = false;
+  } catch (e) {
+    alert("Failed to load inventory for transfer. Error: " + e.message);
+  }
+}
 
     function populateTransferBatches() {
       let selProd = document.getElementById('t_product').value;
