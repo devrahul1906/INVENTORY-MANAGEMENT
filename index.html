@@ -995,7 +995,7 @@ async function showTodayBillsDetails() {
       fetchUserScansFromCloud(); 
     }
 
-function showDashboard() {
+	function showDashboard() {
       const currentWh = sessionStorage.getItem("warehouse") || "";
       const userRole = sessionStorage.getItem("role") || "Standard";
       let actionButtons = "";
@@ -1060,6 +1060,33 @@ function showDashboard() {
       actionButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
       actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
+      // --- NAYA KPI ACCESS CONTROL LOGIC ---
+      const isGlobalUser = (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view") || roleLower.includes("manager") || lowerWh === "all view");
+      
+      const qaActive = isGlobalUser || lowerWh === "qa (quality assurance)";
+      const mainActive = isGlobalUser || lowerWh === "main warehouse";
+      const packActive = isGlobalUser || lowerWh === "packing area";
+      const expActive = isGlobalUser || lowerWh === "near-expiry";
+      const dispActive = isGlobalUser || lowerWh === "packing area" || lowerWh === "dispatch inventory";
+      const dmgActive = isGlobalUser || lowerWh === "damaged";
+      const holdActive = isGlobalUser || lowerWh === "qa (quality assurance)" || lowerWh === "hold items";
+
+      function buildKpiCard(title, valId, cardClass, isActive, clickFunc) {
+         if (isActive) {
+           return `<div class="metric-card ${cardClass} clickable" onclick="${clickFunc}" title="Click to view details">
+                     <span>${title}</span>
+                     <h3 id="${valId}">Loading...</h3>
+                     <div class="view-stock-text">View Details <i class="fa-solid fa-arrow-right"></i></div>
+                   </div>`;
+         } else {
+           return `<div class="metric-card ${cardClass}" style="opacity: 0.85; cursor: not-allowed;" title="Access Restricted">
+                     <span>${title}</span>
+                     <h3 id="${valId}">Loading...</h3>
+                     <div class="view-stock-text" style="color: #94a3b8; opacity: 0.8;"><i class="fa-solid fa-lock"></i> Locked</div>
+                   </div>`;
+         }
+      }
+
       document.getElementById("app").innerHTML = `
         ${getBrandingHeader()}
         <div class="card">
@@ -1069,60 +1096,22 @@ function showDashboard() {
               <b><i class="fa-solid fa-industry"></i> </b> ${escapeHtml(sessionStorage.getItem("warehouse"))}
             </div>
             <div>
-		<button onclick="logout()" class="logout-btn-innovative" title="Log out">
-  		<i class="fa-solid fa-power-off"></i>
-  		<span class="text">Log out</span>
-		</button>
+        <button onclick="logout()" class="logout-btn-innovative" title="Log out">
+          <i class="fa-solid fa-power-off"></i>
+          <span class="text">Log out</span>
+        </button>
             </div>
           </div>
 
           <div class="metrics-grid">
-            ${(roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager") || lowerWh === "qa (quality assurance)") 
-              ? `<div class="metric-card clickable" onclick="showTodayBillsDetails()" title="Click to view today's bills details">
-                  <span>BILLS RECEIVED TODAY</span>
-                  <h3 id="todayBillsVal">Loading...</h3>
-                  <div class="view-stock-text">View Details <i class="fa-solid fa-arrow-right"></i></div>
-                 </div>`
-              : `<div class="metric-card">
-                  <span>BILLS RECEIVED TODAY</span>
-                  <h3 id="todayBillsVal">Loading...</h3>
-                 </div>`
-            }
-            <div class="metric-card clickable" onclick="showWarehouseStockDetails()" title="Click to view product list">
-              <span>QA (QUALITY ASSURANCE)</span>
-              <h3 id="qaStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card main-wh-card clickable" onclick="showMainWarehouseStockDetails()" title="Click to view product list">
-              <span>MAIN WAREHOUSE</span>
-              <h3 id="mainWarehouseStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card warning-card clickable" onclick="showPackingStockDetails()" title="Click to view product list">
-              <span>PACKING AREA</span>
-              <h3 id="packingStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card danger-card clickable" onclick="showExpiredStockDetails()" title="Click to view product list">
-              <span>NEAR-EXPIRY</span>
-              <h3 id="expiredStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card info-card clickable" onclick="showDispatchStockDetails()" title="Click to view product list">
-              <span>DISPATCHED QTY</span>
-              <h3 id="dispatchStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card danger-card clickable" onclick="showDamageStockDetails()" title="Click to view product list">
-              <span>DAMAGED</span>
-              <h3 id="damageStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
-            <div class="metric-card warning-card clickable" onclick="showHoldStockDetails()" title="Click to view product list">
-              <span>HOLD ITEMS</span>
-              <h3 id="holdStockVal">Loading...</h3>
-              <div class="view-stock-text">View Stock <i class="fa-solid fa-arrow-right"></i></div>
-            </div>
+            ${buildKpiCard("BILLS RECEIVED TODAY", "todayBillsVal", "", qaActive, "showTodayBillsDetails()")}
+            ${buildKpiCard("QA (QUALITY ASSURANCE)", "qaStockVal", "", qaActive, "showWarehouseStockDetails()")}
+            ${buildKpiCard("MAIN WAREHOUSE", "mainWarehouseStockVal", "main-wh-card", mainActive, "showMainWarehouseStockDetails()")}
+            ${buildKpiCard("PACKING AREA", "packingStockVal", "warning-card", packActive, "showPackingStockDetails()")}
+            ${buildKpiCard("NEAR-EXPIRY", "expiredStockVal", "danger-card", expActive, "showExpiredStockDetails()")}
+            ${buildKpiCard("DISPATCHED QTY", "dispatchStockVal", "info-card", dispActive, "showDispatchStockDetails()")}
+            ${buildKpiCard("DAMAGED", "damageStockVal", "danger-card", dmgActive, "showDamageStockDetails()")}
+            ${buildKpiCard("HOLD ITEMS", "holdStockVal", "warning-card", holdActive, "showHoldStockDetails()")}
           </div>
 
           <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -1135,7 +1124,7 @@ function showDashboard() {
         ${getFooter()}
       `;
       updateLiveDateTime();
-    }
+}
 
 // 1. User se Date select karwane wala Modal
     function openDailyWorkReportModal() {
