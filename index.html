@@ -6164,14 +6164,23 @@ function downloadStockExcel(type) {
       }
     }
 
-    async function logout() { 
+	function logout() { 
       let user = sessionStorage.getItem("employee");
       let sessionId = sessionStorage.getItem("sessionId");
+      
+      // STEP 1: Turant UI ko clear karke Login page dikha do (Instant Action)
+      sessionStorage.clear(); 
+      userScansCache = []; 
+      showLoginPage(); 
+
+      // STEP 2: Background me Google Sheet ko logout ka data bhej do (User ko wait nahi karna padega)
       if (user) {
-        try { await fetch(`${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(user)}&sessionId=${encodeURIComponent(sessionId || '')}`); } catch(e){}
+        try { 
+          // 'await' hata diya gaya hai aur 'keepalive: true' lagaya hai
+          fetch(`${GOOGLE_SHEET_URL}?action=logout&user=${encodeURIComponent(user)}&sessionId=${encodeURIComponent(sessionId || '')}`, { keepalive: true }); 
+        } catch(e){}
       }
-      sessionStorage.clear(); userScansCache = []; showLoginPage(); 
-    }
+    }	
     
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
 
