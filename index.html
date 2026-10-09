@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxCClmclkfKl4SBC_dsF0E7UsrKEmsWO3kNzd3KGZ0vTwaXhrEMKBlGBCHQ2vNGijEC/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx8jZRHeP3EzBgHKR0I-dTwCLJJ_rjJhgcUJmferw6VZh2KSZ0k0srB4g2dZK9hPIZp/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -960,13 +960,19 @@ async function showTodayBillsDetails() {
       }
     }
 
-    async function login() {
+	async function login() {
       let emp = document.getElementById("employee").value.trim();
       let pass = document.getElementById("password").value.trim();
       let wh = document.getElementById("warehouse").value;
       let loginBtn = document.getElementById("loginBtn");
 
       if (!emp || !pass || !wh) { alert("Please fill in Employee Name, Password, and select Warehouse!"); return; }
+
+      // "Other Location" validation check
+      if (wh === "Other Location") {
+        alert("Access Restricted: 'Other Location' is currently not an authorized warehouse. Please select a valid authorized warehouse to proceed.");
+        return;
+      }
 
       if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Authenticating..."; }
 
