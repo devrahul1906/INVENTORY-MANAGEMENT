@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzYJC1XrtJJWm9YtMHZ_2GpVFvbVZSCPV6ZlsC_CHpt2-I3FU89TnXefoq9wcPNqsRL/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz2PY1El8T2T4KMhvyo7DiNriAy1aPP3QPzoIccnM6Y1Co-iR4uJhnR5fJ_ktTtaCJF/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -1910,7 +1910,7 @@ async function savePurchaseModalData() {
     function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
     function triggerExpiryDamagePdfSelect() { document.getElementById("expiryDamagePdfInput").click(); }
 
-async function handleExpiryDamagePdfUpload(input) {
+	async function handleExpiryDamagePdfUpload(input) {
       if (!input.files || input.files.length === 0) return;
       const file = input.files[0];
       
@@ -2164,7 +2164,7 @@ async function handleExpiryDamagePdfUpload(input) {
                 ${itemsRows}
               </tbody>
             </table>
-            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Near-Expiry.</p>
+            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Damaged stock.</p>
             <div style="display:flex; gap:12px; margin-top:8px;">
               <button onclick="confirmAndExecuteExpiryDamage()" class="btn-success">Yes, Proceed</button>
               <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
