@@ -336,7 +336,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz2PY1El8T2T4KMhvyo7DiNriAy1aPP3QPzoIccnM6Y1Co-iR4uJhnR5fJ_ktTtaCJF/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbywYhvXH_VKevlMiktj7L9_xPAS1m2-n8o15JiF8su5yDqfyxFJ-L6rSB49WIKxbC_Y/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -570,7 +570,159 @@ setInterval(async () => {
     function showMainWarehouseStockDetails() { fetchKpiDetails("Main Warehouse", "<i class='fa-solid fa-warehouse'></i>", "Main Warehouse"); }
     function showPackingStockDetails() { fetchKpiDetails("Packing Area", "<i class='fa-solid fa-box-open'></i>", "Packing Area"); }
     function showExpiredStockDetails() { fetchKpiDetails("Near-Expiry Stock", "<i class='fa-solid fa-clock-rotate-left'></i>", "Near-Expiry"); }
-    function showDispatchStockDetails() { fetchKpiDetails("Dispatched Qty", "<i class='fa-solid fa-file-invoice'></i>", "Dispatch Inventory"); }
+		
+	// 1. Pehle ye function Date Range Popup show karega
+    function showDispatchStockDetails() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 450px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for Dispatched Qty. <b>Leave blank for full data.</b></p>
+            
+            <div class="field-group" style="margin-top: 10px;">
+              <label>From Date (Optional)</label>
+              <input type="date" id="dispatchFromDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            <div class="field-group" style="margin-top: 10px;">
+              <label>To Date (Optional)</label>
+              <input type="date" id="dispatchToDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:20px;">
+              <button onclick="fetchAndShowDispatchData()" class="btn-primary" style="background-color: var(--primary); color: white; width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-bolt"></i> Generate Report</button>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; cursor: pointer; background: #f1f5f9;">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+	// 2. Report generate karne wala actual function with STRICT Date Filter
+    async function fetchAndShowDispatchData() {
+      let fromDateVal = document.getElementById("dispatchFromDate").value;
+      let toDateVal = document.getElementById("dispatchToDate").value;
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 600px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Dispatch Details...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getFullDispatchData`);
+        if (res && res.status === "error") throw new Error(res.message);
+
+        // --- STRICT DATE FILTER LOGIC ---
+        if (fromDateVal || toDateVal) {
+          let fromDate = fromDateVal ? new Date(fromDateVal) : new Date("2000-01-01");
+          fromDate.setHours(0, 0, 0, 0);
+          let toDate = toDateVal ? new Date(toDateVal) : new Date("2100-01-01");
+          toDate.setHours(23, 59, 59, 999);
+
+          res = res.filter(item => {
+            if (!item.scanTime) return false; // Blank date skip karega
+            
+            let itemDate;
+            let timeStr = String(item.scanTime).trim();
+            
+            // Try to parse DD-MM-YYYY format properly
+            if(timeStr.includes("-")) {
+                let parts = timeStr.split(" ")[0].split("-");
+                if(parts.length === 3) {
+                    if(parts[2].length === 4) { // Format: DD-MM-YYYY
+                        itemDate = new Date(parts[2], parseInt(parts[1], 10) - 1, parts[0]);
+                    } else if(parts[0].length === 4) { // Format: YYYY-MM-DD
+                        itemDate = new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
+                    }
+                }
+            }
+            
+            // Fallback for standard system Date string
+            if(!itemDate || isNaN(itemDate.getTime())) {
+                itemDate = new Date(timeStr);
+            }
+            
+            // Final check
+            if(isNaN(itemDate.getTime())) return false; 
+            
+            return itemDate >= fromDate && itemDate <= toDate;
+          });
+        }
+        // --------------------------------
+
+        // Ye line ab filtered 'res' ko excel export ke liye set karegi
+        window.currentDispatchFullData = res;
+
+        let tbody = "";
+        if (!res || res.length === 0) {
+          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Dispatch Inventory for selected dates.</td></tr>`;
+        } else {
+          
+          // UI ke liye sirf Product aur Qty ko sum karna
+          let groupedData = {};
+          res.forEach(item => {
+            let p = item.product;
+            if(!groupedData[p]) groupedData[p] = 0;
+            groupedData[p] += (parseFloat(String(item.qty).replace(/,/g, '')) || 0);
+          });
+
+          let aggregatedArray = Object.keys(groupedData).map(p => ({ product: p, totalQty: groupedData[p] }));
+          aggregatedArray = aggregatedArray.filter(item => item.totalQty > 0);
+          aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+
+          aggregatedArray.forEach((item) => {
+             tbody += `
+               <tr>
+                 <td><b>${escapeHtml(item.product)}</b></td>
+                 <td style="text-align: right; color: var(--primary); font-weight: bold;">${formatNumber(item.totalQty)} pcs</td>
+               </tr>
+             `;
+          });
+        }
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Dispatched Qty Details</h3>
+              
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
+                <div class="field-group" style="flex: 1;">
+                  <input type="text" id="dispatchSearchInput" placeholder="Search by Product Name..." onkeyup="filterDispatchDetails()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                </div>
+                <button onclick="exportDispatchExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table class="pdf-item-table" id="dispatchDetailsTable" style="width: 100%; font-size: 0.85rem;">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th style="text-align: right;">Total Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top: 15px;">
+                  <button onclick="showDispatchStockDetails()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date</button>
+                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        alert("Error loading Dispatch Details: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
     function showDamageStockDetails() { fetchKpiDetails("Damaged Stock", "<i class='fa-solid fa-ban'></i>", "Damaged"); }
     function showHoldStockDetails() { fetchKpiDetails("Hold Items", "<i class='fa-solid fa-pause'></i>", "Hold Items"); }
 
@@ -1064,7 +1216,10 @@ async function showTodayBillsDetails() {
           `;
         }
       }
-
+	// Sirf Admin, Master User aur View Only (Manager) roles ko hi Dump Inventory tab show hoga
+      if (roleLower === 'admin' || roleLower === 'master user' || roleLower.includes('view-only') || roleLower.includes('view only') || roleLower.includes('manager')) {
+        actionButtons += `<button onclick="openDumpInventoryModal()" style="background-color: #475569; color: white;"><i class="fa-solid fa-trash-can"></i> Dump Inventory</button>`;
+      }
       actionButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
       actionButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
       actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
@@ -6555,6 +6710,203 @@ async function forceUserLogout(username) {
       } catch (e) {
         alert("Export Error: " + e.message);
         if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export to Excel";
+      }
+    }
+
+	async function openDumpInventoryModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 600px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#475569; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Dump Inventory...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getDamagedDumpData`);
+        if (res && res.status === "error") throw new Error(res.message);
+
+        // Raw Data Excel Export ke liye globally save kar rahe hain (Isko change nahi kiya hai)
+        window.currentDumpData = res;
+
+        let tbody = "";
+        if (!res || res.length === 0) {
+          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Damaged Dump.</td></tr>`;
+        } else {
+          
+          // GROUPING LOGIC (UI ke liye 1 Product 1 Baar aayega or Qty Plus ho jayegi)
+          let groupedData = {};
+          res.forEach(item => {
+            let p = item.product;
+            if(!groupedData[p]) {
+              groupedData[p] = {
+                product: p,
+                qty: 0
+              };
+            }
+            // Qty ko sum karna
+            groupedData[p].qty += item.qty;
+          });
+
+          // Object to array & Alphabetical Sort
+          let aggregatedArray = Object.values(groupedData);
+          aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+
+          // Screen par sirf Product aur Qty show karenge
+          aggregatedArray.forEach((item) => {
+             tbody += `
+               <tr>
+                 <td><b>${escapeHtml(item.product)}</b></td>
+                 <td style="text-align: right; color: var(--danger); font-weight: bold;">${formatNumber(item.qty)}</td>
+               </tr>
+             `;
+          });
+        }
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:#475569;"><i class="fa-solid fa-trash-can"></i> Damaged Dump Inventory</h3>
+              
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
+                <div class="field-group" style="flex: 1;">
+                  <input type="text" id="dumpSearchInput" placeholder="Search by Product Name..." onkeyup="filterDumpInventory()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                </div>
+                <button onclick="exportDumpInventoryExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table class="pdf-item-table" id="dumpInventoryTable" style="min-width: 650px; font-size: 0.85rem;">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th style="text-align: right;">Total Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+              <div style="text-align:right; margin-top: 15px;">
+                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        alert("Error loading Dump Inventory: " + e.message);
+        closeModalAndResume();
+      }
+    }
+	function filterDumpInventory() {
+      let filter = document.getElementById("dumpSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#dumpInventoryTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    function exportDumpInventoryExcel() {
+      if (!window.currentDumpData || window.currentDumpData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+      
+      let btn = document.querySelector("#modal-container .btn-emerald");
+      if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+      // Export Raw Detail with ALL required columns
+      let exportData = window.currentDumpData.map((item, idx) => {
+         let formattedDate = "";
+         if (item.scanTime) {
+           let d = new Date(item.scanTime);
+           if (!isNaN(d.getTime())) {
+             formattedDate = String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
+           } else {
+             formattedDate = item.scanTime.split(" ")[0]; 
+           }
+         }
+         
+         return {
+           "S.No": idx + 1,
+           "USER NAME": item.userName || "N/A",
+           "FROM WAREHOUSE": item.fromWh || "N/A",
+           "PRODUCT NAME": item.product || "N/A",
+           "BATCH NO": item.batch || "N/A",
+           "QTY": parseInt(item.qty) || 0,
+           "CHALLAN NO": item.challanNo || "N/A",
+           "SCAN TIME": formattedDate
+         };
+      });
+
+      try {
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dump Inventory");
+        XLSX.writeFile(wb, `Damaged_Dump_Inventory_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      } finally {
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
+      }
+    }
+
+	function filterDispatchDetails() {
+      let filter = document.getElementById("dispatchSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#dispatchDetailsTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    function exportDispatchExcel() {
+      if (!window.currentDispatchFullData || window.currentDispatchFullData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+      
+      let btn = document.querySelector("#modal-container .btn-emerald");
+      if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+      let exportData = window.currentDispatchFullData.map((item, idx) => {
+         let formattedDate = "";
+         if (item.scanTime) {
+           let d = new Date(item.scanTime);
+           if (!isNaN(d.getTime())) {
+             formattedDate = String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
+           } else {
+             formattedDate = item.scanTime.split(" ")[0]; 
+           }
+         }
+         
+         return {
+           "S.No": idx + 1,
+           "USER NAME": item.userName || "N/A",
+           "FROM WAREHOUSE": item.fromWh || "N/A",
+           "PRODUCT NAME": item.product || "N/A",
+           "BATCH NO.": item.batch || "N/A",
+           "QTY": parseFloat(item.qty.replace(/,/g, '')) || 0,
+           "INVOICE NO": item.invoiceNo || "N/A",
+           "SCAN TIME": formattedDate
+         };
+      });
+
+      try {
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dispatch Data");
+        XLSX.writeFile(wb, `Dispatched_Qty_Details_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      } finally {
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
       }
     }
 
