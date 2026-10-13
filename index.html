@@ -2064,227 +2064,272 @@ async function savePurchaseModalData() {
     function triggerDispatchPdfSelect() { document.getElementById("dispatchPdfInput").click(); }
     function triggerDispatchReturnPdfSelect() { document.getElementById("dispatchReturnPdfInput").click(); }
     function triggerExpiryDamagePdfSelect() { document.getElementById("expiryDamagePdfInput").click(); }
-
+	
 	async function handleExpiryDamagePdfUpload(input) {
-      if (!input.files || input.files.length === 0) return;
-      const file = input.files[0];
-      
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer, disableAutoFetch: false, disableStream: false }).promise;
+  if (!input?.files?.length) return;
+  const file = input.files[0];
+  const resetInput = () => { try { input.value = ""; } catch (_) {} };
 
-        const PRODUCT_OPTIONS = [
+  try {
+    if (!window.pdfjsLib) {
+      throw new Error("PDF.js is not loaded. Please check the pdfjsLib script include.");
+    }
+
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+
+    const PRODUCT_OPTIONS = [
             "MR.INJECT(Disposable Syringe)", "(BLISTER PACK) WITHOUT NEEDLE 5ML", "AMOXYHAT-SL INJ. 300 MG", "AZITHROHAT SYRUP 30 ML", "AZITHROHAT-300 1*6", "CARDIOHAT TAB 1*30", "CARPOHAT-100 TAB 1*10", "CARPOHAT-50 TAB. 1*10", "CLINDAHAT 600MG TAB. 1*10", "CLINDAHAT SYRUP OLD 60 ML", "CLINDAHAT SYRUP 60 ML","CLINDAHAT-250 TAB 1*10", "CORTIHAT TOPICAL SPRAY 50 ML", "DIGEHAT PLUS SYRUP 100 ML", "ECTOCOVER PNC SHAMPOO 200 ML", "ECTOCOVER-F ANTI-TICKS POWDER 100 GM", "ECTOCOVER-PP ANTI-TICKS POWDER 100 GM", "ECTOCOVER-CM 24 SHAMPOO 200 ML", "ECTOCOVER-BPSS SHAMPOO 200ML", "ENROHAT-10 SYRUP 60 ML", "ENROHAT-50 SYRUP 60 ML", "ENROHAT-DT 200 1*10", "EPIHAT-KBR SYP 100 ml", "EPIHAT-LC SYP 100 ml", "HATCAL JUNIOR SYRUP 100 ML", "HATCAL-D TAB 1*30", "HATCAL-RENAL TAB 1*10", "HATCEF-100 DT TAB 1*10", "HATCEF-200 DT TAB 1*10", "HATCLAV 500 TAB 1*10", "HATCLAV DS D/S 30 ML", "HATCLAV-250 DRY SYP 30 ML", "HATCLAV-375 TAB 1*10", "HATCORT MP TAB 1*10", "HATCORT SYP 60 ml", "HATCORT-DS SYP 60 ML", "HATCURE INJ 100 ML", "HATDERM KC TOPICAL SPRAY 100 ML", "HATDERM MC TOPICAL SPRAY 100 ML", "HATDERM-KCN CREAM 30 GM", "HATDOTE INJ. 5 ml", "HATFUR OMEGA TAB 1*10", "HATFUR TAB 1*10", "HATFUR-Z TAB. 1*10", "HATGAT EYE DROP 5 ml", "HATGAT-P EYE DROP 5 ml", "HATGROW PLUS POWDER 200 GM", "HATJOINT PLUS TAB 1*10", "HATLAC PLUS TAB. 1*10", "HATLAC PLUS D/S 60 ML", "HATLAC SUSP 60 ml", "HATLAC TAB 1*10","RENALRAJ-PB SUSPENSION", "HATLAC JUNIOR DRY SYP.", "HATLEXIN-1000 TAB 1*10", "HATLEXIN-250 SYRUP 60 ML", "HATLEXIN-300 TAB. 1*10", "HATLEXIN-600 TAB. 1*10", "HATLOOSE SYP 100 ml", "HATMOIST EYE DROP 10 ml", "HATMOX EYE DROP 5 ml", "HATMOX-D EYE DROP 5 ml", "HATMOX-KT EYE DROP 5 ml", "HATODINE AQUA SOLUTION 60 ML", "HATODINE OINT 1*30 G", "HATODINE SCRUB TOPICAL SPRAY 100 ML", "HATODINE TOPICAL SPRAY 100 ML", "HATODINE-M OINT 1*30 G", "HATOTIC-ES EAR DROP 15 ML", "HATOTIC-GBC E/D 15 ML", "HATOTIC-NBC E/D 15ML", "HATPAN TAB 1*10", "HATPLAT SYRUP 100 ML", "HATPLAT TAB. (HERBAL) 1*10", "HATPOD 100 DT TAB 1*10", "HATPOD 200 DT TAB 1*10", "HATPOD-100 D/S 30 ml", "HATPOD-200 TAB 1*10", "HATPYRIN SYP 60 ML", "HATPYRIN TAB 1*10", "HATVET'S ALL IN ONE SHAMPOO 200 ML", "HATVET'S ANTI DANDRUFF SHAMPOO 200 ML", "HATVET'S ALL IN ONE SHAMPOO 30 ML", "HATVET'S DRY FOAM SHAMPOO 150 ML", "HATVET'S HATGROOM POWDER 100 GM", "HATVIT-A TAB 1*10", "VITnMIN-H TAB 1*10", "HATWORM KITTY TAB 1*1", "HATWORM PLUS TAB. 1*2", "HATZAPINE TAB 1*10", "HATZINE-25 1*10", "HATZINE-50 1*10", "HEPARAJ ADVANCE TAB 1*10", "HEPARAJ JUNIOR SYRUP 100 ML", "HEPARAJ PLUS TAB. 1*10", "HEPARAJ TAB 1*10", "IMMUNOHAT SYP 100 ML", "INFLAHAT-TBR TAB 1*10", "ITRARAJ SYP 60 ml", "ITRARAJ-100MG TAB 1*10", "IVERRAJ-10MG TAB. 1*10", "IVERRAJ-3MG TAB. 1*10", "IVERRAJ-DT 16 TAB 1*10", "KETOHAT 200 MG TAB. 1*10", "METROHAT 300 MG TAB 1*10", "METROHAT SYP 60 ml", "NASOVET NASAL DROP 10 ml", "ONDAHAT ORAL SPRAY 20 ML", "ONDAHAT ORAL SPRAY 30ML", "OPTHORAJ-DT EYE DROP 5 ml", "OTIHAT TeN EAR CLEANSER 50 ML", "OTIHAT-EC 60 ML", "PANTOHAT 40 TAB. 1*10", "PANTOHAT-D TAB. 1*10", "PANTOHAT-I.V. INJ. 10ML", "PULMOHAT SYRUP 100 ML", "RAJCPM SYP 60 ml", "RAJDOX 100 INJ. 100 MG", "RAJDOX 200 INJ. 200 MG", "RAJDOX SUSP 60 ml", "RAJDOX-100 TAB 1*10", "RAJDOX-200 TAB 1*10", "RAJDOX-LB 100 1*10", "RAJDOX-LB 200 1*10", "RAJDOX-LB 300 TAB 1*10", "RAJDROXIL-500 DT TAB 1*10", "RAJDROXIL-250 TAB 1*10", "RAJDROXIL-600 DT TAB 1*10", "RAJFAN TAB 1*3", "RAJFAN-50 SYRUP 60 ML", "RAJMET SYP 60 ml", "RAJMET-DP SYRUP 60 ML", "RAJPARA SUSP 60 ml", "RAJPARA TAB 1*10", "RANTIRAJ SYP 100 ml", "RANTIRAJ TAB 1*10", "RENALRAJ SUSP 170 ml", "RENOHAT PLUS TABLET 1*30", "RENOHAT-H SYRUP 100 ML", "SCABHAT OINTMENT 30 GM", "TERBIRAJ 250 TAB 1*10", "TERBIRAJ 500 TAB 1*10", "TORSOHAT 7.5 TAB 1*10", "TRAMAHAT 100 DT TAB 1*10", "TRAMAHAT 50 DT TAB 1*10", "VETAXONE-SL INJ. 750 MG", "VETAXONE-TAZO INJ. 562.5", "VETTAX-SL INJ. 750 MG",
             "ALPRARAJ TAB", "HATPLAT TAB (OLD)", "ONCORAJ TAB", "RAJCALM INJ.", "TERBI RAJ 500 TAB", "I VERRAJ-3MG TAB.", "RAJPARA TAB"
-        ];
+    ];
 
-        const normalize = value => String(value || "").toUpperCase().replace(/₹/g, "").replace(/[‐-‒–—]/g, "-").replace(/\s+/g, " ").trim();
-        const alphaNum = value => normalize(value).replace(/[^A-Z0-9]/g, "");
+    const normalize = value => String(value ?? "")
+      .toUpperCase()
+      .replace(/[‐-‒–—]/g, "-")
+      .replace(/[’‘]/g, "'")
+      .replace(/\s+/g, " ")
+      .trim();
+    const alphaNum = value => normalize(value).replace(/[^A-Z0-9]/g, "");
+    const isNumber = value => /^[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/.test(String(value ?? "").trim());
+    const numberValue = value => isNumber(value) ? Number(String(value).replace(/,/g, "").trim()) : null;
+    const isDateLike = value => /^\d{1,2}[\/-]\d{1,2}(?:[\/-]\d{2,4})?$/.test(String(value ?? "").trim());
+    const isSerial = value => /^(\d{1,4})[.)]?$/.test(String(value ?? "").trim());
 
-        // STRIP PACK SIZES TO PREVENT COLUMN MISMATCHES
-        const getCleanBase = (name) => {
-            let n = String(name || "").toUpperCase();
-            n = n.replace(/\b(1\*10|1\*6|1\*3|1\*1|1\*2|1\*30|1 10|1 30 G|30 GM|100 GM|50 ML|60 ML|100 ML|150 ML|200 ML|30 ML|10 ML|5 ML|15 ML|750 MG|562\.5|20 ML|30ML|170 ML|100 MG|200 MG)\b/g, "");
-            return n.replace(/[^A-Z0-9]/g, "");
-        };
+    const productOptionsNormalized = PRODUCT_OPTIONS.map(name => ({
+      name,
+      key: alphaNum(name)
+    })).sort((a, b) => b.key.length - a.key.length);
 
-        const PRODUCT_MAP = PRODUCT_OPTIONS.map(name => ({
-            full: name, cleanBase: getCleanBase(name)
-        })).sort((a, b) => b.cleanBase.length - a.cleanBase.length);
-
-        const isNumber = value => /^[+-]?\d+(?:,\d{3})*(?:\.\d+)?$/.test(String(value || "").trim());
-        const numberValue = value => isNumber(value) ? Number(String(value).replace(/,/g, "").trim()) : null;
-        const isDateLike = value => /^\d{1,2}[\/-]\d{2,4}$/.test(String(value || "").trim());
-
-        const pages = {};
-        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-            const page = await pdf.getPage(pageNo);
-            const content = await page.getTextContent();
-            pages[pageNo] = content.items.map((item, index) => ({
-                str: String(item.str || "").trim(),
-                x: Number(item.transform?.[4] || 0),
-                y: Number(item.transform?.[5] || 0),
-                index, page: pageNo
-            })).filter(item => item.str);
-        }
-
-        let allText = Object.values(pages).flat().map(x => x.str).join(" ");
-        let invoiceMatch = allText.match(/Invoice\s*No\.?\s*[:\-]?\s*([A-Z0-9\-]+)/i) || allText.match(/CA[0-9]+/i) || allText.match(/CN[0-9]+/i);
-        const invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : "EXP-" + Math.floor(Math.random() * 10000);
-
-        // MAP COLUMN HEADERS
-        const pageHeaders = {};
-        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-            pageHeaders[pageNo] = { serial: null, qty: null, batch: null, mrp: null };
-            for (const item of pages[pageNo]) {
-                const t = normalize(item.str).replace(/\s+/g, "");
-                if (t === "S." || t === "SN." || t === "SNO.") pageHeaders[pageNo].serial = item.x;
-                if (t === "QTY" || t === "QTY.") pageHeaders[pageNo].qty = item.x;
-                if (t === "BATCH" || t === "BATCHNO") pageHeaders[pageNo].batch = item.x;
-                if (t === "M.R.P" || t === "MRP") pageHeaders[pageNo].mrp = item.x;
-            }
-        }
-
-        let previousHeaders = { serial: 30, qty: 80, batch: 250, mrp: 400 };
-        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-            Object.keys(pageHeaders[pageNo]).forEach(key => {
-                if (pageHeaders[pageNo][key] === null) pageHeaders[pageNo][key] = previousHeaders[key];
-                else previousHeaders[key] = pageHeaders[pageNo][key];
-            });
-        }
-
-        const blocks = [];
-        const ignoredWords = ["CLASS TOTAL", "TOTAL GST", "GRAND TOTAL", "TAXABLE AMT", "DIS AMT", "TERMS & CONDITIONS", "AUTHORISED SIGNATORY", "MSG:"];
-
-        // ADVANCED Y-COORDINATE BINNING
-        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-            const pageItems = pages[pageNo];
-            const pageRows = [];
-            
-            // Group items perfectly on the exact same horizontal line
-            for (const item of pageItems) {
-                let placed = false;
-                for (const row of pageRows) {
-                    if (Math.abs(row.y - item.y) <= 4.0) {
-                        row.items.push(item);
-                        placed = true;
-                        break;
-                    }
-                }
-                if (!placed) {
-                    pageRows.push({ y: item.y, page: pageNo, items: [item] });
-                }
-            }
-            
-            pageRows.sort((a, b) => b.y - a.y);
-            
-            let currentBlock = null;
-            for (const row of pageRows) {
-                row.items.sort((a, b) => a.x - b.x);
-                let rowText = row.items.map(i => i.str).join(" ");
-                
-                if (ignoredWords.some(w => normalize(rowText).includes(normalize(w)))) {
-                    currentBlock = null;
-                    continue;
-                }
-
-                // Look for Serial Number trigger (e.g. "1.", "399.")
-                let serialItem = row.items.find(i => i.x < 55 && /^\d{1,4}\.?$/.test(i.str.trim()));
-                
-                if (serialItem) {
-                    let sNum = parseInt(serialItem.str.replace(/[^\d]/g, ''), 10);
-                    if (sNum >= 1 && sNum <= 1000) {
-                        currentBlock = { serial: sNum, page: pageNo, items: [...row.items] };
-                        blocks.push(currentBlock);
-                        continue;
-                    }
-                }
-
-                if (currentBlock) {
-                    currentBlock.items.push(...row.items);
-                }
-            }
-        }
-
-        let itemsFound = [];
-
-        for (const block of blocks) {
-            block.rawText = block.items.map(x => x.str).join(" ");
-            const combinedAlphaNum = alphaNum(block.rawText);
-            
-            let matchedProduct = null;
-            for (const p of PRODUCT_MAP) { 
-                if (combinedAlphaNum.includes(p.cleanBase)) {
-                    matchedProduct = p.full;
-                    break;
-                }
-            }
-
-            if (!matchedProduct) continue;
-
-            const qtyHeaderX = pageHeaders[block.page].qty || 80;
-            const batchHeaderX = pageHeaders[block.page].batch || 250;
-            const mrpHeaderX = pageHeaders[block.page].mrp || 400;
-
-            let billedQty = 0;
-            
-            // Extract QTY safely aligned with QTY header
-            let qtyCandidates = block.items.filter(item => isNumber(item.str) && item.x > 45 && item.x < 140);
-            qtyCandidates.sort((a, b) => Math.abs(a.x - qtyHeaderX) - Math.abs(b.x - qtyHeaderX));
-            
-            if (qtyCandidates.length > 0) {
-                billedQty = numberValue(qtyCandidates[0].str);
-            }
-
-            // Extract Batch safely aligned with Batch header (Captures pure numbers like "181")
-            let batch = "UNKNOWN";
-            let batchCandidates = block.items.filter(item => {
-                let text = item.str.trim();
-                if (isDateLike(text)) return false;
-                if (Math.abs(item.x - qtyHeaderX) < 15) return false; 
-                if (Math.abs(item.x - mrpHeaderX) < 15) return false; 
-                if (matchedProduct.toUpperCase().includes(text.toUpperCase())) return false; 
-                if (text.length < 2) return false;
-                if (item.x < 150) return false; 
-                return true;
-            });
-
-            batchCandidates.sort((a, b) => Math.abs(a.x - batchHeaderX) - Math.abs(b.x - batchHeaderX));
-            
-            if (batchCandidates.length > 0) {
-                batch = batchCandidates[0].str.trim();
-            }
-
-            itemsFound.push({
-                serial: block.serial,
-                page: block.page,
-                rawText: block.rawText,
-                product: matchedProduct,
-                batch: batch,
-                qty: Number(billedQty)
-            });
-        }
-
-        const uniqueRows = [];
-        const physicalRowKeys = new Set();
-        for (const item of itemsFound) {
-            const key = `${item.page}|${item.serial}`;
-            if (physicalRowKeys.has(key)) continue;
-            physicalRowKeys.add(key);
-            uniqueRows.push(item);
-        }
-
-        if (uniqueRows.length === 0) {
-            alert("⚠️ Failed to read valid product items from Expiry/Damage PDF. Please ensure it's a standard Marg ERP Challan.");
-            input.value = "";
-            return;
-        }
-
-        let totalExtractedQty = uniqueRows.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-
-        alert(
-            "✅ Invoice successfully verified.\n\n" +
-            `Invoice: ${invoiceNo}\n` +
-            `Items: ${uniqueRows.length}\n` +
-            `Total Qty: ${totalExtractedQty}\n\n` +
-            "All validation checks passed."
-        );
-
-        pendingExpiryDamagePayload = {
-            action: "expiry_damage_dispatch",
-            user: sessionStorage.getItem("employee") || "",
-            invoiceNo: invoiceNo,
-            items: uniqueRows
-        };
-
-        openExpiryDamageConfirmationModal();
-
-      } catch (err) {
-        console.error(err);
-        alert("⚠️ PDF Parsing Error: " + err.message);
-      }
-      input.value = "";
+    const pages = {};
+    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+      const page = await pdf.getPage(pageNo);
+      const content = await page.getTextContent();
+      pages[pageNo] = content.items
+        .map((item, index) => ({
+          str: String(item.str ?? "").trim(),
+          x: Number(item.transform?.[4] ?? 0),
+          y: Number(item.transform?.[5] ?? 0),
+          width: Number(item.width ?? 0),
+          index,
+          page: pageNo
+        }))
+        .filter(item => item.str);
     }
+
+    const allItems = Object.values(pages).flat();
+    const allText = allItems.map(x => x.str).join(" ");
+    const invoiceMatch = allText.match(/Invoice\s*No\.?\s*[:\-]?\s*([A-Z0-9\-/]+)/i)
+      || allText.match(/\b(?:CA|CN)[0-9]+\b/i);
+    const invoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]) : `EXP-${Date.now()}`;
+
+    const pageHeaders = {};
+    let lastHeader = {
+      serial: 28, qty: 92, pack: 185, product: 245, batch: 465, exp: 520
+    };
+
+    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+      const items = pages[pageNo];
+      const h = {};
+      for (const item of items) {
+        const t = alphaNum(item.str);
+        if (h.serial == null && /^(S|SN|SNO|SRNO|SLNO|SERIALNO)$/.test(t) && item.x < 150) h.serial = item.x;
+        if (h.qty == null && /^QTY\.?$/.test(normalize(item.str).replace(/\s/g, ""))) h.qty = item.x;
+        if (h.pack == null && t === "PACK") h.pack = item.x;
+        if (h.product == null && (t === "PRODUCTNAME" || t === "PRODUCT")) h.product = item.x;
+        if (h.batch == null && /^(BATCH|BATCHNO|BATCHNUMBER)$/.test(t)) h.batch = item.x;
+        if (h.exp == null && /^(EXP|EXPIRY)$/.test(t)) h.exp = item.x;
+      }
+      for (const key of Object.keys(lastHeader)) {
+        if (h[key] != null) lastHeader[key] = h[key];
+        else h[key] = lastHeader[key];
+      }
+      pageHeaders[pageNo] = { ...h };
+    }
+
+    const detectedRows = [];
+    const unmatchedRows = [];
+    const reviewRows = [];
+    const seenSerials = new Set();
+
+    for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+      const items = [...pages[pageNo]].sort((a, b) => b.y - a.y || a.x - b.x);
+      const rows = [];
+
+      for (const item of items) {
+        let target = null;
+        let bestDistance = Infinity;
+        for (const row of rows) {
+          const d = Math.abs(row.y - item.y);
+          if (d <= 2.8 && d < bestDistance) {
+            target = row;
+            bestDistance = d;
+          }
+        }
+        if (target) {
+          target.items.push(item);
+          target.y = target.items.reduce((sum, p) => sum + p.y, 0) / target.items.length;
+        } else {
+          rows.push({ y: item.y, page: pageNo, items: [item] });
+        }
+      }
+
+      const header = pageHeaders[pageNo];
+      for (const row of rows) {
+        row.items.sort((a, b) => a.x - b.x);
+        const serialItem = row.items
+          .filter(it => isSerial(it.str))
+          .map(it => ({ it, n: Number(String(it.str).replace(/[.)]/g, "")) }))
+          .filter(x => x.n >= 1 && x.n <= 9999 && Math.abs(x.it.x - header.serial) <= 42)
+          .sort((a, b) => Math.abs(a.it.x - header.serial) - Math.abs(b.it.x - header.serial))[0];
+
+        if (!serialItem) continue;
+
+        const serial = serialItem.n;
+        const rowText = row.items.map(i => i.str).join(" ").replace(/\s+/g, " ").trim();
+
+        if (/CLASS\s+TOTAL|TOTAL GST|GRAND TOTAL|TERMS\s*&?\s*CONDITIONS|AUTHORISED SIGNATORY/i.test(rowText)) continue;
+
+        const qtyItem = row.items
+          .filter(it => isNumber(it.str) && it.x > header.serial + 8 && it.x < header.pack + 18)
+          .map(it => ({ it, value: numberValue(it.str) }))
+          .filter(x => x.value != null && x.value >= 0)
+          .sort((a, b) => Math.abs(a.it.x - header.qty) - Math.abs(b.it.x - header.qty))[0];
+
+        // --- YAHAN QTY PEHLE DEFINE KI GAYI HAI TAARI BATCH FILTER MEIN ERROR NA AAYE ---
+        const qty = qtyItem ? qtyItem.value : null;
+
+        // --- FIXED BATCH SELECTION (Allows both Alphanumeric & Pure Numeric Batches) ---
+        const batchItem = row.items
+          .filter(it => {
+            const v = it.str.trim();
+            return v.length >= 1 
+              && !isDateLike(v)
+              && it.x >= header.batch - 60
+              && it.x < header.exp + 10
+              && v !== String(serial)
+              && v !== String(qty);
+          })
+          .sort((a, b) => Math.abs(a.x - header.batch) - Math.abs(b.x - header.batch))[0];
+
+        const productParts = row.items.filter(it =>
+          it.x >= header.product - 28 && it.x < header.batch - 18
+        );
+        let rawProduct = productParts.map(it => it.str).join(" ").replace(/\s+/g, " ").trim();
+
+        rawProduct = rawProduct.replace(/^(?:(?:\d+\s*(?:ML|GM|G|MG|L))\s+)+/i, "").trim();
+        const rawKey = alphaNum(rawProduct);
+        const matched = productOptionsNormalized.find(p =>
+          rawKey && (rawKey.includes(p.key) || p.key.includes(rawKey))
+        );
+        const product = matched?.name || rawProduct || "UNKNOWN PRODUCT";
+        const batch = batchItem ? batchItem.str.trim() : "";
+
+        const record = {
+          serial,
+          page: pageNo,
+          rawText: rowText,
+          product,
+          batch: batch || "UNKNOWN",
+          qty: qty == null ? 0 : qty
+        };
+
+        detectedRows.push(record);
+        if (!rawProduct || product === "UNKNOWN PRODUCT") {
+          unmatchedRows.push({ serial, page: pageNo, rawText: rowText });
+        }
+        if (!batch || qty == null || qty <= 0) {
+          reviewRows.push({
+            ...record,
+            issue: [
+              !batch ? "Batch not identified" : "",
+              qty == null ? "Qty not identified" : qty <= 0 ? "Qty is zero/negative" : "",
+              !rawProduct ? "Product name not identified" : ""
+            ].filter(Boolean).join("; ")
+          });
+        }
+        if (seenSerials.has(serial)) {
+          reviewRows.push({ ...record, issue: "Duplicate serial number detected; verify PDF row" });
+        }
+        seenSerials.add(serial);
+      }
+    }
+
+    if (!detectedRows.length) {
+      alert("No numbered product rows were detected. Confirm the PDF contains selectable text and is a MARG challan.");
+      return;
+    }
+
+    const serialNumbers = [...new Set(detectedRows.map(r => r.serial))].sort((a, b) => a - b);
+    const missingSerials = [];
+    for (let n = serialNumbers[0]; n <= serialNumbers[serialNumbers.length - 1]; n++) {
+      if (!serialNumbers.includes(n)) missingSerials.push(n);
+    }
+
+    const totalExtractedQty = detectedRows.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const totalItemsMatch = allText.match(/Total\s*Items\s*[:\-]?\s*(\d+)/i);
+    const expectedItems = totalItemsMatch ? Number(totalItemsMatch[1]) : null;
+    const totalQtyMatch = allText.match(/Total\s*Qty\s*[:\-]?\s*([\d,]+)/i);
+    const expectedQty = totalQtyMatch ? Number(totalQtyMatch[1].replace(/,/g, "")) : null;
+    const summaryProblems = [];
+    if (missingSerials.length) summaryProblems.push(`Missing serials: ${missingSerials.slice(0, 30).join(", ")}${missingSerials.length > 30 ? "..." : ""}`);
+    if (expectedItems != null && detectedRows.length !== expectedItems) {
+      summaryProblems.push(`PDF footer says ${expectedItems} items, but parser detected ${detectedRows.length} numbered rows.`);
+    }
+    if (expectedQty != null && totalExtractedQty !== expectedQty) {
+      summaryProblems.push(`PDF footer says total Qty ${expectedQty}, but parser extracted ${totalExtractedQty}.`);
+    }
+    if (unmatchedRows.length) summaryProblems.push(`${unmatchedRows.length} rows need product-name review.`);
+    if (reviewRows.length) summaryProblems.push(`${reviewRows.length} rows have missing/invalid fields or duplicate serials.`);
+
+    if (summaryProblems.length) {
+      const lines = [
+        "PDF extraction needs review; dispatch was NOT submitted.",
+        `Invoice: ${invoiceNo}`,
+        `Pages: ${pdf.numPages}`,
+        `Detected numbered rows: ${detectedRows.length}`,
+        `Unique serials: ${serialNumbers.length}`,
+        `Total extracted Qty: ${totalExtractedQty}` +
+          (expectedQty != null ? ` (PDF footer: ${expectedQty})` : ""),
+        ...summaryProblems
+      ];
+      if (unmatchedRows.length) {
+        lines.push("", "PRODUCT NAME REVIEW (page / serial / row text):");
+        unmatchedRows.slice(0, 12).forEach(r => lines.push(`P${r.page} / #${r.serial}: ${r.rawText.slice(0, 200)}`));
+        if (unmatchedRows.length > 12) lines.push(`...and ${unmatchedRows.length - 12} more.`);
+      }
+      if (reviewRows.length) {
+        lines.push("", "BATCH/QTY REVIEW (page / serial / product / issue):");
+        reviewRows.slice(0, 12).forEach(r => lines.push(`P${r.page} / #${r.serial} / ${r.product}: ${r.issue}`));
+        if (reviewRows.length > 12) lines.push(`...and ${reviewRows.length - 12} more.`);
+      }
+      console.warn("Expiry/damage PDF extraction review", {
+        detectedRows, unmatchedRows, reviewRows, missingSerials, expectedItems, totalExtractedQty
+      });
+      alert(lines.join("\n"));
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `PDF extraction summary\n\nInvoice: ${invoiceNo}\nPages: ${pdf.numPages}\nDetected rows: ${detectedRows.length}` +
+      (expectedItems != null ? `\nPDF footer item count: ${expectedItems}` : "") +
+      (expectedQty != null ? `\nPDF footer total Qty: ${expectedQty}` : "") +
+      `\nTotal extracted Qty: ${totalExtractedQty}\n\nPlease compare the row count and quantities with the PDF before continuing.`
+    );
+    if (!confirmed) return;
+
+    pendingExpiryDamagePayload = {
+      action: "expiry_damage_dispatch",
+      user: sessionStorage.getItem("employee") || "",
+      invoiceNo,
+      items: detectedRows
+    };
+    openExpiryDamageConfirmationModal();
+  } catch (err) {
+    console.error("Expiry/Damage PDF parsing error:", err);
+    alert("PDF Parsing Error: " + (err?.message || String(err)));
+  } finally {
+    resetInput();
+  }
+}
 
     function openExpiryDamageConfirmationModal() {
       if (!pendingExpiryDamagePayload) return;
