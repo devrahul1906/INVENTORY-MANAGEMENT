@@ -319,6 +319,136 @@
   opacity: 1;
 }
 
+/* --- NEW MODERN 50-50 LOGIN PAGE LAYOUT --- */
+    .login-fullscreen-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      z-index: 99999; /* Isko sabse upar rakhne ke liye */
+      background-color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .login-left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); /* Modern Blue Gradient */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      position: relative;
+    }
+    
+    .login-left-panel .top-brand {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    
+    .login-left-panel .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+    
+    .login-left-panel .center-content img {
+      max-width: 280px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Logo ke piche halki shadow */
+      background: white; /* Logo ke borders ko clean rakhne ke liye */
+      padding: 10px;
+    }
+    
+    .login-left-panel .center-content h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    
+    .login-left-panel .center-content p {
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.9;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .login-right-panel {
+      flex: 1;
+      background-color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .login-right-panel .login-card-modern {
+      background: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Clean modern shadow */
+      border: 1px solid var(--border-color);
+    }
+
+    .login-right-panel .footer-text {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Mobile screens ke liye (Responsive Design) */
+    @media(max-width: 900px) {
+      .login-fullscreen-wrapper {
+        flex-direction: column;
+      }
+      .login-left-panel {
+        flex: 0.4;
+        padding: 40px 20px;
+      }
+      .login-left-panel .top-brand {
+        display: none;
+      }
+      .login-left-panel .center-content img {
+        max-width: 180px;
+      }
+      .login-left-panel .center-content h1 {
+        font-size: 1.5rem;
+      }
+      .login-right-panel {
+        flex: 0.6;
+        padding: 20px;
+      }
+      .login-right-panel .login-card-modern {
+        padding: 25px;
+      }
+      .login-right-panel .footer-text {
+        position: relative;
+        bottom: 0;
+        margin-top: 20px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1045,35 +1175,60 @@ async function showTodayBillsDetails() {
       }
     }
 
-    function showLoginPage() {
+	function showLoginPage() {
       document.getElementById("app").innerHTML = `
-        <div class="login-container">
-          ${getBrandingHeader()}
-          <div class="login-wrapper">
-            <div class="card">
-              <h3 style="color: var(--primary); text-align: center; font-size: 1.3rem;"><i class="fa-solid fa-lock"></i> Warehouse Sign In</h3>
-              <div class="field-group">
-                <label for="employee">Employee ID / Username</label>
-                <input type="text" id="employee" placeholder="Enter Employee ID / Username" onblur="fetchUserWarehouses()">
-              </div>
-              <div class="field-group">
-                <label for="password">Password</label>
-                <div class="password-wrapper">
-                  <input type="password" id="password" placeholder="Enter Password" oninput="handlePasswordInput(this)">
-                  <span id="togglePasswordBtn" class="toggle-password" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye"></i></span>
-                </div>
-              </div>
-              <div class="field-group">
-                <label for="warehouse">Warehouse</label>
-                <select id="warehouse">
-                  <option value="">-- Enter Username to Load Warehouses --</option>
-                </select>
-              </div>
-              <button id="loginBtn" onclick="login()" style="margin-top: 8px;">Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+        <div class="login-fullscreen-wrapper">
+          
+          <!-- Left Side: Blue Branding Area -->
+          <div class="login-left-panel">
+            <div class="top-brand">
+              <i class="fa-solid fa-layer-group"></i> HATVET PHARMA PVT. LTD.
+            </div>
+            <div class="center-content">
+              <img src="https://i.postimg.cc/XNwPRcH7/LOGO-2.jpg" alt="Hatvet Pharma Logo">
+              <h1>Inventory Management System</h1>
+              <p>SECURE • FAST • TRACKABLE</p>
             </div>
           </div>
+
+          <!-- Right Side: White Login Form Area -->
+          <div class="login-right-panel">
+            <div class="login-card-modern">
+              
+              <h2 style="color: var(--primary); margin-bottom: 5px; font-weight: 800; font-size: 1.6rem;">Warehouse Sign In</h2>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Please enter your credentials to continue.</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="field-group">
+                  <label for="employee">Employee ID / Username</label>
+                  <input type="text" id="employee" placeholder="Enter Employee ID / Username" onblur="fetchUserWarehouses()" style="background: #f8fafc;">
+                </div>
+                
+                <div class="field-group">
+                  <label for="password">Password</label>
+                  <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Enter Password" oninput="handlePasswordInput(this)" style="background: #f8fafc;">
+                    <span id="togglePasswordBtn" class="toggle-password" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye"></i></span>
+                  </div>
+                </div>
+                
+                <div class="field-group">
+                  <label for="warehouse">Warehouse</label>
+                  <select id="warehouse" style="background: #f8fafc;">
+                    <option value="">-- Enter Username to Load Warehouses --</option>
+                  </select>
+                </div>
+                
+                <button id="loginBtn" onclick="login()" style="margin-top: 10px; padding: 14px; font-size: 1rem; border-radius: 8px;">Sign In</button>
+              </div>
+            </div>
+            
+            <div class="footer-text">
+              © 2026 Hatvet Pharma Pvt. Ltd. | Developed & Maintained by Sharma R.
+            </div>
+          </div>
+
         </div>
-        ${getFooter()}
       `;
       updateLiveDateTime();
     }
