@@ -1159,23 +1159,31 @@ async function showTodayBillsDetails() {
 	function showDashboard() {
       const currentWh = sessionStorage.getItem("warehouse") || "";
       const userRole = sessionStorage.getItem("role") || "Standard";
-      let actionButtons = "";
+      
+      // Do alag-alag sections ke liye variables banaye gaye hain
+      let operationButtons = "";
+      let reportingButtons = "";
+      
       const lowerWh = currentWh.trim().toLowerCase();
       const roleLower = userRole.toLowerCase();
       
       if (roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
-        actionButtons = `
+        // View Only roles ko operations nahi dikhenge, bas ek message aayega
+        operationButtons = `
+          <div style="grid-column: span 3; display: flex; align-items: center; justify-content: center; padding: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px;">
+            <p style="color:var(--text-muted); font-size: 0.95rem; font-weight: 600; margin: 0;"><i class="fa-solid fa-lock"></i> Operations Disabled (View-Only Access)</p>
+          </div>
+        `;
+        reportingButtons = `
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance</button>
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
-          <div style="grid-column: span 1; display: flex; align-items: center;">
-            <p style="color:var(--text-muted); font-size: 0.9rem; margin: 0;">You have View-Only access. Operations disabled.</p>
-          </div>
         `;
       } else if (roleLower === "admin" || roleLower === "master user") {
-        actionButtons = `
+        // Admin ke liye Operations
+        operationButtons = `
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Sale Invoice (PDF)</button>
           <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Sales Return (PDF)</button>
@@ -1183,46 +1191,58 @@ async function showTodayBillsDetails() {
           <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
           <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
+          <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
+        `;
+        // Admin ke liye Reporting
+        reportingButtons = `
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
           <button onclick="showSampleRoomStockDetails()" style="background-color: #0d9488; color: white;"><i class="fa-solid fa-vials"></i> Control Sample Room</button>
           <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           <button onclick="openProductAnalyzerDateModal()" style="background-color: #0ea5e9; color: white;"><i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance</button>
-          <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
         `;
       } else {
         if (lowerWh === "qa (quality assurance)") {
-          actionButtons = `
+          operationButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
             <button onclick="triggerDispatchReturnPdfSelect()"><i class="fa-solid fa-rotate-left"></i> Upload Sales Return (PDF)</button>
             <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
             <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
-            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
             <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
           `;
+          reportingButtons = `
+            <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
+          `;
         } else if (lowerWh === "main warehouse" || lowerWh === "packing area" || lowerWh === "near-expiry" || lowerWh === "damaged") {
-          actionButtons = `
+          operationButtons = `
             ${lowerWh === "packing area" ? `<button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Sale Invoice (PDF)</button>
             <button onclick="triggerExpiryDamagePdfSelect()" class="btn-danger"><i class="fa-solid fa-file-circle-exclamation"></i> Upload Expiry/Damage Bill</button>` : ""}
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
+          `;
+          reportingButtons = `
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         } else {
-          actionButtons = `
+          operationButtons = `
             <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
             <button onclick="openTransferModal()" class="btn-indigo"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</button>
+          `;
+          reportingButtons = `
             <button onclick="openStockReportModal()"><i class="fa-solid fa-chart-column"></i> Stock Report</button>
           `;
         }
       }
-	// Sirf Admin, Master User aur View Only (Manager) roles ko hi Dump Inventory tab show hoga
+
+      // Sirf Admin, Master User aur View Only (Manager) roles ko hi Dump Inventory tab show hoga
       if (roleLower === 'admin' || roleLower === 'master user' || roleLower.includes('view-only') || roleLower.includes('view only') || roleLower.includes('manager')) {
-        actionButtons += `<button onclick="openDumpInventoryModal()" style="background-color: #475569; color: white;"><i class="fa-solid fa-trash-can"></i> Dump Inventory</button>`;
+        reportingButtons += `<button onclick="openDumpInventoryModal()" style="background-color: #475569; color: white;"><i class="fa-solid fa-trash-can"></i> Dump Inventory</button>`;
       }
-      actionButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
-      actionButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
-      actionButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
+      
+      // Common Reporting Buttons
+      reportingButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
+      reportingButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
+      reportingButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
       // --- NAYA KPI ACCESS CONTROL LOGIC ---
       const isGlobalUser = (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view") || roleLower.includes("manager") || lowerWh === "all view");
@@ -1278,12 +1298,22 @@ async function showTodayBillsDetails() {
             ${buildKpiCard("HOLD ITEMS", "holdStockVal", "warning-card", holdActive, "showHoldStockDetails()")}
           </div>
 
+          <!-- DYNAMIC OPERATIONS SECTION -->
           <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
             <h4 style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em;">OPERATIONS</h4>
             <div class="action-grid">
-              ${actionButtons}
+              ${operationButtons}
             </div>
           </div>
+
+          <!-- DYNAMIC REPORTING SECTION -->
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 10px;">
+            <h4 style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em;">REPORTING & MANAGEMENT</h4>
+            <div class="action-grid">
+              ${reportingButtons}
+            </div>
+          </div>
+          
         </div>
         ${getFooter()}
       `;
