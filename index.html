@@ -319,7 +319,7 @@
   opacity: 1;
 }
 
-/* --- NEW MODERN 50-50 LOGIN PAGE LAYOUT --- */
+/* --- NEW MODERN FADE & PATTERN LOGIN LAYOUT --- */
     .login-fullscreen-wrapper {
       position: fixed;
       top: 0;
@@ -327,21 +327,37 @@
       width: 100vw;
       height: 100vh;
       display: flex;
-      z-index: 99999; /* Isko sabse upar rakhne ke liye */
-      background-color: #ffffff;
+      z-index: 99999;
+      /* Smooth Gradient Fade (Blue se dheere dheere White) */
+      background: linear-gradient(105deg, #1e40af 0%, #3b82f6 40%, #ffffff 55%, #ffffff 100%);
       margin: 0;
       padding: 0;
+    }
+
+    /* Box / Dot Pattern Overlay (Jo half aate aate fade/gayab ho jayega) */
+    .login-fullscreen-wrapper::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.25) 2px, transparent 2px);
+      background-size: 25px 25px; /* Box pattern ka size */
+      /* Yeh pattern ko right side me smooth tarike se gayab kar dega */
+      -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, rgba(0,0,0,0) 45%);
+      mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, rgba(0,0,0,0) 45%);
+      z-index: 0;
+      pointer-events: none;
     }
     
     .login-left-panel {
       flex: 1;
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); /* Modern Blue Gradient */
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: white;
       position: relative;
+      z-index: 1;
+      background: transparent; /* Line hatane ke liye background transparent kiya */
     }
     
     .login-left-panel .top-brand {
@@ -354,6 +370,7 @@
       font-size: 1.2rem;
       font-weight: 700;
       letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .login-left-panel .center-content {
@@ -367,8 +384,8 @@
     .login-left-panel .center-content img {
       max-width: 280px;
       border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Logo ke piche halki shadow */
-      background: white; /* Logo ke borders ko clean rakhne ke liye */
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      background: white;
       padding: 10px;
     }
     
@@ -377,6 +394,7 @@
       font-weight: 700;
       margin: 0;
       letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .login-left-panel .center-content p {
@@ -390,12 +408,13 @@
 
     .login-right-panel {
       flex: 1;
-      background-color: #f8fafc;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: relative;
+      z-index: 1;
+      background: transparent;
     }
 
     .login-right-panel .login-card-modern {
@@ -404,7 +423,7 @@
       max-width: 420px;
       padding: 40px;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Clean modern shadow */
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
       border: 1px solid var(--border-color);
     }
 
@@ -417,10 +436,15 @@
       width: 100%;
     }
 
-    /* Mobile screens ke liye (Responsive Design) */
+    /* Mobile screens ke liye */
     @media(max-width: 900px) {
       .login-fullscreen-wrapper {
         flex-direction: column;
+        background: linear-gradient(to bottom, #1e40af 0%, #3b82f6 30%, #ffffff 40%, #ffffff 100%);
+      }
+      .login-fullscreen-wrapper::before {
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 30%);
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 30%);
       }
       .login-left-panel {
         flex: 0.4;
