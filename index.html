@@ -472,6 +472,84 @@
         margin-top: 20px;
       }
     }
+	
+	/* --- NOTIFICATION BELL ICON & BADGE STYLES --- */
+    .notif-bell-btn {
+      position: relative !important;
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50% !important;
+      background-color: #eff6ff !important;
+      border: 1px solid #bfdbfe !important;
+      color: var(--primary) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      cursor: pointer;
+      transition: all 0.2s ease !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+
+    .notif-bell-btn:hover {
+      background-color: var(--primary) !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+    }
+
+    .notif-bell-btn.has-alerts {
+      background-color: #fef2f2 !important;
+      border-color: #fecaca !important;
+      color: #dc2626 !important;
+    }
+
+    .notif-bell-btn.has-alerts:hover {
+      background-color: #dc2626 !important;
+      color: #ffffff !important;
+    }
+
+    .notif-bell-btn.has-alerts i {
+      animation: bellRing 2s infinite;
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #dc2626;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    @keyframes bellRing {
+      0%, 100% { transform: rotate(0); }
+      10%, 30% { transform: rotate(14deg); }
+      20%, 40% { transform: rotate(-14deg); }
+      50% { transform: rotate(0); }
+    }
+
+    .expiry-alert-card {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-left: 5px solid #e11d48;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
 
   </style>
 </head>
@@ -490,7 +568,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzCIkyagK-Yo4d5eTqbFnQ3N00x79z_pxSuS4s6xe2PbzkhTuEOq3I5Y_YzeKKTuSM/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx0LG7ImjYQaYt39NjVJ6qHLFyDLxkp-E1pmosH2ERlmye1I4bn5WbnK5gBg2u1qKXu/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -527,10 +605,10 @@
       }
     }
 
-    async function syncDataAndShowDashboard() {
+	async function syncDataAndShowDashboard() {
       showDashboard(); 
       fetchAllMetrics(); 
-      // fallback call yahan se permanently hata di gayi hai
+      fetchUserScansFromCloud(); 
     }
 
     function formatNumber(val) {
@@ -656,24 +734,14 @@ setInterval(async () => {
       localStorage.setItem("userScansCache", JSON.stringify(userScansCache));
     }
 
-    async function fetchUserScansFromCloud() {
-      try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=fallback`); 
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          userScansCache = data;
-          saveScansToLocalStorage();
-        }
-        return userScansCache;
-      } catch (e) {
-        return userScansCache;
-      }
+	async function fetchUserScansFromCloud() {
+      // Extra network call removed for maximum speed
+      return userScansCache;
     }
 
     async function fetchAllMetrics() {
       try {
-        const response = await fetch(`${GOOGLE_SHEET_URL}?action=getAllMetrics`);
-        const data = await response.json();
+        const data = await safeFetch(`${GOOGLE_SHEET_URL}?action=getAllMetrics`);
         
         const billsElem = document.getElementById("todayBillsVal");
         if (billsElem) billsElem.innerHTML = `${formatNumber(data.todayBills || 0)} <span class="unit-pcs">NOS</span>`;
@@ -698,7 +766,11 @@ setInterval(async () => {
 
         const holdElem = document.getElementById("holdStockVal");
         if (holdElem) holdElem.innerHTML = `${formatNumber(data.hold || 0)} <span class="unit-pcs">PCS</span>`;
-        
+
+        // Instant Notification Update (0 Extra Backend Call!)
+        if (data && Array.isArray(data.expCandidates)) {
+          checkExpiredStockNotifications(data.expCandidates);
+        }
       } catch (e) {
         ["todayBillsVal", "qaStockVal", "mainWarehouseStockVal", "packingStockVal", "expiredStockVal", "dispatchStockVal", "damageStockVal", "holdStockVal"].forEach(id => {
             const el = document.getElementById(id);
@@ -1371,6 +1443,7 @@ async function showTodayBillsDetails() {
           <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
+	  <button onclick="openExpiredInventoryModal()" style="background-color: #991b1b; color: white;"><i class="fa-solid fa-calendar-xmark"></i> Expired Inventory</button>
         `;
         // Admin ke liye Reporting
         reportingButtons = `
@@ -1453,16 +1526,23 @@ async function showTodayBillsDetails() {
       document.getElementById("app").innerHTML = `
         ${getBrandingHeader()}
         <div class="card">
-          <div class="user-info-bar">
+		<div class="user-info-bar">
             <div class="user-details">
               <b><i class="fa-solid fa-user"></i> </b> ${escapeHtml(sessionStorage.getItem("employee"))} &nbsp; | &nbsp; 
               <b><i class="fa-solid fa-industry"></i> </b> ${escapeHtml(sessionStorage.getItem("warehouse"))}
             </div>
-            <div>
-        <button onclick="logout()" class="logout-btn-innovative" title="Log out">
-          <i class="fa-solid fa-power-off"></i>
-          <span class="text">Log out</span>
-        </button>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <!-- NEW NOTIFICATION BELL BUTTON -->
+              <button id="expiryNotifBtn" onclick="openExpiredNotificationsModal()" class="notif-bell-btn" title="Expired Stock Notifications">
+                <i class="fa-solid fa-bell" style="font-size: 1.05rem;"></i>
+                <span id="expiryNotifBadge" class="notif-badge">0</span>
+              </button>
+
+              <!-- EXISTING LOGOUT BUTTON -->
+              <button onclick="logout()" class="logout-btn-innovative" title="Log out">
+                <i class="fa-solid fa-power-off"></i>
+                <span class="text">Log out</span>
+              </button>
             </div>
           </div>
 
@@ -2573,7 +2653,7 @@ async function savePurchaseModalData() {
                 ${itemsRows}
               </tbody>
             </table>
-            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Damaged stock.</p>
+            <p style="font-weight:700; color:var(--danger); margin-top:4px;">Please review Batch No & Qty before submitting to deduct from Expired Inventory .</p>
             <div style="display:flex; gap:12px; margin-top:8px;">
               <button onclick="confirmAndExecuteExpiryDamage()" class="btn-success">Yes, Proceed</button>
               <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
@@ -2758,7 +2838,7 @@ async function savePurchaseModalData() {
       let qaRemarkHtml = "";
       let warehouseToOptions = "";
 
-      if (currentWarehouse === 'QA (Quality Assurance)') {
+	if (currentWarehouse === 'QA (Quality Assurance)') {
         qaRemarkHtml = `
           <div class="field-group" style="margin-top: 8px;">
             <label>QA Remarks <span style="color:var(--danger);">*</span></label>
@@ -2776,26 +2856,31 @@ async function savePurchaseModalData() {
           <option value="Main Warehouse" selected>Main Warehouse</option>
           <option value="Packing Area">Packing Area</option>
           <option value="Damaged">Damaged</option>
+          <option value="Expired">Expired Inventory</option>
         `;
       } else if (currentWarehouse === 'Main Warehouse') {
         warehouseToOptions = `
           <option value="Packing Area" selected>Packing Area</option>
           <option value="Damaged">Damaged</option>
           <option value="Near-Expiry">Near-Expiry</option>
+          <option value="Expired">Expired Inventory</option>
         `;
       } else if (currentWarehouse === 'Packing Area') {
         warehouseToOptions = `
           <option value="Near-Expiry" selected>Near-Expiry</option>
           <option value="Damaged">Damaged</option>
+          <option value="Expired">Expired Inventory</option>
         `;
       } else if (currentWarehouse === 'Near-Expiry') {
         warehouseToOptions = `
           <option value="Packing Area" selected>Packing Area</option>
+          <option value="Expired">Expired Inventory</option>
         `;
       } else if (currentWarehouse === 'Damaged') {
         warehouseToOptions = `
           <option value="Packing Area" selected>Packing Area</option>
           <option value="Near-Expiry">Near-Expiry</option>
+          <option value="Expired">Expired Inventory</option>
           <option value="Other Location">Other Location</option>
         `;
       } else {
@@ -2805,6 +2890,7 @@ async function savePurchaseModalData() {
           <option value="Damaged" ${currentWarehouse === 'Damaged' ? '' : 'selected'}>Damaged</option>
           <option value="Near-Expiry" ${currentWarehouse === 'Near-Expiry' ? '' : 'selected'}>Near-Expiry</option>
           <option value="QA (Quality Assurance)" ${currentWarehouse === 'QA (Quality Assurance)' ? '' : 'selected'}>QA (Quality Assurance)</option>
+          <option value="Expired">Expired Inventory</option>
           <option value="Other Location">Other Location</option>
         `;
       }
@@ -7162,6 +7248,460 @@ async function forceUserLogout(username) {
       } finally {
         if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
       }
+    }
+	
+	// --- 1. EXPIRED INVENTORY MODAL (SAME LAYOUT AS DUMP INVENTORY) ---
+    async function openExpiredInventoryModal() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 600px;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color:#475569; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Expired Inventory...</h3>
+          </div>
+        </div>
+      `;
+
+      try {
+        let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getExpiredData`);
+        if (res && res.status === "error") throw new Error(res.message);
+
+        // Raw Data Excel Export ke liye globally save kar rahe hain
+        window.currentExpiredData = res;
+
+        let tbody = "";
+        if (!res || res.length === 0) {
+          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Expired Inventory.</td></tr>`;
+        } else {
+          // Product-wise Qty sum karke group karna (Bilkul Dump Inventory ki tarah)
+          let groupedData = {};
+          res.forEach(item => {
+            let p = item.product;
+            if (!groupedData[p]) {
+              groupedData[p] = {
+                product: p,
+                qty: 0
+              };
+            }
+            groupedData[p].qty += (parseFloat(item.qty) || 0);
+          });
+
+          let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
+          aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+
+          aggregatedArray.forEach((item) => {
+            tbody += `
+              <tr>
+                <td><b>${escapeHtml(item.product)}</b></td>
+                <td style="text-align: right; color: var(--danger); font-weight: bold;">${formatNumber(item.qty)}</td>
+              </tr>
+            `;
+          });
+        }
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:#475569;"><i class="fa-solid fa-calendar-xmark"></i> Expired Inventory</h3>
+              
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
+                <div class="field-group" style="flex: 1;">
+                  <input type="text" id="expiredSearchInput" placeholder="Search by Product Name..." onkeyup="filterExpiredInventory()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                </div>
+                <button onclick="exportExpiredInventoryExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table class="pdf-item-table" id="expiredInventoryTable" style="min-width: 650px; font-size: 0.85rem;">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th style="text-align: right;">Total Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+              <div style="text-align:right; margin-top: 15px;">
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        alert("Error loading Expired Inventory: " + e.message);
+        closeModalAndResume();
+      }
+    }
+
+    // --- 2. SEARCH FILTER FOR EXPIRED INVENTORY ---
+    function filterExpiredInventory() {
+      let filter = document.getElementById("expiredSearchInput").value.toLowerCase();
+      let rows = document.querySelectorAll("#expiredInventoryTable tbody tr");
+      
+      rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+      });
+    }
+
+    // --- 3. EXCEL EXPORT FOR EXPIRED INVENTORY ---
+    function exportExpiredInventoryExcel() {
+      if (!window.currentExpiredData || window.currentExpiredData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+      
+      let btn = document.querySelector("#modal-container .btn-emerald");
+      if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+      let exportData = window.currentExpiredData.map((item, idx) => {
+        let formattedDate = "";
+        if (item.scanTime) {
+          let d = new Date(item.scanTime);
+          if (!isNaN(d.getTime())) {
+            formattedDate = String(d.getDate()).padStart(2, '0') + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + d.getFullYear();
+          } else {
+            formattedDate = String(item.scanTime).split(" ")[0];
+          }
+        }
+        
+        return {
+          "S.No": idx + 1,
+          "USER NAME": item.userName || "N/A",
+          "FROM WAREHOUSE": item.fromWh || "N/A",
+          "PRODUCT NAME": item.product || "N/A",
+          "BATCH NO": item.batch || "N/A",
+          "QTY": parseInt(item.qty, 10) || 0,
+          "MFG": formatShortDate(item.mfg) || "N/A",
+          "EXP": formatShortDate(item.exp) || "N/A",
+          "MRP": item.mrp || "N/A",
+          "SCAN TIME": formattedDate
+        };
+      });
+
+      try {
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Expired Inventory");
+        XLSX.writeFile(wb, `Expired_Inventory_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      } finally {
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
+      }
+    }
+
+	// =======================================================================
+    // EXPIRED STOCK NOTIFICATION SYSTEM (INSTANT-MEMORY & ZERO-LAG VERSION)
+    // =======================================================================
+    window.expiredAlertsCache = [];
+    window.expiredAlertsLoaded = false;
+
+    // Dashboard load par sirf 1 request (fetchAllMetrics) jayegi jisse KPIs + Notifications dono aa jayenge
+    async function syncDataAndShowDashboard() {
+      showDashboard(); 
+      fetchAllMetrics(); 
+    }
+
+    function parseExpiryMonthYear(rawExp) {
+      if (!rawExp) return null;
+      let str = String(rawExp).trim();
+      if (!str) return null;
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      // 1. Google Sheet Long Date String (e.g., "Thu Oct 01 2026 00:00:00 GMT+0530...")
+      if (str.includes("GMT") || str.includes("Standard Time") || str.length > 20) {
+        let d = new Date(str);
+        if (!isNaN(d.getTime())) {
+          let m = d.getMonth() + 1;
+          let y = d.getFullYear();
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      // 2. Format: MM/YY or MM/YYYY or MM-YY or MM-YYYY (e.g., 07/26, 08/26, 08/2026)
+      let mmYY = str.match(/^(\d{1,2})[\/\-](\d{2}|\d{4})$/);
+      if (mmYY) {
+        let m = parseInt(mmYY[1], 10);
+        let y = parseInt(mmYY[2], 10);
+        if (y < 100) y += 2000;
+        if (m >= 1 && m <= 12) {
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      // 3. Format: DD-MMM-YY or DD-MMM-YYYY (e.g., 01-Sep-29, 01-Jul-26)
+      let ddMonYY = str.match(/^(\d{1,2})[\s\/\-]+([a-zA-Z]+)[\s\/\-]+(\d{2}|\d{4})$/);
+      if (ddMonYY) {
+        let monPrefix = ddMonYY[2].substring(0, 3).toLowerCase();
+        let mIdx = monthNames.findIndex(m => m.toLowerCase() === monPrefix);
+        if (mIdx !== -1) {
+          let m = mIdx + 1;
+          let y = parseInt(ddMonYY[3], 10);
+          if (y < 100) y += 2000;
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      // 4. Format: YYYY-MM-DD (e.g., 2026-10-01)
+      let ymd = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (ymd) {
+        let y = parseInt(ymd[1], 10);
+        let m = parseInt(ymd[2], 10);
+        if (m >= 1 && m <= 12) {
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      // 5. Format: DD-MM-YYYY or DD/MM/YYYY
+      let dmy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        let m = parseInt(dmy[2], 10);
+        let y = parseInt(dmy[3], 10);
+        if (m >= 1 && m <= 12) {
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      // 6. Format: Oct-26, October-26, Aug 2026, Jul/26
+      let monYY = str.match(/^([a-zA-Z]+)[\s\/\-]+(\d{2}|\d{4})$/);
+      if (monYY) {
+        let monPrefix = monYY[1].substring(0, 3).toLowerCase();
+        let mIdx = monthNames.findIndex(m => m.toLowerCase() === monPrefix);
+        if (mIdx !== -1) {
+          let m = mIdx + 1;
+          let y = parseInt(monYY[2], 10);
+          if (y < 100) y += 2000;
+          return { month: m, year: y, formatted: `${monthNames[m - 1]}-${String(y).slice(-2)}` };
+        }
+      }
+
+      return null;
+    }
+
+    async function checkExpiredStockNotifications(preloadedData) {
+      try {
+        const currentWh = (sessionStorage.getItem("warehouse") || "").trim();
+        const userRole = (sessionStorage.getItem("role") || "Standard").trim().toLowerCase();
+        const lowerWh = currentWh.toLowerCase();
+
+        const isGlobalUser = (
+          userRole === "admin" || 
+          userRole === "master user" || 
+          userRole.includes("view") || 
+          userRole.includes("manager") || 
+          lowerWh === "all view"
+        );
+
+        // Agar getAllMetrics se data aa gaya hai to 0 extra call me kaam hoga
+        let rawData = preloadedData;
+        if (!Array.isArray(rawData)) {
+          const queryWh = isGlobalUser ? "All" : currentWh;
+          rawData = await safeFetch(`${GOOGLE_SHEET_URL}?action=getStockReport&warehouse=${encodeURIComponent(queryWh)}`);
+        }
+        if (!Array.isArray(rawData)) return;
+
+        const allowedWarehouses = [
+          "QA (Quality Assurance)",
+          "Main Warehouse",
+          "Packing Area",
+          "Near-Expiry",
+          "Damaged"
+        ];
+
+        let grouped = {};
+        rawData.forEach(item => {
+          let loc = String(item.location || "").trim();
+          if (!allowedWarehouses.includes(loc)) return;
+          if (!isGlobalUser && loc.toLowerCase() !== lowerWh) return;
+
+          let prod = String(item.product || "").trim().toUpperCase();
+          let batch = String(item.batch || "").trim().toUpperCase();
+          let expRaw = String(item.exp || "").trim();
+          let qty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
+
+          if (!prod || qty <= 0) return;
+
+          let key = `${loc}|||${prod}|||${batch}`;
+          if (!grouped[key]) {
+            grouped[key] = { location: loc, product: prod, batch: batch, expRaw: expRaw, qty: 0 };
+          }
+          grouped[key].qty += qty;
+          if (!grouped[key].expRaw && expRaw) grouped[key].expRaw = expRaw;
+        });
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+
+        let expiredList = [];
+
+        Object.values(grouped).forEach(item => {
+          if (item.qty <= 0) return;
+          let parsedExp = parseExpiryMonthYear(item.expRaw);
+          if (parsedExp) {
+            let isExpired = (parsedExp.year < currentYear) || (parsedExp.year === currentYear && parsedExp.month <= currentMonth);
+            if (isExpired) {
+              expiredList.push({
+                location: item.location,
+                product: item.product,
+                batch: item.batch,
+                expFormatted: parsedExp.formatted,
+                expSortVal: parsedExp.year * 100 + parsedExp.month,
+                qty: item.qty
+              });
+            }
+          }
+        });
+
+        expiredList.sort((a, b) => a.expSortVal - b.expSortVal || a.location.localeCompare(b.location));
+        window.expiredAlertsCache = expiredList;
+        window.expiredAlertsLoaded = true;
+
+        const btn = document.getElementById("expiryNotifBtn");
+        const badge = document.getElementById("expiryNotifBadge");
+        if (btn && badge) {
+          if (expiredList.length > 0) {
+            btn.classList.add("has-alerts");
+            badge.style.display = "flex";
+            badge.innerText = expiredList.length > 99 ? "99+" : expiredList.length;
+          } else {
+            btn.classList.remove("has-alerts");
+            badge.style.display = "none";
+            badge.innerText = "0";
+          }
+        }
+      } catch (e) {
+        console.error("Notification check error:", e);
+      }
+    }
+
+    async function openExpiredNotificationsModal() {
+      // Sirf tabhi wait karega agar pehli baar abhi tak data load na hua ho, warna 0.01 sec me khulega!
+      if (!window.expiredAlertsLoaded) {
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 500px; text-align: center;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color: #dc2626;"><i class="fa-solid fa-spinner fa-spin"></i> Checking Expired Batches...</h3>
+            </div>
+          </div>
+        `;
+        await checkExpiredStockNotifications();
+      }
+
+      let alerts = window.expiredAlertsCache || [];
+      const currentWh = sessionStorage.getItem("warehouse") || "Warehouse";
+      const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
+      const isGlobalUser = (
+        userRole === "admin" || 
+        userRole === "master user" || 
+        userRole.includes("view") || 
+        userRole.includes("manager") || 
+        currentWh.toLowerCase() === "all view"
+      );
+
+      let scopeLabel = isGlobalUser ? "All Warehouses" : currentWh;
+
+      let contentHtml = "";
+      if (alerts.length === 0) {
+        contentHtml = `
+          <div style="text-align: center; padding: 30px 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #15803d;">
+            <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; margin-bottom: 10px;"></i>
+            <h4 style="margin-bottom: 4px;">No Expired Stock Found!</h4>
+            <p style="font-size: 0.85rem;">There are currently no expired product batches in <b>${escapeHtml(scopeLabel)}</b>.</p>
+          </div>
+        `;
+      } else {
+        let cardsHtml = alerts.map((item) => `
+          <div class="expiry-alert-card" data-search="${escapeHtml((item.location + ' ' + item.product + ' ' + item.batch + ' ' + item.expFormatted).toLowerCase())}">
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;">
+                <span style="background: #e11d48; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
+                  <i class="fa-solid fa-warehouse"></i> ${escapeHtml(item.location)}
+                </span>
+                <span style="background: #fee2e2; color: #991b1b; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                  Expiry: ${escapeHtml(item.expFormatted)}
+                </span>
+              </div>
+              <div style="font-size: 0.92rem; color: #0f172a; line-height: 1.45;">
+                Batch <b style="color: #dc2626;">${escapeHtml(item.batch)}</b> of <b>${escapeHtml(item.product)}</b> has expired in <b>${escapeHtml(item.location)}</b>.
+              </div>
+            </div>
+            <div style="text-align: right; min-width: 95px;">
+              <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 700;">Avail Qty</span>
+              <span style="font-size: 1.05rem; font-weight: 800; color: #dc2626;">${formatNumber(item.qty)} pcs</span>
+            </div>
+          </div>
+        `).join("");
+
+        contentHtml = `
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <input type="text" id="notifSearchInput" placeholder="Search by Warehouse, Product, or Batch..." onkeyup="filterExpiryNotifications()" style="flex: 1; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+            <button onclick="exportExpiredAlertsExcel()" class="btn-emerald" style="width: auto; padding: 9px 14px; font-size: 0.85rem;">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+          </div>
+          <div id="expiryAlertsListContainer" style="max-height: 60vh; overflow-y: auto; padding-right: 4px;">
+            ${cardsHtml}
+          </div>
+        `;
+      }
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
+            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color: #dc2626; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span><i class="fa-solid fa-bell"></i> Expired Stock Alerts</span>
+              <span style="font-size: 0.8rem; background: #fee2e2; color: #991b1b; padding: 3px 10px; border-radius: 50px;">${escapeHtml(scopeLabel)}: ${alerts.length} Batches</span>
+            </h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: -8px;">
+              The following product batches have reached or passed their expiry month. Please transfer them to <b>Expired Inventory</b> via Internal Stock Transfer.
+            </p>
+            ${contentHtml}
+            <div style="text-align: right; margin-top: 10px;">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterExpiryNotifications() {
+      let q = (document.getElementById("notifSearchInput")?.value || "").toLowerCase();
+      let cards = document.querySelectorAll("#expiryAlertsListContainer .expiry-alert-card");
+      cards.forEach(card => {
+        let text = card.getAttribute("data-search") || "";
+        card.style.display = text.includes(q) ? "flex" : "none";
+      });
+    }
+
+    function exportExpiredAlertsExcel() {
+      let alerts = window.expiredAlertsCache || [];
+      if (alerts.length === 0) {
+        alert("No expired stock alerts available to export.");
+        return;
+      }
+
+      let exportData = alerts.map((item, idx) => ({
+        "S.No": idx + 1,
+        "Warehouse": item.location,
+        "Product Name": item.product,
+        "Batch No": item.batch,
+        "Expiry Date": item.expFormatted,
+        "Available Qty": item.qty,
+        "Notification Details": `Batch ${item.batch} of ${item.product} has expired in ${item.location}.`
+      }));
+
+      let ws = XLSX.utils.json_to_sheet(exportData);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Expired Stock Alerts");
+      XLSX.writeFile(wb, `Expired_Stock_Alerts_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
   </script>
