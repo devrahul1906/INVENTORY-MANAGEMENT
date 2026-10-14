@@ -568,7 +568,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx0LG7ImjYQaYt39NjVJ6qHLFyDLxkp-E1pmosH2ERlmye1I4bn5WbnK5gBg2u1qKXu/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyonfe4sUDAVmjHoCcucXGdB5rbTRpgjSsx-tSm9z4WGLzs3jdaPNziQejG_qWFTLLk/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -6162,35 +6162,55 @@ async function handleDispatchReturnPdfUpload(input) {
       `;
     }
 
+	function getSuspenseExpiryMonthsDiff(expStr) {
+      if (!expStr) return null;
+      let cleanStr = expStr.trim().replace(/\$/g, '');
+      let match = cleanStr.match(/^(0?[1-9]|1[0-2])[\/\-](\d{2}|\d{4})$/);
+      if (!match) return null;
+
+      let expMonth = parseInt(match[1], 10);
+      let expYear = parseInt(match[2], 10);
+      if (expYear < 100) expYear += 2000;
+
+      let now = new Date();
+      let currentYear = now.getFullYear();
+      let currentMonth = now.getMonth() + 1; // 1 to 12
+
+      let monthsDiff = (expYear - currentYear) * 12 + (expMonth - currentMonth);
+      let formattedExp = String(expMonth).padStart(2, '0') + "/" + String(expYear).slice(-2);
+      let isoExpDate = `${expYear}-${String(expMonth).padStart(2, '0')}-01`;
+
+      return { monthsDiff, formattedExp, isoExpDate };
+    }
+
     function updateSuspenseStatus() {
       let expVal = document.getElementById("sr_exp").value.trim();
       let statusBox = document.getElementById("sr_status_box");
       let daysText = document.getElementById("sr_days_text");
       
-      let formattedExpDate = parsePdfExpiryToDate(expVal); 
+      let parsed = getSuspenseExpiryMonthsDiff(expVal);
       
-      if (!expVal || expVal.length < 5) {
+      if (!parsed) {
          statusBox.innerText = "Pending";
          statusBox.style.color = "var(--text-muted)";
-         daysText.innerText = "";
+         daysText.innerText = expVal.length >= 4 ? "Invalid format (Use MM/YY)" : "";
          return;
       }
 
-      if (formattedExpDate) {
-        let expDateObj = new Date(formattedExpDate);
-        let currentDate = new Date();
-        let timeDiff = expDateObj.getTime() - currentDate.getTime();
-        let daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        
-        daysText.innerText = daysDiff + " Days remaining";
+      let mDiff = parsed.monthsDiff;
 
-        if (daysDiff <= 90) {
-           statusBox.innerText = "Near-Expiry";
-           statusBox.style.color = "var(--danger)";
-        } else {
-           statusBox.innerText = "Usable";
-           statusBox.style.color = "var(--success)";
-        }
+      if (mDiff <= 0) {
+         statusBox.innerText = "Expired";
+         statusBox.style.color = "var(--danger)";
+         daysText.innerText = mDiff === 0 ? "Expires this month (➔ Expired Inventory)" : `Expired ${Math.abs(mDiff)} month(s) ago (➔ Expired Inventory)`;
+      } else if (mDiff <= 9) {
+         statusBox.innerText = "Near-Expiry";
+         statusBox.style.color = "var(--warning)";
+         daysText.innerText = `${mDiff} Month(s) remaining (➔ Near-Expiry Inventory)`;
+      } else {
+         statusBox.innerText = "Usable";
+         statusBox.style.color = "var(--success)";
+         daysText.innerText = `${mDiff} Month(s) remaining (➔ QA Inventory)`;
       }
     }
 
@@ -6207,7 +6227,11 @@ async function handleDispatchReturnPdfUpload(input) {
         return;
       }
 
-      let formattedExpDate = parsePdfExpiryToDate(exp);
+      let parsedExp = getSuspenseExpiryMonthsDiff(exp);
+      if (!parsedExp) {
+        alert("❌ Invalid Exp. Date! Please enter in MM/YY format (e.g., 08/26 or 12/27).");
+        return;
+      }
 
       let submitBtn = document.querySelector("#modal-container button.btn-success");
       if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Submitting..."; }
@@ -6218,7 +6242,8 @@ async function handleDispatchReturnPdfUpload(input) {
         warehouse: sessionStorage.getItem("warehouse") || "",
         product: product.toUpperCase(),
         batch: batch.toUpperCase(),
-        expDate: formattedExpDate,
+        exp: parsedExp.formattedExp,
+        expDate: parsedExp.isoExpDate,
         qty: qty,
         free: free,
         mrp: mrp
