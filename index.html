@@ -797,14 +797,20 @@ setInterval(async () => {
     function showPackingStockDetails() { fetchKpiDetails("Packing Area", "<i class='fa-solid fa-box-open'></i>", "Packing Area"); }
     function showExpiredStockDetails() { fetchKpiDetails("Near-Expiry Stock", "<i class='fa-solid fa-clock-rotate-left'></i>", "Near-Expiry"); }
 		
-	// 1. Pehle ye function Date Range Popup show karega
-    function showDispatchStockDetails() {
+	function showDispatchStockDetails() {
+      let today = new Date();
+      let toDateStr = today.toISOString().split('T')[0];
+      
+      let pastSixMonths = new Date();
+      pastSixMonths.setMonth(today.getMonth() - 6);
+      let fromDateStr = pastSixMonths.toISOString().split('T')[0];
+
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box" style="max-width: 450px;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for Dispatched Qty. <b>Leave blank for full data.</b></p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for Dispatched Qty. <b>If left blank, system will automatically show data for the last 6 months.</b></p>
             
             <div class="field-group" style="margin-top: 10px;">
               <label>From Date (Optional)</label>
@@ -824,10 +830,22 @@ setInterval(async () => {
       `;
     }
 
-	// 2. Report generate karne wala actual function with STRICT Date Filter
-    async function fetchAndShowDispatchData() {
+	async function fetchAndShowDispatchData() {
       let fromDateVal = document.getElementById("dispatchFromDate").value;
       let toDateVal = document.getElementById("dispatchToDate").value;
+
+      let today = new Date();
+      let defaultToDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      
+      let defaultFromDate = new Date();
+      defaultFromDate.setMonth(today.getMonth() - 6);
+      defaultFromDate.setHours(0, 0, 0, 0);
+
+      let fromDate = fromDateVal ? new Date(fromDateVal) : defaultFromDate;
+      fromDate.setHours(0, 0, 0, 0);
+
+      let toDate = toDateVal ? new Date(toDateVal) : defaultToDate;
+      toDate.setHours(23, 59, 59, 999);
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
@@ -842,53 +860,38 @@ setInterval(async () => {
         let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getFullDispatchData`);
         if (res && res.status === "error") throw new Error(res.message);
 
-        // --- STRICT DATE FILTER LOGIC ---
-        if (fromDateVal || toDateVal) {
-          let fromDate = fromDateVal ? new Date(fromDateVal) : new Date("2000-01-01");
-          fromDate.setHours(0, 0, 0, 0);
-          let toDate = toDateVal ? new Date(toDateVal) : new Date("2100-01-01");
-          toDate.setHours(23, 59, 59, 999);
+        res = res.filter(item => {
+          if (!item.scanTime) return false;
+          
+          let itemDate;
+          let timeStr = String(item.scanTime).trim();
+          
+          if(timeStr.includes("-")) {
+              let parts = timeStr.split(" ")[0].split("-");
+              if(parts.length === 3) {
+                  if(parts[2].length === 4) {
+                      itemDate = new Date(parts[2], parseInt(parts[1], 10) - 1, parts[0]);
+                  } else if(parts[0].length === 4) {
+                      itemDate = new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
+                  }
+              }
+          }
+          
+          if(!itemDate || isNaN(itemDate.getTime())) {
+              itemDate = new Date(timeStr);
+          }
+          
+          if(isNaN(itemDate.getTime())) return false; 
+          
+          return itemDate >= fromDate && itemDate <= toDate;
+        });
 
-          res = res.filter(item => {
-            if (!item.scanTime) return false; // Blank date skip karega
-            
-            let itemDate;
-            let timeStr = String(item.scanTime).trim();
-            
-            // Try to parse DD-MM-YYYY format properly
-            if(timeStr.includes("-")) {
-                let parts = timeStr.split(" ")[0].split("-");
-                if(parts.length === 3) {
-                    if(parts[2].length === 4) { // Format: DD-MM-YYYY
-                        itemDate = new Date(parts[2], parseInt(parts[1], 10) - 1, parts[0]);
-                    } else if(parts[0].length === 4) { // Format: YYYY-MM-DD
-                        itemDate = new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
-                    }
-                }
-            }
-            
-            // Fallback for standard system Date string
-            if(!itemDate || isNaN(itemDate.getTime())) {
-                itemDate = new Date(timeStr);
-            }
-            
-            // Final check
-            if(isNaN(itemDate.getTime())) return false; 
-            
-            return itemDate >= fromDate && itemDate <= toDate;
-          });
-        }
-        // --------------------------------
-
-        // Ye line ab filtered 'res' ko excel export ke liye set karegi
         window.currentDispatchFullData = res;
 
         let tbody = "";
         if (!res || res.length === 0) {
-          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Dispatch Inventory for selected dates.</td></tr>`;
+          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Dispatch Inventory for the selected range.</td></tr>`;
         } else {
-          
-          // UI ke liye sirf Product aur Qty ko sum karna
           let groupedData = {};
           res.forEach(item => {
             let p = item.product;
@@ -910,11 +913,13 @@ setInterval(async () => {
           });
         }
 
+        let rangeLabel = `${fromDate.toLocaleDateString('en-GB')} to ${toDate.toLocaleDateString('en-GB')}`;
+
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
             <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Dispatched Qty Details</h3>
+              <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Dispatched Qty Details <small style="font-size: 0.8rem; color: var(--text-muted);">(${rangeLabel})</small></h3>
               
               <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
                 <div class="field-group" style="flex: 1;">
@@ -7727,6 +7732,83 @@ async function forceUserLogout(username) {
       let wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Expired Stock Alerts");
       XLSX.writeFile(wb, `Expired_Stock_Alerts_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+	function formatToDDMMYYYY(rawDateStr) {
+      if (!rawDateStr) return "";
+      let str = String(rawDateStr).trim();
+      if (!str) return "";
+
+      if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
+        return str;
+      }
+
+      let parts = str.split(/[\/\s,-]+/);
+      if (parts.length >= 3) {
+        if (parts[0].length === 4) {
+          let y = parts[0], m = parts[1].padStart(2, '0'), d = parts[2].padStart(2, '0');
+          return `${d}-${m}-${y}`;
+        }
+        if (parts[2].length === 4) {
+          let p1 = parseInt(parts[0], 10);
+          let p2 = parseInt(parts[1], 10);
+          let y = parts[2];
+          
+          if (p1 > 12) {
+            return `${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}-${y}`;
+          } else if (p2 > 12) {
+            return `${String(p2).padStart(2, '0')}-${String(p1).padStart(2, '0')}-${y}`;
+          } else {
+            return `${String(p1).padStart(2, '0')}-${String(p2).padStart(2, '0')}-${y}`;
+          }
+        }
+      }
+
+      let dObj = new Date(str);
+      if (!isNaN(dObj.getTime())) {
+        let dd = String(dObj.getDate()).padStart(2, '0');
+        let mm = String(dObj.getMonth() + 1).padStart(2, '0');
+        let yyyy = dObj.getFullYear();
+        return `${dd}-${mm}-${yyyy}`;
+      }
+
+      return str;
+    }
+
+    function exportDispatchExcel() {
+      if (!window.currentDispatchFullData || window.currentDispatchFullData.length === 0) {
+        alert("No data available to export.");
+        return;
+      }
+      
+      let btn = document.querySelector("#modal-container .btn-emerald");
+      if (btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Exporting...";
+
+      let exportData = window.currentDispatchFullData.map((item, idx) => {
+         let formattedDate = formatToDDMMYYYY(item.scanTime);
+         
+         return {
+           "S.No": idx + 1,
+           "USER NAME": item.userName || "N/A",
+           "FROM WAREHOUSE": item.fromWh || "N/A",
+           "PRODUCT NAME": item.product || "N/A",
+           "BATCH NO.": item.batch || "N/A",
+           "QTY": parseFloat(String(item.qty).replace(/,/g, '')) || 0,
+           "INVOICE NO": item.invoiceNo || "N/A",
+           "SCAN TIME": formattedDate
+         };
+      });
+
+      try {
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dispatch Data");
+        XLSX.writeFile(wb, `Dispatched_Qty_Details_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch(e) {
+        alert("Export Error: " + e.message);
+      } finally {
+        if (btn) btn.innerHTML = "<i class='fa-solid fa-file-excel'></i> Export Excel";
+      }
     }
 
   </script>
