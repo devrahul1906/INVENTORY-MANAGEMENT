@@ -3132,14 +3132,15 @@ async function savePurchaseModalData() {
         closeModalAndResume();
       }
     }
-async function handleDispatchPdfUpload(input) {
+	
+	async function handleDispatchPdfUpload(input) {
 
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
 
     // ============================================================
-    // MARG ERP ADVANCED PDF PARSER
+    // MARG ERP DUAL-FORMAT ADVANCED PDF PARSER (FORMAT 1 & FORMAT 2)
     // ============================================================
 
     try {
@@ -3166,14 +3167,14 @@ async function handleDispatchPdfUpload(input) {
             "AMOXYHAT-SL INJ. 300 MG",
             "AZITHROHAT SYRUP 30 ML",
             "AZITHROHAT-300 1*6",
-	    "RENALRAJ-PB SUSPENSION",
-	    "HATLAC JUNIOR DRY SYP.",
+            "RENALRAJ-PB SUSPENSION",
+            "HATLAC JUNIOR DRY SYP.",
             "CARDIOHAT TAB 1*30",
             "CARPOHAT-100 TAB 1*10",
             "CARPOHAT-50 TAB. 1*10",
             "CLINDAHAT 600MG TAB. 1*10",
             "CLINDAHAT SYRUP 60 ML",
-	    "CLINDAHAT SYRUP OLD 60 ML",
+            "CLINDAHAT SYRUP OLD 60 ML",
             "CLINDAHAT-250 TAB 1*10",
             "CORTIHAT TOPICAL SPRAY 50 ML",
             "DIGEHAT PLUS SYRUP 100 ML",
@@ -3313,38 +3314,43 @@ async function handleDispatchPdfUpload(input) {
 
 
         // ========================================================
-        // NORMALIZATION
+        // NORMALIZATION (WITH PHARMA SYNONYM SUPPORT FOR FORMAT 2)
         // ========================================================
 
         const normalize = value => {
-
             return String(value || "")
                 .toUpperCase()
-                .replace(/₹/g, "")
+                .replace(/₹|\$/g, "")
                 .replace(/[‐-‒–—]/g, "-")
                 .replace(/\s+/g, " ")
                 .trim();
-
         };
-
 
         const alphaNum = value => {
-
-            return normalize(value)
-                .replace(/[^A-Z0-9]/g, "");
-
+            return normalize(value).replace(/[^A-Z0-9]/g, "");
         };
 
+        // Standardizes synonyms like SYRUP <-> SYP, TABLET <-> TAB, 250MG <-> 250
+        const pharmaCanonical = value => {
+            return normalize(value)
+                .replace(/\bSYRUP\b/g, "SYP")
+                .replace(/\bSUSPENSION\b/g, "SUSP")
+                .replace(/\bTABLETS?\b/g, "TAB")
+                .replace(/\bINJECTION\b/g, "INJ")
+                .replace(/\bOINTMENT\b/g, "OINT")
+                .replace(/\bSOLUTION\b/g, "SOL")
+                .replace(/(\d+)\s*MG\b/g, "$1")
+                .replace(/[^A-Z0-9]/g, "");
+        };
 
         const PRODUCT_MAP = PRODUCT_OPTIONS
             .map(name => ({
                 full: name,
                 norm: normalize(name),
-                base: alphaNum(name)
+                base: alphaNum(name),
+                canon: pharmaCanonical(name)
             }))
-            .sort((a, b) =>
-                b.base.length - a.base.length
-            );
+            .sort((a, b) => b.base.length - a.base.length);
 
 
         // ========================================================
@@ -3352,76 +3358,31 @@ async function handleDispatchPdfUpload(input) {
         // ========================================================
 
         const isNumber = value => {
-
-            if (
-                value === null ||
-                value === undefined
-            ) {
-                return false;
-            }
-
-            return /^[+-]?\d+(?:,\d{3})*(?:\.\d+)?$/
-                .test(String(value).trim());
-
+            if (value === null || value === undefined) return false;
+            return /^[+-]?\d+(?:,\d{3})*(?:\.\d+)?$/.test(String(value).trim());
         };
-
 
         const numberValue = value => {
-
-            if (!isNumber(value))
-                return null;
-
-            return Number(
-                String(value)
-                    .replace(/,/g, "")
-                    .trim()
-            );
-
+            if (!isNumber(value)) return null;
+            return Number(String(value).replace(/,/g, "").trim());
         };
-
 
         const isDateLike = value => {
-
-            return /^\d{1,2}[\/-]\d{2,4}$/
-                .test(
-                    String(value || "").trim()
-                );
-
+            const clean = String(value || "").replace(/\$/g, "").trim();
+            return /^\d{1,2}[\/-]\d{2,4}$/.test(clean);
         };
 
-
-	const isBatchLike = value => {
-
-            const s =
-                String(value || "").trim();
-
-            if (s.length < 3)
-                return false;
-
-            if (isNumber(s))
-                return false;
-
-            if (isDateLike(s))
-                return false;
-
-            // Updated regex to allow spaces inside the batch number
-            return /^[A-Z0-9][A-Z0-9._\/\- ]*$/i
-                .test(s);
-
+        const isBatchLike = value => {
+            const s = String(value || "").replace(/\$/g, "").trim();
+            if (s.length < 3) return false;
+            if (isNumber(s)) return false;
+            if (isDateLike(s)) return false;
+            return /^[A-Z0-9][A-Z0-9._\/\- ]*$/i.test(s);
         };
-
 
         const distance = (a, b) => {
-
-            if (
-                a === null ||
-                b === null
-            ) {
-                return 99999;
-            }
-
+            if (a === null || b === null) return 99999;
             return Math.abs(a - b);
-
         };
 
 
@@ -3431,109 +3392,37 @@ async function handleDispatchPdfUpload(input) {
 
         const pages = {};
 
-        for (
-            let pageNo = 1;
-            pageNo <= pdf.numPages;
-            pageNo++
-        ) {
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const page = await pdf.getPage(pageNo);
+            const content = await page.getTextContent();
 
-            const page =
-                await pdf.getPage(pageNo);
-
-            const content =
-                await page.getTextContent();
-
-            pages[pageNo] =
-                content.items
-                    .map((item, index) => ({
-
-                        str:
-                            String(
-                                item.str || ""
-                            ).trim(),
-
-                        x:
-                            Number(
-                                item.transform?.[4] || 0
-                            ),
-
-                        y:
-                            Number(
-                                item.transform?.[5] || 0
-                            ),
-
-                        width:
-                            Number(
-                                item.width || 0
-                            ),
-
-                        height:
-                            Number(
-                                item.height || 0
-                            ),
-
-                        index,
-                        page: pageNo
-
-                    }))
-                    .filter(item => item.str);
-
+            pages[pageNo] = content.items
+                .map((item, index) => ({
+                    str: String(item.str || "").trim(),
+                    x: Number(item.transform?.[4] || 0),
+                    y: Number(item.transform?.[5] || 0),
+                    width: Number(item.width || 0),
+                    height: Number(item.height || 0),
+                    index,
+                    page: pageNo
+                }))
+                .filter(item => item.str);
         }
 
 
         // ========================================================
-        // ALL TEXT
+        // ALL TEXT & HEADER DETECTION
         // ========================================================
 
-        let allText =
-            Object.values(pages)
-                .flat()
-                .map(x => x.str)
-                .join(" ");
-
-
-        // ========================================================
-        // INVOICE NUMBER
-        // ========================================================
-
-        let invoiceMatch =
-
-            allText.match(
-                /Invoice\s*No\.?\s*[:\-]?\s*([A-Z0-9\-]+)/i
-            )
-
-            ||
-
-            allText.match(
-                /\bA00\d+\b/i
-            );
-
-
-        const invoiceNo =
-            invoiceMatch
-                ? (
-                    invoiceMatch[1] ||
-                    invoiceMatch[0]
-                )
-                : "";
-
-
-        // ========================================================
-        // HEADER DETECTION
-        // ========================================================
+        let allText = Object.values(pages).flat().map(x => x.str).join(" ");
 
         const pageHeaders = {};
 
-        for (
-            let pageNo = 1;
-            pageNo <= pdf.numPages;
-            pageNo++
-        ) {
-
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
             pageHeaders[pageNo] = {
-
                 serial: null,
                 product: null,
+                pack: null,
                 qty: null,
                 free: null,
                 batch: null,
@@ -3545,210 +3434,47 @@ async function handleDispatchPdfUpload(input) {
                 dis2: null,
                 igst: null,
                 amount: null
-
             };
 
-
-            const items =
-                pages[pageNo];
-
+            const items = pages[pageNo];
 
             for (const item of items) {
-
-                const t =
-                    normalize(item.str)
-                        .replace(/\s+/g, "")
-                        .toUpperCase();
-
-
+                const t = normalize(item.str).replace(/\s+/g, "").toUpperCase();
                 const x = item.x;
 
-
-                if (
-                    t === "SN." ||
-                    t === "SN" ||
-                    t === "S.NO." ||
-                    t === "SNO."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .serial = x;
-
-                }
-
-
-                if (
-                    t === "QTY" ||
-                    t === "QTY."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .qty = x;
-
-                }
-
-
-                if (
-                    t === "FREE" ||
-                    t === "FREE." ||
-                    t === "FREE.."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .free = x;
-
-                }
-
-
-                if (
-                    t === "BATCH" ||
-                    t === "BATCHNO" ||
-                    t === "BATCHNO." ||
-                    t === "BATCHNO:"
-                ) {
-
-                    pageHeaders[pageNo]
-                        .batch = x;
-
-                }
-
-
-                if (
-                    t === "EXP" ||
-                    t === "EXP."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .exp = x;
-
-                }
-
-
-                if (t === "HSN") {
-
-                    pageHeaders[pageNo]
-                        .hsn = x;
-
-                }
-
-
-                if (
-                    t === "M.R.P" ||
-                    t === "MRP"
-                ) {
-
-                    pageHeaders[pageNo]
-                        .mrp = x;
-
-                }
-
-
-                if (t === "RATE") {
-
-                    pageHeaders[pageNo]
-                        .rate = x;
-
-                }
-
-
-                if (
-                    t === "DIS1" ||
-                    t === "DIS1."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .dis1 = x;
-
-                }
-
-
-                if (
-                    t === "DIS2" ||
-                    t === "DIS2."
-                ) {
-
-                    pageHeaders[pageNo]
-                        .dis2 = x;
-
-                }
-
-
-                if (t === "IGST") {
-
-                    pageHeaders[pageNo]
-                        .igst = x;
-
-                }
-
-
-                if (
-                    t === "N.AMOUNT" ||
-                    t === "NAMOUNT" ||
-                    t === "AMOUNT"
-                ) {
-
-                    pageHeaders[pageNo]
-                        .amount = x;
-
-                }
-
+                if (t === "SN." || t === "SN" || t === "S.NO." || t === "SNO.") pageHeaders[pageNo].serial = x;
+                if (t === "PACK" || t === "PACK.") pageHeaders[pageNo].pack = x;
+                if (t === "QTY" || t === "QTY.") pageHeaders[pageNo].qty = x;
+                if (t === "FREE" || t === "FREE." || t === "FREE..") pageHeaders[pageNo].free = x;
+                if (t === "BATCH" || t === "BATCHNO" || t === "BATCHNO." || t === "BATCHNO:") pageHeaders[pageNo].batch = x;
+                if (t === "EXP" || t === "EXP.") pageHeaders[pageNo].exp = x;
+                if (t === "HSN") pageHeaders[pageNo].hsn = x;
+                if (t === "M.R.P" || t === "MRP" || t === "M.R.P.") pageHeaders[pageNo].mrp = x;
+                if (t === "RATE") pageHeaders[pageNo].rate = x;
+                if (t === "DIS1" || t === "DIS1.") pageHeaders[pageNo].dis1 = x;
+                if (t === "DIS2" || t === "DIS2.") pageHeaders[pageNo].dis2 = x;
+                if (t === "IGST") pageHeaders[pageNo].igst = x;
+                if (t === "N.AMOUNT" || t === "NAMOUNT" || t === "AMOUNT") pageHeaders[pageNo].amount = x;
             }
-
         }
 
 
         // ========================================================
-        // INHERIT HEADERS
+        // INHERIT HEADERS ACROSS PAGES
         // ========================================================
 
         let previousHeaders = {
-
-            serial: null,
-            product: null,
-            qty: null,
-            free: null,
-            batch: null,
-            exp: null,
-            hsn: null,
-            mrp: null,
-            rate: null,
-            dis1: null,
-            dis2: null,
-            igst: null,
-            amount: null
-
+            serial: null, product: null, pack: null, qty: null, free: null,
+            batch: null, exp: null, hsn: null, mrp: null, rate: null,
+            dis1: null, dis2: null, igst: null, amount: null
         };
 
-
-        for (
-            let pageNo = 1;
-            pageNo <= pdf.numPages;
-            pageNo++
-        ) {
-
-            const current =
-                pageHeaders[pageNo];
-
-
-            Object.keys(current)
-                .forEach(key => {
-
-                    if (
-                        current[key] === null
-                    ) {
-
-                        current[key] =
-                            previousHeaders[key];
-
-                    } else {
-
-                        previousHeaders[key] =
-                            current[key];
-
-                    }
-
-                });
-
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const current = pageHeaders[pageNo];
+            Object.keys(current).forEach(key => {
+                if (current[key] === null) current[key] = previousHeaders[key];
+                else previousHeaders[key] = current[key];
+            });
         }
 
 
@@ -3756,53 +3482,38 @@ async function handleDispatchPdfUpload(input) {
         // FALLBACK COLUMN DETECTION
         // ========================================================
 
-        for (
-            let pageNo = 1;
-            pageNo <= pdf.numPages;
-            pageNo++
-        ) {
-
-            const h =
-                pageHeaders[pageNo];
-
-
-            if (
-                h.qty === null ||
-                h.batch === null
-            ) {
-
-                const headerItems =
-                    pages[pageNo].filter(item =>
-                        /Sn\.\s*Product\s*Name.*Qty.*Free.*Batch/i
-                            .test(item.str)
-                    );
-
-
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const h = pageHeaders[pageNo];
+            if (h.qty === null || h.batch === null) {
+                const headerItems = pages[pageNo].filter(item =>
+                    /Sn\.\s*Product\s*Name.*Qty.*Free.*Batch/i.test(item.str)
+                );
                 if (headerItems.length) {
-
-                    const header =
-                        headerItems[0];
-
-
-                    if (h.qty === null)
-                        h.qty =
-                            header.x + 160;
-
-
-                    if (h.free === null)
-                        h.free =
-                            header.x + 195;
-
-
-                    if (h.batch === null)
-                        h.batch =
-                            header.x + 235;
-
+                    const header = headerItems[0];
+                    if (h.qty === null) h.qty = header.x + 160;
+                    if (h.free === null) h.free = header.x + 195;
+                    if (h.batch === null) h.batch = header.x + 235;
                 }
-
             }
-
         }
+
+
+        // ========================================================
+        // AUTO-DETECT 2ND FORMAT & ADD "PA-" PREFIX TO INVOICE NO
+        // ========================================================
+
+        const isSecondFormat =
+            /HATVET\s+PET\s+PASSION|info\.hatpet|09AAFCH8409Q1ZU/i.test(allText) ||
+            (Object.values(pageHeaders).some(h => h.pack !== null) && !/HATVET\s+PHARMA/i.test(allText));
+
+        let invoiceMatch =
+            allText.match(/Invoice\s*No\.?\s*[:\-]?\s*([A-Z0-9\-]*\d[A-Z0-9\-]*)/i) ||
+            allText.match(/\bA00\d+\b/i);
+
+        const rawInvoiceNo = invoiceMatch ? (invoiceMatch[1] || invoiceMatch[0]).trim() : "";
+        const invoiceNo = (isSecondFormat && rawInvoiceNo && !/^PA-/i.test(rawInvoiceNo))
+            ? `PA-${rawInvoiceNo}`
+            : rawInvoiceNo;
 
 
         // ========================================================
@@ -3811,94 +3522,110 @@ async function handleDispatchPdfUpload(input) {
 
         const rows = [];
 
-
-        for (
-            let pageNo = 1;
-            pageNo <= pdf.numPages;
-            pageNo++
-        ) {
-
-            const items =
-                pages[pageNo];
-
-
-            const sorted =
-                [...items]
-                    .sort((a, b) => {
-
-                        if (
-                            Math.abs(a.y - b.y) < 2
-                        ) {
-
-                            return a.x - b.x;
-
-                        }
-
-                        return b.y - a.y;
-
-                    });
-
+        for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+            const items = pages[pageNo];
+            const sorted = [...items].sort((a, b) => {
+                if (Math.abs(a.y - b.y) < 2) return a.x - b.x;
+                return b.y - a.y;
+            });
 
             const pageRows = [];
 
-
             for (const item of sorted) {
-
-                let row =
-                    pageRows.find(r =>
-                        Math.abs(
-                            r.y - item.y
-                        ) <= 2.8
-                    );
-
-
+                let row = pageRows.find(r => Math.abs(r.y - item.y) <= 2.8);
                 if (!row) {
-
-                    row = {
-
-                        page: pageNo,
-                        y: item.y,
-                        items: []
-
-                    };
-
+                    row = { page: pageNo, y: item.y, items: [] };
                     pageRows.push(row);
-
                 }
-
-
                 row.items.push(item);
-
             }
 
-
-            pageRows.sort(
-                (a, b) => b.y - a.y
-            );
-
-
+            // Ensure items inside each row are sorted strictly left-to-right
+            pageRows.forEach(r => r.items.sort((a, b) => a.x - b.x));
+            pageRows.sort((a, b) => b.y - a.y);
             rows.push(...pageRows);
-
         }
 
 
-// ========================================================
+        // ========================================================
+        // PRODUCT MATCHING (SUPPORTS FORMAT 1 & FORMAT 2)
+        // ========================================================
+
+        function findProduct(rowItems, headers) {
+            // Restrict product text candidates to items before Qty/Batch column if available
+            const maxProdX = (headers && headers.qty !== null) ? (headers.qty - 5) : 99999;
+            const prodItems = rowItems.filter(x => x.x < maxProdX);
+            const combined = (prodItems.length ? prodItems : rowItems).map(x => x.str).join(" ");
+
+            const combinedBase = alphaNum(combined);
+            const combinedCanon = pharmaCanonical(combined);
+
+            // 1. Exact Base Match
+            for (const p of PRODUCT_MAP) {
+                if (combinedBase.includes(p.base)) {
+                    return { product: p.full, confidence: 1 };
+                }
+            }
+
+            // 2. Canonical Synonym Match (Handles SYRUP -> SYP, 250MG -> 250, Pack column join)
+            for (const p of PRODUCT_MAP) {
+                if (p.canon && combinedCanon.includes(p.canon)) {
+                    return { product: p.full, confidence: 1 };
+                }
+            }
+
+            // 3. Token Match
+            const normCombined = normalize(combined)
+                .replace(/\bSYRUP\b/g, "SYP")
+                .replace(/\bSUSPENSION\b/g, "SUSP")
+                .replace(/\bTABLETS?\b/g, "TAB");
+            const tokens = normCombined.split(/\s+/).filter(Boolean);
+
+            let best = null;
+
+            for (const p of PRODUCT_MAP) {
+                const pTokens = p.norm
+                    .replace(/\bSYRUP\b/g, "SYP")
+                    .replace(/\bSUSPENSION\b/g, "SUSP")
+                    .replace(/\bTABLETS?\b/g, "TAB")
+                    .split(/\s+/);
+
+                let matched = 0;
+
+                for (const token of pTokens) {
+                    if (
+                        token.length >= 2 &&
+                        tokens.some(t =>
+                            t === token ||
+                            t.includes(token) ||
+                            token.includes(t) ||
+                            pharmaCanonical(t) === pharmaCanonical(token)
+                        )
+                    ) {
+                        matched++;
+                    }
+                }
+
+                const score = matched / Math.max(pTokens.length, 1);
+
+                if (score >= 0.65 && (!best || score > best.confidence)) {
+                    best = { product: p.full, confidence: score };
+                }
+            }
+
+            return best;
+        }
+
+
+        // ========================================================
         // SERIAL DETECTION
         // ========================================================
 
         const serialRows = [];
 
         for (const row of rows) {
-
-            const rowText =
-                row.items
-                    .map(x => x.str)
-                    .join(" ");
-
-            // Strict match: expects a dot/bracket but NOT followed by another digit (prevents 77.00 being caught)
+            const rowText = row.items.map(x => x.str).join(" ");
             const strictMatch = rowText.match(/^\s*(\d{1,4})\s*[.)](?!\d)/);
-            
-            // Loose match: any number at the start (e.g., "83 Aggarsain...")
             const looseMatch = rowText.match(/^\s*(\d{1,4})\b/);
 
             let serial = null;
@@ -3906,174 +3633,37 @@ async function handleDispatchPdfUpload(input) {
             if (strictMatch) {
                 serial = parseInt(strictMatch[1], 10);
             } else if (looseMatch) {
-                // If no dot is found, VERIFY if the line actually contains a product
-                // This prevents addresses like "83 Aggarsain Nagar" from being caught
                 const rowAlphaNum = alphaNum(rowText);
-                const hasProduct = PRODUCT_MAP.some(p => rowAlphaNum.includes(p.base));
-                
+                const rowCanon = pharmaCanonical(rowText);
+                const hasProduct = PRODUCT_MAP.some(p =>
+                    rowAlphaNum.includes(p.base) || (p.canon && rowCanon.includes(p.canon))
+                );
                 if (hasProduct) {
                     serial = parseInt(looseMatch[1], 10);
                 }
             }
 
-            // Reject invalid serials or numbers over 200 (like HSN codes)
-            if (serial === null || serial < 1 || serial > 200) {
-                continue;
-            }
+            if (serial === null || serial < 1 || serial > 200) continue;
 
-            serialRows.push({
-                ...row,
-                serial
-            });
-
+            serialRows.push({ ...row, serial });
         }
+
 
         // ========================================================
         // IGNORED ROWS
         // ========================================================
 
-const ignoredWords = [
-
-            "CLASS TOTAL",
-            "TOTAL",
-            "GST",
-            "IGST",
-            "TERMS",
-            "GRAND TOTAL",
-            "TAXABLE AMT",
-            "DIS AMT",
-            "PAYBLE",
-            "CASH DISCOUNT",
-            "BANK DETAILS",
-            "OUR BANK",
-            "AUTHORIZED SIGNATORY",
-            "AUTHORISED SIGNATORY",
-            "IMPORT PURCHASE",
-            "MARG ERP",
-            "HSN",         // <-- Added this
-            "FREIGHT",     // <-- Added this
-            "SUMMARY"      // <-- Added this
+        const ignoredWords = [
+            "CLASS TOTAL", "TOTAL", "GST", "IGST", "TERMS", "GRAND TOTAL",
+            "TAXABLE AMT", "DIS AMT", "PAYBLE", "CASH DISCOUNT", "BANK DETAILS",
+            "OUR BANK", "AUTHORIZED SIGNATORY", "AUTHORISED SIGNATORY",
+            "IMPORT PURCHASE", "MARG ERP", "HSN", "FREIGHT", "SUMMARY"
         ];
 
         const isIgnoredRow = text => {
-
-            const t =
-                normalize(text);
-
-            return ignoredWords.some(
-                word => t.includes(word)
-            );
-
+            const t = normalize(text);
+            return ignoredWords.some(word => t.includes(word));
         };
-
-
-        // ========================================================
-        // PRODUCT MATCHING
-        // ========================================================
-
-        function findProduct(rowItems) {
-
-            const combined =
-                rowItems
-                    .map(x => x.str)
-                    .join(" ");
-
-
-            const combinedBase =
-                alphaNum(combined);
-
-
-            // Exact match
-
-            for (const p of PRODUCT_MAP) {
-
-                if (
-                    combinedBase.includes(
-                        p.base
-                    )
-                ) {
-
-                    return {
-
-                        product: p.full,
-                        confidence: 1
-
-                    };
-
-                }
-
-            }
-
-
-            // Token match
-
-            const tokens =
-                normalize(combined)
-                    .split(/\s+/)
-                    .filter(Boolean);
-
-
-            let best = null;
-
-
-            for (const p of PRODUCT_MAP) {
-
-                const pTokens =
-                    p.norm.split(/\s+/);
-
-
-                let matched = 0;
-
-
-                for (const token of pTokens) {
-
-                    if (
-                        token.length >= 3 &&
-                        tokens.some(t =>
-                            t === token ||
-                            t.includes(token) ||
-                            token.includes(t)
-                        )
-                    ) {
-
-                        matched++;
-
-                    }
-
-                }
-
-
-                const score =
-                    matched /
-                    Math.max(
-                        pTokens.length,
-                        1
-                    );
-
-
-                if (
-                    score >= 0.65 &&
-                    (
-                        !best ||
-                        score > best.score
-                    )
-                ) {
-
-                    best = {
-
-                        product: p.full,
-                        confidence: score
-
-                    };
-
-                }
-
-            }
-
-
-            return best;
-
-        }
 
 
         // ========================================================
@@ -4082,1381 +3672,351 @@ const ignoredWords = [
 
         const itemsFound = [];
 
-
         for (const row of serialRows) {
+            const rowText = row.items.map(x => x.str).join(" ");
+            if (isIgnoredRow(rowText)) continue;
 
-            const rowText =
-                row.items
-                    .map(x => x.str)
-                    .join(" ");
-
-
-            if (
-                isIgnoredRow(rowText)
-            ) {
-                continue;
-            }
-
-
-            const headers =
-                pageHeaders[row.page];
-
-
-            const productResult =
-                findProduct(row.items);
-
-
-            // ====================================================
-            // PRODUCT NOT FOUND
-            // ====================================================
+            const headers = pageHeaders[row.page];
+            const productResult = findProduct(row.items, headers);
 
             if (!productResult) {
-
                 itemsFound.push({
-
                     serial: row.serial,
                     page: row.page,
-
                     product: "",
                     batch: "",
                     exp: "",
-
                     billedQty: 0,
                     freeQty: 0,
                     qty: 0,
-
                     confidence: 0,
-
-                    status:
-                        "PRODUCT_NOT_MATCHED",
-
+                    status: "PRODUCT_NOT_MATCHED",
                     rawText: rowText
-
                 });
-
                 continue;
-
             }
 
-
-            // ====================================================
-            // NUMERIC VALUES
-            // ====================================================
-
-            const numeric =
-                row.items
-                    .map(item => ({
-
-                        ...item,
-
-                        value:
-                            numberValue(
-                                item.str
-                            )
-
-                    }))
-                    .filter(
-                        item =>
-                            item.value !== null
-                    );
-
-
-            // ====================================================
-            // QTY + FREE
-            // ====================================================
+            const numeric = row.items
+                .map(item => ({ ...item, value: numberValue(item.str) }))
+                .filter(item => item.value !== null);
 
             let billedQty = null;
-
             let freeQty = 0;
 
-
-            /*
-             * IMPORTANT:
-             *
-             * MARG often does NOT print 0
-             * in FREE column.
-             *
-             * Therefore:
-             *
-             * QTY = 10
-             * FREE = blank
-             *
-             * MUST result:
-             *
-             * billedQty = 10
-             * freeQty   = 0
-             *
-             */
-
-
-            let qtyFreeCandidates =
-                numeric
-                    .filter(item => {
-
-                        // Must be after Qty column
-                        if (
-                            headers.qty !== null &&
-                            item.x <
-                            headers.qty - 10
-                        ) {
-
-                            return false;
-
-                        }
-
-
-                        // Must be before Batch
-                        if (
-                            headers.batch !== null &&
-                            item.x >=
-                            headers.batch - 10
-                        ) {
-
-                            return false;
-
-                        }
-
-
-                        return true;
-
-                    })
-                    .sort(
-                        (a, b) =>
-                            a.x - b.x
-                    );
-
-
-            // ====================================================
-            // FIND BILLED QTY
-            // ====================================================
-
-            if (
-                headers.qty !== null
-            ) {
-
-                const qtyCandidates =
-                    qtyFreeCandidates
-
-                        .map(item => ({
-
-                            ...item,
-
-                            distance:
-                                Math.abs(
-                                    item.x -
-                                    headers.qty
-                                )
-
-                        }))
-
-                        .filter(
-                            item =>
-                                item.distance <= 35
-                        )
-
-                        .sort(
-                            (a, b) =>
-                                a.distance -
-                                b.distance
-                        );
-
-
-                if (
-                    qtyCandidates.length
-                ) {
-
-                    billedQty =
-                        qtyCandidates[0]
-                            .value;
-
-                }
-
-            }
-
-
-            // ====================================================
-            // FIND FREE
-            // ====================================================
-
-            /*
-             * FREE WILL ONLY BE ACCEPTED IF:
-             *
-             * 1. There is a separate numeric value
-             * 2. It is AFTER Qty
-             * 3. It is BEFORE Batch
-             * 4. It is close to FREE header
-             * 5. It is NOT the same physical Qty value
-             */
-
-            if (
-                billedQty !== null &&
-                headers.free !== null
-            ) {
-
-                const freeCandidates =
-                    qtyFreeCandidates
-
-                        .filter(item => {
-
-                            // Must be AFTER Qty
-                            if (
-                                headers.qty !== null &&
-                                item.x <=
-                                headers.qty + 8
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            // Must be BEFORE Batch
-                            if (
-                                headers.batch !== null &&
-                                item.x >=
-                                headers.batch - 10
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            // Must be close to Free
-                            const d =
-                                Math.abs(
-                                    item.x -
-                                    headers.free
-                                );
-
-
-                            if (d > 30)
-                                return false;
-
-
-                            return true;
-
-                        })
-
-                        .map(item => ({
-
-                            ...item,
-
-                            distance:
-                                Math.abs(
-                                    item.x -
-                                    headers.free
-                                )
-
-                        }))
-
-                        .sort(
-                            (a, b) =>
-                                a.distance -
-                                b.distance
-                        );
-
-
-                if (
-                    freeCandidates.length
-                ) {
-
-                    const candidate =
-                        freeCandidates[0];
-
-
-                    /*
-                     * FINAL PROTECTION:
-                     *
-                     * If candidate is physically
-                     * close to Qty position,
-                     * it is NOT FREE.
-                     */
-
-                    const sameAsQty =
-                        headers.qty !== null &&
-                        Math.abs(
-                            candidate.x -
-                            headers.qty
-                        ) <= 12;
-
-
-                    if (!sameAsQty) {
-
-                        freeQty =
-                            candidate.value;
-
-                    } else {
-
-                        freeQty = 0;
-
+            let qtyFreeCandidates = numeric
+                .filter(item => {
+                    // Exclude Serial number itself
+                    if (headers.serial !== null && Math.abs(item.x - headers.serial) <= 15) {
+                        return false;
                     }
-
-                }
-
-            }
-
-
-            // ====================================================
-            // ABSOLUTE SAFETY
-            // ====================================================
-
-            /*
-             * NEVER automatically copy Qty into Free.
-             */
-
-            if (
-                billedQty !== null &&
-                freeQty === billedQty
-            ) {
-
-                const actualSeparateFree =
-                    qtyFreeCandidates.some(
-                        item => {
-
-                            if (
-                                headers.qty !== null &&
-                                item.x <=
-                                headers.qty + 8
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            if (
-                                headers.batch !== null &&
-                                item.x >=
-                                headers.batch - 10
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            if (
-                                headers.free !== null &&
-                                Math.abs(
-                                    item.x -
-                                    headers.free
-                                ) > 30
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            if (
-                                headers.qty !== null &&
-                                Math.abs(
-                                    item.x -
-                                    headers.qty
-                                ) <= 12
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            return true;
-
+                    // Exclude Pack column numbers (e.g. "110" or "60" in Format 2)
+                    if (headers.pack !== null && headers.qty !== null) {
+                        if (Math.abs(item.x - headers.pack) < Math.abs(item.x - headers.qty)) {
+                            return false;
                         }
-                    );
+                    }
+                    if (headers.qty !== null && item.x < headers.qty - 15) {
+                        return false;
+                    }
+                    if (headers.batch !== null && item.x >= headers.batch - 10) {
+                        return false;
+                    }
+                    return true;
+                })
+                .sort((a, b) => a.x - b.x);
 
+            // FIND BILLED QTY
+            if (headers.qty !== null) {
+                const qtyCandidates = qtyFreeCandidates
+                    .map(item => ({ ...item, distance: Math.abs(item.x - headers.qty) }))
+                    .filter(item => item.distance <= 38)
+                    .sort((a, b) => a.distance - b.distance);
 
-                if (
-                    !actualSeparateFree
-                ) {
-
-                    freeQty = 0;
-
+                if (qtyCandidates.length) {
+                    billedQty = qtyCandidates[0].value;
                 }
-
             }
 
-
-            // ====================================================
-            // FINAL QTY DEFAULTS
-            // ====================================================
-
-            if (
-                billedQty === null ||
-                !Number.isFinite(billedQty)
-            ) {
-
-                billedQty = 0;
-
-            }
-
-
-            if (
-                freeQty === null ||
-                !Number.isFinite(freeQty)
-            ) {
-
-                freeQty = 0;
-
-            }
-
-
-            // ====================================================
-            // TOTAL QTY
-            // ====================================================
-
-            const totalQty =
-                Number(billedQty) +
-                Number(freeQty);
-
-
-            // ====================================================
-            // DEBUG
-            // ====================================================
-
-            console.log(
-                "================================"
-            );
-
-            console.log(
-                "MARG QTY/FREE"
-            );
-
-            console.log(
-                "Product:",
-                productResult.product
-            );
-
-            console.log(
-                "Qty Header X:",
-                headers.qty
-            );
-
-            console.log(
-                "Free Header X:",
-                headers.free
-            );
-
-            console.log(
-                "Batch Header X:",
-                headers.batch
-            );
-
-            console.log(
-                "Numeric Candidates:",
-                qtyFreeCandidates.map(
-                    x => ({
-                        value: x.value,
-                        x: x.x
-                    })
-                )
-            );
-
-            console.log(
-                "Billed Qty:",
-                billedQty
-            );
-
-            console.log(
-                "Free Qty:",
-                freeQty
-            );
-
-            console.log(
-                "Total Qty:",
-                totalQty
-            );
-
-            console.log(
-                "================================"
-            );
-
-
-            // ====================================================
-            // FALLBACK QTY
-            // ====================================================
-
-            if (
-                billedQty === 0
-            ) {
-
-                const productMatchItem =
-                    row.items.find(item =>
-                        alphaNum(item.str)
-                            .includes(
-                                alphaNum(
-                                    productResult.product
-                                )
-                            )
-                    );
-
-
-                const productX =
-                    productMatchItem?.x ?? 0;
-
-
-                const afterProduct =
-                    numeric
-                        .filter(
-                            item =>
-                                item.x >
-                                productX
-                        )
-                        .sort(
-                            (a, b) =>
-                                a.x - b.x
-                        );
-
-
-                if (
-                    afterProduct.length
-                ) {
-
-                    billedQty =
-                        afterProduct[0].value;
-
-                }
-
-            }
-
-
-            // ====================================================
-            // BATCH
-            // ====================================================
-
-            let batch = "";
-
-
-            const batchCandidates =
-                row.items
-
+            // FIND FREE QTY
+            if (billedQty !== null && headers.free !== null) {
+                const freeCandidates = qtyFreeCandidates
                     .filter(item => {
-
-                        const s =
-                            item.str.trim();
-
-
-                        if (
-                            !isBatchLike(s)
-                        ) {
-                            return false;
-                        }
-
-
-                        if (
-                            isDateLike(s)
-                        ) {
-                            return false;
-                        }
-
-
-                        if (
-                            s.toUpperCase() ===
-                            productResult.product
-                                .toUpperCase()
-                        ) {
-                            return false;
-                        }
-
-
+                        if (headers.qty !== null && item.x <= headers.qty + 8) return false;
+                        if (headers.batch !== null && item.x >= headers.batch - 10) return false;
+                        const d = Math.abs(item.x - headers.free);
+                        if (d > 30) return false;
                         return true;
-
                     })
+                    .map(item => ({ ...item, distance: Math.abs(item.x - headers.free) }))
+                    .sort((a, b) => a.distance - b.distance);
 
-                    .map(item => ({
-
-                        ...item,
-
-                        distance:
-                            distance(
-                                item.x,
-                                headers.batch
-                            )
-
-                    }))
-
-                    .sort(
-                        (a, b) =>
-                            a.distance -
-                            b.distance
-                    );
-
-
-            if (
-                batchCandidates.length
-            ) {
-
-                const selected =
-                    batchCandidates.find(
-                        x =>
-                            x.distance <= 55
-                    );
-
-
-                if (selected) {
-
-                    batch =
-                        selected.str.trim();
-
+                if (freeCandidates.length) {
+                    const candidate = freeCandidates[0];
+                    const sameAsQty = headers.qty !== null && Math.abs(candidate.x - headers.qty) <= 12;
+                    if (!sameAsQty) freeQty = candidate.value;
+                    else freeQty = 0;
                 }
-
             }
 
+            if (billedQty !== null && freeQty === billedQty) {
+                const actualSeparateFree = qtyFreeCandidates.some(item => {
+                    if (headers.qty !== null && item.x <= headers.qty + 8) return false;
+                    if (headers.batch !== null && item.x >= headers.batch - 10) return false;
+                    if (headers.free !== null && Math.abs(item.x - headers.free) > 30) return false;
+                    if (headers.qty !== null && Math.abs(item.x - headers.qty) <= 12) return false;
+                    return true;
+                });
+                if (!actualSeparateFree) freeQty = 0;
+            }
 
-            // ====================================================
+            if (billedQty === null || !Number.isFinite(billedQty)) billedQty = 0;
+            if (freeQty === null || !Number.isFinite(freeQty)) freeQty = 0;
+
+            // FALLBACK QTY
+            if (billedQty === 0 && qtyFreeCandidates.length) {
+                billedQty = qtyFreeCandidates[0].value;
+            }
+
+            // BATCH
+            let batch = "";
+            const batchCandidates = row.items
+                .filter(item => {
+                    const s = item.str.replace(/\$/g, "").trim();
+                    if (!isBatchLike(s)) return false;
+                    if (isDateLike(s)) return false;
+                    if (s.toUpperCase() === productResult.product.toUpperCase()) return false;
+                    if (headers.pack !== null && Math.abs(item.x - headers.pack) <= 18) return false;
+                    return true;
+                })
+                .map(item => ({
+                    ...item,
+                    cleanStr: item.str.replace(/\$/g, "").trim(),
+                    distance: distance(item.x, headers.batch)
+                }))
+                .sort((a, b) => a.distance - b.distance);
+
+            if (batchCandidates.length) {
+                const selected = batchCandidates.find(x => x.distance <= 60);
+                if (selected) batch = selected.cleanStr;
+            }
+
             // EXPIRY
-            // ====================================================
-
             let exp = "";
+            const expiryCandidates = row.items
+                .filter(item => isDateLike(item.str))
+                .map(item => ({
+                    ...item,
+                    cleanExp: item.str.replace(/\$/g, "").trim(),
+                    distance: distance(item.x, headers.exp)
+                }))
+                .sort((a, b) => a.distance - b.distance);
 
-
-            const expiryCandidates =
-                row.items
-
-                    .filter(item =>
-                        isDateLike(
-                            item.str
-                        )
-                    )
-
-                    .map(item => ({
-
-                        ...item,
-
-                        distance:
-                            distance(
-                                item.x,
-                                headers.exp
-                            )
-
-                    }))
-
-                    .sort(
-                        (a, b) =>
-                            a.distance -
-                            b.distance
-                    );
-
-
-            if (
-                expiryCandidates.length
-            ) {
-
-                const selected =
-                    expiryCandidates.find(
-                        x =>
-                            headers.exp !== null
-                                ? x.distance <= 50
-                                : true
-                    );
-
-
-                if (selected) {
-
-                    exp =
-                        selected.str.trim();
-
-                }
-
+            if (expiryCandidates.length) {
+                const selected = expiryCandidates.find(x =>
+                    headers.exp !== null ? x.distance <= 55 : true
+                );
+                if (selected) exp = selected.cleanExp;
             }
 
-
-            // ====================================================
             // HSN
-            // ====================================================
-
             let hsn = "";
+            const hsnCandidates = row.items
+                .map(x => x.str.trim())
+                .filter(x => /^\d{6,8}$/.test(x));
+            if (hsnCandidates.length) hsn = hsnCandidates[0];
 
-
-            const hsnCandidates =
-                row.items
-                    .map(
-                        x =>
-                            x.str.trim()
-                    )
-                    .filter(
-                        x =>
-                            /^\d{6,8}$/
-                                .test(x)
-                    );
-
-
-            if (
-                hsnCandidates.length
-            ) {
-
-                hsn =
-                    hsnCandidates[0];
-
-            }
-
-
-            // ====================================================
             // STATUS
-            // ====================================================
-
             let status = "OK";
-
-
-            if (
-                !productResult.product
-            ) {
-
-                status =
-                    "PRODUCT_NOT_MATCHED";
-
-            }
-
-
-            if (
-                billedQty <= 0
-            ) {
-
-                status =
-                    "QTY_SUSPICIOUS";
-
-            }
-
-
-            if (!batch) {
-
-                status =
-                    "BATCH_SUSPICIOUS";
-
-            }
-
-
-            if (
-                productResult.confidence < 0.75 &&
-                status === "OK"
-            ) {
-
-                status =
-                    "LOW_CONFIDENCE";
-
-            }
-
-
-            // ====================================================
-            // PUSH ITEM
-            // ====================================================
+            if (!productResult.product) status = "PRODUCT_NOT_MATCHED";
+            if (billedQty <= 0) status = "QTY_SUSPICIOUS";
+            if (!batch) status = "BATCH_SUSPICIOUS";
+            if (productResult.confidence < 0.75 && status === "OK") status = "LOW_CONFIDENCE";
 
             itemsFound.push({
-
-                serial:
-                    row.serial,
-
-                page:
-                    row.page,
-
-                product:
-                    productResult.product,
-
-                batch:
-                    batch || "UNKNOWN",
-
-                exp:
-                    exp || "",
-
-                hsn:
-                    hsn,
-
-                billedQty:
-                    billedQty,
-
-                freeQty:
-                    freeQty,
-
-                qty:
-                    Number(billedQty) +
-                    Number(freeQty),
-
-                confidence:
-                    Number(
-                        productResult
-                            .confidence
-                            .toFixed(2)
-                    ),
-
-                status:
-                    status,
-
-                rawText:
-                    rowText
-
+                serial: row.serial,
+                page: row.page,
+                product: productResult.product,
+                batch: batch || "UNKNOWN",
+                exp: exp || "",
+                hsn: hsn,
+                billedQty: billedQty,
+                freeQty: freeQty,
+                qty: Number(billedQty) + Number(freeQty),
+                confidence: Number(productResult.confidence.toFixed(2)),
+                status: status,
+                rawText: rowText
             });
-
         }
 
 
         // ========================================================
-        // SORT BY SERIAL
+        // SORT BY SERIAL & REMOVE DUPLICATES
         // ========================================================
 
-        itemsFound.sort(
-            (a, b) =>
-                a.serial - b.serial
-        );
-
-
-        // ========================================================
-        // REMOVE EXACT PHYSICAL DUPLICATES
-        // ========================================================
+        itemsFound.sort((a, b) => a.serial - b.serial);
 
         const uniqueRows = [];
+        const physicalRowKeys = new Set();
 
-        const physicalRowKeys =
-            new Set();
-
-
-        for (
-            const item of itemsFound
-        ) {
-
-            const key =
-                `${item.page}|${item.serial}|${item.rawText}`;
-
-
-            if (
-                physicalRowKeys.has(key)
-            ) {
-
-                continue;
-
-            }
-
-
+        for (const item of itemsFound) {
+            const key = `${item.page}|${item.serial}|${item.rawText}`;
+            if (physicalRowKeys.has(key)) continue;
             physicalRowKeys.add(key);
-
             uniqueRows.push(item);
-
         }
 
-
-        const finalItems =
-            uniqueRows;
+        const finalItems = uniqueRows;
 
 
         // ========================================================
-        // EXPECTED TOTAL ITEMS
+        // EXPECTED TOTAL ITEMS & TOTAL QTY (SUPPORTS BOTH FORMATS)
         // ========================================================
 
         let expectedItems = null;
-
-
-        const itemMatch =
-            allText.match(
-                /Total\s+Items\s*[:\-]?\s*(\d+)/i
-            );
-
-
-        if (itemMatch) {
-
-            expectedItems =
-                parseInt(
-                    itemMatch[1],
-                    10
-                );
-
-        }
-
-
-        // ========================================================
-        // EXPECTED TOTAL QTY
-        // ========================================================
-
         let expectedQty = null;
 
+        // Check Format 2 stacked footer pattern first: "Total Items :- Total Qty :- 5 Dis1: 0.00 55"
+        const combinedFooterMatch = allText.match(
+            /Total\s+Items\s*[:\-]+\s*Total\s+Qty\s*[:\-]+\s*(\d+)\s+(?:Dis\s*1\s*[:\-]?\s*[\d.,]+\s+)?([\d,]+)/i
+        );
 
-        const qtyMatch =
-            allText.match(
-                /Total\s+Qty\s*[:\-]?\s*([\d,]+)/i
-            );
+        if (combinedFooterMatch) {
+            expectedItems = parseInt(combinedFooterMatch[1], 10);
+            expectedQty = parseInt(combinedFooterMatch[2].replace(/,/g, ""), 10);
+        } else {
+            const allRowText = rows.map(r => r.items.map(x => x.str).join(" ")).join(" \n ");
 
+            const itemMatch =
+                allRowText.match(/Total\s+Items\s*[:\-]+\s*(\d+)/i) ||
+                allText.match(/Total\s+Items\s*[:\-]?\s*(\d+)/i);
+            if (itemMatch) expectedItems = parseInt(itemMatch[1], 10);
 
-        if (qtyMatch) {
-
-            expectedQty =
-                parseInt(
-                    qtyMatch[1]
-                        .replace(/,/g, ""),
-                    10
-                );
-
+            const qtyMatch =
+                allRowText.match(/Total\s+Qty\s*[:\-]+\s*([\d,]+)/i) ||
+                allText.match(/Total\s+Qty\s*[:\-]?\s*([\d,]+)/i);
+            if (qtyMatch) expectedQty = parseInt(qtyMatch[1].replace(/,/g, ""), 10);
         }
 
 
         // ========================================================
-        // EXTRACTED TOTALS
+        // EXTRACTED TOTALS & VALIDATION
         // ========================================================
 
-        const extractedItems =
-            finalItems.length;
+        const extractedItems = finalItems.length;
+        const extractedQty = finalItems.reduce((sum, item) => sum + Number(item.qty || 0), 0);
 
-
-        const extractedQty =
-            finalItems.reduce(
-                (sum, item) =>
-                    sum +
-                    Number(
-                        item.qty || 0
-                    ),
-                0
-            );
-
-
-        // ========================================================
-        // SERIAL VALIDATION
-        // ========================================================
-
-        const serialNumbers =
-            finalItems
-                .map(
-                    x => x.serial
-                )
-                .filter(
-                    x =>
-                        Number.isFinite(x)
-                );
-
-
-        const duplicateSerials =
-            serialNumbers.filter(
-                (v, i, arr) =>
-                    arr.indexOf(v) !== i
-            );
-
+        const serialNumbers = finalItems.map(x => x.serial).filter(x => Number.isFinite(x));
+        const duplicateSerials = serialNumbers.filter((v, i, arr) => arr.indexOf(v) !== i);
 
         let missingSerials = [];
-
-
-        if (
-            expectedItems !== null
-        ) {
-
-            for (
-                let i = 1;
-                i <= expectedItems;
-                i++
-            ) {
-
-                if (
-                    !serialNumbers.includes(i)
-                ) {
-
-                    missingSerials.push(i);
-
-                }
-
+        if (expectedItems !== null) {
+            for (let i = 1; i <= expectedItems; i++) {
+                if (!serialNumbers.includes(i)) missingSerials.push(i);
             }
-
         }
-
-
-        // ========================================================
-        // VALIDATION
-        // ========================================================
 
         const validationErrors = [];
 
-
-        if (
-            expectedItems !== null &&
-            extractedItems !== expectedItems
-        ) {
-
-            validationErrors.push(
-                `ITEM COUNT MISMATCH: MARG=${expectedItems}, READ=${extractedItems}`
-            );
-
+        if (expectedItems !== null && extractedItems !== expectedItems) {
+            validationErrors.push(`ITEM COUNT MISMATCH: MARG=${expectedItems}, READ=${extractedItems}`);
+        }
+        if (expectedQty !== null && extractedQty !== expectedQty) {
+            validationErrors.push(`QTY MISMATCH: MARG=${expectedQty}, READ=${extractedQty}`);
+        }
+        if (duplicateSerials.length) {
+            validationErrors.push(`DUPLICATE SERIAL: ${duplicateSerials.join(", ")}`);
+        }
+        if (missingSerials.length) {
+            validationErrors.push(`MISSING SERIAL: ${missingSerials.join(", ")}`);
         }
 
+        const suspiciousItems = finalItems.filter(item => item.status !== "OK");
+        const validationPassed = validationErrors.length === 0 && suspiciousItems.length === 0;
 
-        if (
-            expectedQty !== null &&
-            extractedQty !== expectedQty
-        ) {
-
-            validationErrors.push(
-                `QTY MISMATCH: MARG=${expectedQty}, READ=${extractedQty}`
-            );
-
-        }
-
-
-        if (
-            duplicateSerials.length
-        ) {
-
-            validationErrors.push(
-                `DUPLICATE SERIAL: ${duplicateSerials.join(", ")}`
-            );
-
-        }
-
-
-        if (
-            missingSerials.length
-        ) {
-
-            validationErrors.push(
-                `MISSING SERIAL: ${missingSerials.join(", ")}`
-            );
-
-        }
-
-
-        // ========================================================
-        // SUSPICIOUS ITEMS
-        // ========================================================
-
-        const suspiciousItems =
-            finalItems.filter(
-                item =>
-                    item.status !== "OK"
-            );
-
-
-        // ========================================================
-        // VALIDATION SUMMARY
-        // ========================================================
-
-        const validationPassed =
-            validationErrors.length === 0 &&
-            suspiciousItems.length === 0;
-
-
-        console.log(
-            "================================="
-        );
-
-        console.log(
-            "MARG PDF VALIDATION"
-        );
-
-        console.log(
-            "================================="
-        );
-
-        console.log(
-            "Invoice:",
-            invoiceNo
-        );
-
-        console.log(
-            "Expected Items:",
-            expectedItems
-        );
-
-        console.log(
-            "Extracted Items:",
-            extractedItems
-        );
-
-        console.log(
-            "Expected Qty:",
-            expectedQty
-        );
-
-        console.log(
-            "Extracted Qty:",
-            extractedQty
-        );
-
-        console.log(
-            "Suspicious Rows:",
-            suspiciousItems.length
-        );
-
-        console.log(
-            "Validation:",
-            validationPassed
-        );
-
-        console.log(
-            "================================="
-        );
-
-
-        // ========================================================
-        // NO ITEMS
-        // ========================================================
-
-        if (
-            finalItems.length === 0
-        ) {
-
-            alert(
-                "❌ Invalid PDF Format\n\n" +
-                "Please check the invoice format."
-            );
-
-
+        if (finalItems.length === 0) {
+            alert("❌ Invalid PDF Format\n\nPlease check the invoice format.");
             input.value = "";
-
             return;
-
         }
 
+        if (!validationPassed) {
+            let message = "⚠️ INVOICE VERIFICATION FAILED\n\n";
+            if (invoiceNo) message += `Invoice: ${invoiceNo}\n\n`;
+            if (expectedItems !== null) message += `MARG Total Items: ${expectedItems}\n`;
+            message += `System Read Items: ${extractedItems}\n\n`;
+            if (expectedQty !== null) message += `MARG Total Qty: ${expectedQty}\n`;
+            message += `System Read Qty: ${extractedQty}\n\n`;
 
-        // ========================================================
-        // VALIDATION FAILURE
-        // ========================================================
-
-        if (
-            !validationPassed
-        ) {
-
-            let message =
-                "⚠️ INVOICE VERIFICATION FAILED\n\n";
-
-
-            if (invoiceNo) {
-
-                message +=
-                    `Invoice: ${invoiceNo}\n\n`;
-
+            if (validationErrors.length) {
+                message += "Problems:\n";
+                validationErrors.slice(0, 10).forEach(error => {
+                    message += "• " + error + "\n";
+                });
             }
 
-
-            if (
-                expectedItems !== null
-            ) {
-
-                message +=
-                    `MARG Total Items: ${expectedItems}\n`;
-
+            if (suspiciousItems.length) {
+                message += `\n⚠️ Suspicious Rows: ${suspiciousItems.length}\n`;
+                suspiciousItems.slice(0, 10).forEach(item => {
+                    message += `• S.No ${item.serial}: ${item.product || "UNKNOWN"} [${item.status}]\n`;
+                });
             }
 
-
-            message +=
-                `System Read Items: ${extractedItems}\n\n`;
-
-
-            if (
-                expectedQty !== null
-            ) {
-
-                message +=
-                    `MARG Total Qty: ${expectedQty}\n`;
-
-            }
-
-
-            message +=
-                `System Read Qty: ${extractedQty}\n\n`;
-
-
-            if (
-                validationErrors.length
-            ) {
-
-                message +=
-                    "Problems:\n";
-
-
-                validationErrors
-                    .slice(0, 10)
-                    .forEach(error => {
-
-                        message +=
-                            "• " +
-                            error +
-                            "\n";
-
-                    });
-
-            }
-
-
-            if (
-                suspiciousItems.length
-            ) {
-
-                message +=
-                    `\n⚠️ Suspicious Rows: ${suspiciousItems.length}\n`;
-
-
-                suspiciousItems
-                    .slice(0, 10)
-                    .forEach(item => {
-
-                        message +=
-                            `• S.No ${item.serial}: ` +
-                            `${item.product || "UNKNOWN"} ` +
-                            `[${item.status}]\n`;
-
-                    });
-
-            }
-
-
-            message +=
-                "\n❌ Data will not save automatically.";
-
-
+            message += "\n❌ Data will not save automatically.";
             alert(message);
 
-
-            // ====================================================
-            // REVIEW PAYLOAD
-            // ====================================================
-
             pendingDispatchPayload = {
-
-                action:
-                    "dispatch-review",
-
-                user:
-                    sessionStorage.getItem(
-                        "employee"
-                    ) || "",
-
-                warehouse:
-                    sessionStorage.getItem(
-                        "warehouse"
-                    ) || "",
-
-                invoiceNo:
-                    invoiceNo,
-
-                items:
-                    finalItems,
-
+                action: "dispatch-review",
+                user: sessionStorage.getItem("employee") || "",
+                warehouse: sessionStorage.getItem("warehouse") || "",
+                invoiceNo: invoiceNo,
+                items: finalItems,
                 validation: {
-
-                    passed:
-                        false,
-
-                    expectedItems:
-                        expectedItems,
-
-                    extractedItems:
-                        extractedItems,
-
-                    expectedQty:
-                        expectedQty,
-
-                    extractedQty:
-                        extractedQty,
-
-                    errors:
-                        validationErrors,
-
-                    suspiciousItems:
-                        suspiciousItems
-
+                    passed: false,
+                    expectedItems: expectedItems,
+                    extractedItems: extractedItems,
+                    expectedQty: expectedQty,
+                    extractedQty: extractedQty,
+                    errors: validationErrors,
+                    suspiciousItems: suspiciousItems
                 }
-
             };
 
-
             input.value = "";
-
             return;
-
         }
 
-
-        // ========================================================
-        // EVERYTHING VERIFIED
-        // ========================================================
-
         pendingDispatchPayload = {
-
-            action:
-                "dispatch",
-
-            user:
-                sessionStorage.getItem(
-                    "employee"
-                ) || "",
-
-            warehouse:
-                sessionStorage.getItem(
-                    "warehouse"
-                ) || "",
-
-            invoiceNo:
-                invoiceNo,
-
-            items:
-                finalItems,
-
+            action: "dispatch",
+            user: sessionStorage.getItem("employee") || "",
+            warehouse: sessionStorage.getItem("warehouse") || "",
+            invoiceNo: invoiceNo,
+            items: finalItems,
             validation: {
-
-                passed:
-                    true,
-
-                expectedItems:
-                    expectedItems,
-
-                extractedItems:
-                    extractedItems,
-
-                expectedQty:
-                    expectedQty,
-
-                extractedQty:
-                    extractedQty
-
+                passed: true,
+                expectedItems: expectedItems,
+                extractedItems: extractedItems,
+                expectedQty: expectedQty,
+                extractedQty: extractedQty
             }
-
         };
 
-
-        // ========================================================
-        // SUCCESS MESSAGE
-        // ========================================================
-
         alert(
-
             "✅ Invoice successfully verified.\n\n" +
-
             `Invoice: ${invoiceNo}\n` +
-
             `Items: ${extractedItems}\n` +
-
             `Total Qty: ${extractedQty}\n\n` +
-
             "All validation checks passed."
-
         );
-
-
-        // ========================================================
-        // EXISTING CONFIRMATION MODAL
-        // ========================================================
 
         openDispatchConfirmationModal();
 
-
     } catch (err) {
-
-        console.error(
-            "MARG PDF Parser Error:",
-            err
-        );
-
-
-        alert(
-
-            "❌ PDF Parsing Error\n\n" +
-
-            err.message
-
-        );
-
+        console.error("MARG PDF Parser Error:", err);
+        alert("❌ PDF Parsing Error\n\n" + err.message);
     } finally {
-
         input.value = "";
-
     }
-
 }
-
 
 function openDispatchConfirmationModal() {
       if (!pendingDispatchPayload) return;
