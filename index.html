@@ -550,6 +550,566 @@
       gap: 12px;
       margin-bottom: 10px;
     }
+
+	/* --- PROFESSIONAL PURCHASE MODAL UI STYLES --- */
+    .purchase-modal-box {
+      max-width: 860px !important;
+      max-height: 90vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .purchase-modal-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .purchase-modal-body {
+      padding: 20px 28px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #f8fafc;
+    }
+    .purchase-supplier-card {
+      background: #eff6ff;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1px solid #bfdbfe;
+      border-left: 5px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .purchase-item-row {
+      background: #ffffff !important;
+      padding: 20px !important;
+      border-radius: 10px !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .purchase-item-row:hover {
+      border-color: #93c5fd !important;
+      box-shadow: var(--shadow-md);
+    }
+    .purchase-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+    .purchase-item-badge {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 4px 12px;
+      border-radius: 50px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid #bfdbfe;
+    }
+    .purchase-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 14px;
+    }
+    .purchase-grid-4 {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 0.9fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .purchase-grid-bottom {
+      display: grid;
+      grid-template-columns: 0.8fr 2.2fr;
+      gap: 14px;
+      margin-top: 12px;
+      align-items: end;
+    }
+    .p_coa {
+      padding: 7px 10px !important;
+      background: #f8fafc !important;
+      border: 1px dashed #94a3b8 !important;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem !important;
+      cursor: pointer;
+      width: 100%;
+    }
+    .p_coa::file-selector-button {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-right: 12px;
+      transition: background 0.2s;
+    }
+    .p_coa::file-selector-button:hover {
+      background: var(--primary-hover);
+    }
+    .purchase-modal-footer {
+      padding: 16px 28px;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    @media(max-width: 768px) {
+      .purchase-grid-2, .purchase-grid-4, .purchase-grid-bottom {
+        grid-template-columns: 1fr;
+      }
+      .purchase-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+	/* --- PROFESSIONAL TRANSFER MODAL UI STYLES --- */
+    .transfer-modal-box {
+      max-width: 680px !important;
+      max-height: 92vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .transfer-modal-header {
+      padding: 18px 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .transfer-modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: #f8fafc;
+    }
+    .transfer-section-card {
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .transfer-grid-2 {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .transfer-route-card {
+      background: #eef2ff;
+      padding: 18px 20px;
+      border-radius: 10px;
+      border: 1px solid #c7d2fe;
+      border-left: 5px solid #4f46e5;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .transfer-route-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .transfer-arrow-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #4f46e5;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+      flex-shrink: 0;
+    }
+    .transfer-modal-footer {
+      padding: 16px 26px;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    @media(max-width: 640px) {
+      .transfer-grid-2, .transfer-route-grid {
+        grid-template-columns: 1fr;
+      }
+      .transfer-arrow-badge {
+        margin: 0 auto;
+        transform: rotate(90deg);
+      }
+    }
+
+	/* --- PROFESSIONAL SUSPENSE RETURN MODAL UI STYLES --- */
+    .suspense-modal-box {
+      max-width: 780px !important;
+      max-height: 92vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .suspense-modal-header {
+      padding: 18px 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .suspense-modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      flex: 1;
+      background: #f8fafc;
+    }
+    .suspense-layout-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .suspense-form-card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .suspense-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .suspense-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      gap: 12px;
+    }
+    .suspense-status-panel {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid #fde68a;
+      border-top: 4px solid var(--warning);
+      border-radius: 10px;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .suspense-status-badge {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      padding: 14px 16px;
+      border-radius: 10px;
+      width: 100%;
+      background: #ffffff;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #fde68a;
+      transition: all 0.2s ease;
+    }
+    .suspense-rule-list {
+      width: 100%;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px dashed #f59e0b;
+      font-size: 0.75rem;
+      color: #78350f;
+      line-height: 1.6;
+    }
+    .suspense-modal-footer {
+      padding: 16px 26px;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    @media(max-width: 720px) {
+      .suspense-layout-grid, .suspense-grid-2, .suspense-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+	/* --- PROFESSIONAL HOLD / UNHOLD MODAL UI STYLES --- */
+    .hold-modal-box {
+      max-width: 680px !important;
+      max-height: 92vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .hold-modal-header {
+      padding: 18px 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .hold-modal-body {
+      padding: 22px 26px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: #f8fafc;
+    }
+    .hold-radio-card {
+      background: #fffbeb;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid #fde68a;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .hold-radio-card label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #92400e;
+      cursor: pointer;
+    }
+    .hold-form-card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .hold-grid-2 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .hold-modal-footer {
+      padding: 16px 26px;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    @media(max-width: 640px) {
+      .hold-grid-2, .hold-radio-card {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+	/* --- FINAL FIXED PROFESSIONAL ACTIVE USERS MODAL UI STYLES --- */
+    .users-modal-box {
+      max-width: 850px !important;
+      width: 100% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .users-modal-header {
+      padding: 18px 26px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .users-modal-body {
+      padding: 22px 26px;
+      overflow-y: auto !important;
+      flex: 1 1 auto !important;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #f8fafc;
+      min-height: 0 !important;
+    }
+    .users-metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .users-stat-card {
+      padding: 16px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid transparent;
+    }
+    .users-stat-card.online {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .users-stat-card.offline {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+    .users-stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .users-stat-card.online .users-stat-icon {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .users-stat-card.offline .users-stat-icon {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .users-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow-x: auto !important;
+      overflow-y: visible !important;
+      box-shadow: var(--shadow-sm);
+    }
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 0 !important;
+    }
+    .users-table th {
+      background: var(--primary-light) !important;
+      color: var(--primary) !important; /* Typo fixed here */
+      font-weight: 700 !important;
+      padding: 12px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      border-top: none !important;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .users-table td {
+      padding: 12px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+    .users-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .users-table tbody tr:hover {
+      background: #f8fafc;
+    }
+    .badge-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .badge-inactive {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .users-modal-footer {
+      padding: 16px 26px;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    @media(max-width: 640px) {
+      .users-metric-grid {
+        grid-template-columns: 1fr;
+      }
+      .users-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
   </style>
 </head>
 
@@ -1876,55 +2436,98 @@ function filterAuditLogs() {
         let activeCount = data.filter(u => u.status.includes("Active")).length;
         let inactiveCount = data.length - activeCount;
 
-        let rows = data.map((u, i) => `
-          <tr>
-            <td>${i+1}</td>
-            <td><b>${escapeHtml(u.user)}</b></td>
-            <td>${escapeHtml(u.role)}</td>
-            <td>${escapeHtml(u.warehouse)}</td>
-            <td style="font-weight:bold; color: ${u.status.includes('Active') ? 'var(--success)' : 'var(--danger)'};">${escapeHtml(u.status)}</td>
-            <td style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
-              ${u.status.includes('Active') ? `<button onclick="forceUserLogout('${escapeHtml(u.user)}')" class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-power-off"></i> Logout</button>` : escapeHtml(u.lastActiveText || '-')}
-            </td>
-          </tr>
-        `).join("");
+        let rows = data.map((u, i) => {
+          let isOnline = u.status.includes('Active');
+          let statusBadge = isOnline 
+            ? `<span class="badge-active"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Active</span>` 
+            : `<span class="badge-inactive"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Inactive</span>`;
+
+          let actionContent = isOnline 
+            ? `<button onclick="forceUserLogout('${escapeHtml(u.user)}')" class="btn-danger" style="padding: 5px 12px; font-size: 0.78rem; width: auto; border-radius: 50px;"><i class="fa-solid fa-power-off"></i> Force Logout</button>` 
+            : `<span style="color: var(--text-muted); font-size: 0.82rem; font-weight: 600;">${escapeHtml(u.lastActiveText || '-')}</span>`;
+
+          return `
+            <tr>
+              <td style="color:var(--text-muted); font-weight:600; width:6%;">${i+1}</td>
+              <td><b>${escapeHtml(u.user)}</b></td>
+              <td><span style="background:#e0f2fe; color:#0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; font-weight:700;">${escapeHtml(u.role)}</span></td>
+              <td>${escapeHtml(u.warehouse)}</td>
+              <td>${statusBadge}</td>
+              <td style="text-align: center;">${actionContent}</td>
+            </tr>
+          `;
+        }).join("");
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:#0284c7;"><i class="fa-solid fa-users-viewfinder"></i> System User Status</h3>
+            <div class="modal-box users-modal-box">
               
-              <div style="display: flex; gap: 20px; margin-top: 10px; margin-bottom: 15px;">
-                <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; text-align: center;">
-                  <h4 style="color: var(--success); margin: 0; font-size: 1.5rem;">${activeCount}</h4>
-                  <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Active (Online)</span>
+              <!-- FIXED HEADER -->
+              <div class="users-modal-header">
+                <div>
+                  <h3 style="color:#0284c7; font-size: 1.25rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-users-viewfinder"></i> System User Status
+                  </h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Monitor active sessions, roles, and manage logged-in users.</p>
                 </div>
-                <div style="flex: 1; background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 8px; text-align: center;">
-                  <h4 style="color: var(--danger); margin: 0; font-size: 1.5rem;">${inactiveCount}</h4>
-                  <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Inactive (Offline)</span>
-                </div>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
               </div>
 
-              <table class="pdf-item-table" style="width:100%; font-size: 0.85rem;">
-                <thead>
-                  <tr>
-                    <th style="width: 5%;">#</th>
-                    <th>User Name</th>
-                    <th>Role</th>
-                    <th>Assigned Warehouse</th>
-                    <th>Status</th>
-                    <th style="text-align: center;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows}
-                </tbody>
-              </table>
-              <div style="display:flex; justify-content:space-between; margin-top:12px;">
-                <button onclick="downloadUserLogs()" class="btn-emerald" style="width: auto; padding: 8px 24px;"><i class="fa-solid fa-file-excel"></i> Export Login History</button>
-                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+              <!-- SCROLLABLE BODY -->
+              <div class="users-modal-body">
+                
+                <!-- TOP METRIC CARDS -->
+                <div class="users-metric-grid">
+                  <div class="users-stat-card online">
+                    <div class="users-stat-icon">
+                      <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div>
+                      <span style="font-size: 0.75rem; color: #15803d; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Online Users</span>
+                      <h4 style="color: #15803d; margin: 2px 0 0 0; font-size: 1.6rem; font-weight: 800;">${activeCount}</h4>
+                    </div>
+                  </div>
+
+                  <div class="users-stat-card offline">
+                    <div class="users-stat-icon">
+                      <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                    <div>
+                      <span style="font-size: 0.75rem; color: #b91c1c; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Offline Users</span>
+                      <h4 style="color: #b91c1c; margin: 2px 0 0 0; font-size: 1.6rem; font-weight: 800;">${inactiveCount}</h4>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- USERS TABLE CONTAINER -->
+                <div class="users-table-container">
+                  <table class="users-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>User Name</th>
+                        <th>Role</th>
+                        <th>Assigned Warehouse</th>
+                        <th>Status</th>
+                        <th style="text-align: center;">Action / Last Active</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${rows}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
+
+              <!-- FIXED FOOTER -->
+              <div class="users-modal-footer">
+                <button onclick="downloadUserLogs()" class="btn-emerald" style="width: auto; padding: 10px 18px; font-size: 0.85rem;">
+                  <i class="fa-solid fa-file-excel"></i> Export Login History
+                </button>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 24px;">Close</button>
+              </div>
+
             </div>
           </div>
         `;
@@ -1978,7 +2581,7 @@ function filterAuditLogs() {
       });
     }
 
-    function openPurchaseModal() {
+	function openPurchaseModal() {
       let supplierSet = new Set();
       userScansCache.forEach(item => {
         if (item.supplier) supplierSet.add(item.supplier.trim());
@@ -1991,247 +2594,296 @@ function filterAuditLogs() {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto; max-width: 800px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> New Purchase Entry</h3>
+          <div class="modal-box purchase-modal-box">
             
-            <div class="field-group" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
-              <label>Supplier Name (Applies to all items below) <span style="color:var(--danger);">*</span></label>
-              <select id="global_supplier">
-                <option value="">-- Select Supplier --</option>
-                <option value="General Machine Tools">General Machine Tools</option>
-                <option value="Dasya Pharma">Dasya Pharma</option>
-                <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
-                <option value="Zaneka Drugs">Zaneka Drugs</option>
-                <option value="FARMA HUB">FARMA HUB</option>
-		<option value="LIFE MAX CANCER LABORATORIES">LIFE MAX CANCER LABORATORIES</option>
-                <option value="Fentum Health Care">Fentum Health Care</option>
-                <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
-                <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
-                <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
-                <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
-                <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
-                <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
-                <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
-                <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
-                <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
-                <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
-                <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
-                <option value="ISKON REMEDIES">ISKON REMEDIES</option>
-                <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
-                <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
-                <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
-                <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
-                <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
-                <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
-                <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
-                <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
-                <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
-              </select>
+            <!-- FIXED HEADER -->
+            <div class="purchase-modal-header">
+              <div>
+                <h3 style="color:var(--primary); font-size: 1.25rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-file-invoice"></i> New Purchase Entry
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Fill in supplier and batch details to inward stock into QA & Sample Room.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div id="purchase_items_container" style="display:flex; flex-direction:column; gap:16px;">
-              <div class="purchase-item-row" style="background: #ffffff; padding: 16px; border-radius: 6px; border: 1px dashed #94a3b8; position: relative;">
-                <div class="field-group">
-                  <label>Category</label>
-                  <select class="p_category">
-		<option value="">-- Select Category --</option>
-		<option value="Tablets">Tablets</option>
-		<option value="Oral Powder">Oral Powder</option>
-		<option value="Oral Spray">Oral Spray</option>
-		<option value="Injection">Injection</option>
-		<option value="Syrup / Suspension">Syrup / Suspension</option>
-		<option value="Eye Drop">Eye Drop</option>
-		<option value="Topical Cream / Ointment">Topical Cream / Ointment</option>
-		<option value="Topical Spray">Topical Spray</option>
-		<option value="Topical Solution">Topical Solution</option>
-		<option value="Ear Drop">Ear Drop</option>
-		<option value="Ear Cleanser">Ear Cleanser</option>
-		<option value="Shampoo">Shampoo</option>
-		<option value="Dusting Powder">Dusting Powder</option>
-		<option value="Dispenser Syringe">Dispenser Syringe</option>
-                  </select>
-                </div>
-                <div class="field-group" style="margin-top:8px;">
-                  <label>Product Name</label>
-                  <select class="p_name">
-                    <option value="">-- Select Product --</option>
-<option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-<option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-<option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
-<option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
-<option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
-<option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
-<option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
-<option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
-<option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
-<option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
-<option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
-<option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
-<option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
-<option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
-<option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
-<option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
-<option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
-<option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
-<option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
-<option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
-<option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
-<option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
-<option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
-<option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
-<option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
-<option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
-<option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
-<option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
-<option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
-<option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
-<option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
-<option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
-<option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
-<option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
-<option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
-<option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
-<option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
-<option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
-<option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
-<option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
-<option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
-<option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
-<option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
-<option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
-<option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
-<option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
-<option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
-<option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
-<option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
-<option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
-<option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
-<option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
-<option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
-<option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
-<option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
-<option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
-<option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
-<option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
-<option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
-<option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
-<option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
-<option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
-<option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
-<option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
-<option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
-<option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
-<option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
-<option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
-<option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
-<option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
-<option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
-<option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
-<option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
-<option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
-<option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
-<option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
-<option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
-<option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
-<option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
-<option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
-<option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
-<option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
-<option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
-<option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
-<option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
-<option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
-<option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
-<option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
-<option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
-<option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
-<option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
-<option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
-<option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
-<option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
-<option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
-<option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
-<option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
-<option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
-<option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
-<option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
-<option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
-<option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
-<option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
-<option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
-<option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
-<option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
-<option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
-<option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
-<option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
-<option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
-<option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
-<option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
-<option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
-<option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
-<option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
-<option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
-<option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
-<option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
-<option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
-<option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
-<option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
-<option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
-<option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
-<option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
-<option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
-<option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
-<option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
-<option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
-<option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-<option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-<option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
-<option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
-<option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
-<option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
-<option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
-<option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
-<option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
-<option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
-<option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
-<option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
-<option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
-<option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
-<option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
-<option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
-<option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
-<option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
-<option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
-<option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>                  </select>
-                </div>
-                <div class="field-group" style="margin-top:8px;">
-                  <label>Batch No</label>
-                  <input type="text" class="p_batch" placeholder="Enter Batch Number" style="text-transform: uppercase;">
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
-                  <div class="field-group"><label>Mfg Date</label><input type="text" class="p_mfg" placeholder="MM/YYYY"></div>
-                  <div class="field-group"><label>Exp Date</label><input type="text" class="p_exp" placeholder="MM/YYYY"></div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
-                  <div class="field-group"><label>MRP</label><input type="number" class="p_mrp" placeholder="MRP"></div>
-                  <div class="field-group"><label>Quantity</label><input type="number" class="p_qty" value="1" min="1"></div>
-                </div>
-                <div class="field-group" style="margin-top:8px;">
-                  <label>Upload COA (PDF/JPG) <span style="color:var(--text-muted); font-weight:normal;">*Optional</span></label>
-                  <input type="file" class="p_coa" accept=".pdf, .jpg, .jpeg" style="padding: 6px;">
+            <!-- SCROLLABLE BODY -->
+            <div class="purchase-modal-body">
+              
+              <!-- SUPPLIER SECTION -->
+              <div class="field-group purchase-supplier-card">
+                <label style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">
+                  <i class="fa-solid fa-truck-field"></i> Supplier Name (Applies to all items below) <span style="color:var(--danger);">*</span>
+                </label>
+                <select id="global_supplier" style="margin-top: 6px; background: #fff; font-weight: 600;">
+                  <option value="">-- Select Supplier --</option>
+                  <option value="General Machine Tools">General Machine Tools</option>
+                  <option value="Dasya Pharma">Dasya Pharma</option>
+                  <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
+                  <option value="Zaneka Drugs">Zaneka Drugs</option>
+                  <option value="FARMA HUB">FARMA HUB</option>
+                  <option value="LIFE MAX CANCER LABORATORIES">LIFE MAX CANCER LABORATORIES</option>
+                  <option value="Fentum Health Care">Fentum Health Care</option>
+                  <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
+                  <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
+                  <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
+                  <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
+                  <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
+                  <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
+                  <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
+                  <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
+                  <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
+                  <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
+                  <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
+                  <option value="ISKON REMEDIES">ISKON REMEDIES</option>
+                  <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
+                  <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
+                  <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
+                  <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
+                  <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
+                  <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
+                  <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
+                  <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
+                  <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
+                </select>
+              </div>
+
+              <!-- PRODUCT ITEMS CONTAINER -->
+              <div id="purchase_items_container" style="display:flex; flex-direction:column; gap:16px;">
+                <div class="purchase-item-row">
+                  
+                  <div class="purchase-row-header">
+                    <span class="purchase-item-badge"><i class="fa-solid fa-box"></i> Product #1</span>
+                    <div class="remove-btn-slot"></div>
+                  </div>
+
+                  <!-- ROW 1: Category & Product Name side-by-side -->
+                  <div class="purchase-grid-2">
+                    <div class="field-group">
+                      <label>Category <span style="color:var(--danger);">*</span></label>
+                      <select class="p_category">
+                        <option value="">-- Select Category --</option>
+                        <option value="Tablets">Tablets</option>
+                        <option value="Oral Powder">Oral Powder</option>
+                        <option value="Oral Spray">Oral Spray</option>
+                        <option value="Injection">Injection</option>
+                        <option value="Syrup / Suspension">Syrup / Suspension</option>
+                        <option value="Eye Drop">Eye Drop</option>
+                        <option value="Topical Cream / Ointment">Topical Cream / Ointment</option>
+                        <option value="Topical Spray">Topical Spray</option>
+                        <option value="Topical Solution">Topical Solution</option>
+                        <option value="Ear Drop">Ear Drop</option>
+                        <option value="Ear Cleanser">Ear Cleanser</option>
+                        <option value="Shampoo">Shampoo</option>
+                        <option value="Dusting Powder">Dusting Powder</option>
+                        <option value="Dispenser Syringe">Dispenser Syringe</option>
+                      </select>
+                    </div>
+
+                    <div class="field-group">
+                      <label>Product Name <span style="color:var(--danger);">*</span></label>
+                      <select class="p_name">
+                        <option value="">-- Select Product --</option>
+                        <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
+                        <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
+                        <option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
+                        <option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
+                        <option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
+                        <option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
+                        <option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
+                        <option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
+                        <option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
+                        <option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
+                        <option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
+                        <option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
+                        <option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
+                        <option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
+                        <option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
+                        <option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
+                        <option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
+                        <option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
+                        <option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
+                        <option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
+                        <option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
+                        <option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
+                        <option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
+                        <option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
+                        <option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
+                        <option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
+                        <option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
+                        <option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
+                        <option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
+                        <option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
+                        <option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
+                        <option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
+                        <option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
+                        <option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
+                        <option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
+                        <option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
+                        <option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
+                        <option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
+                        <option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
+                        <option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
+                        <option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
+                        <option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
+                        <option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
+                        <option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
+                        <option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
+                        <option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
+                        <option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
+                        <option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
+                        <option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
+                        <option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
+                        <option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
+                        <option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
+                        <option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
+                        <option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
+                        <option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
+                        <option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
+                        <option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
+                        <option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
+                        <option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
+                        <option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
+                        <option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
+                        <option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
+                        <option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
+                        <option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
+                        <option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
+                        <option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
+                        <option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
+                        <option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
+                        <option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
+                        <option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
+                        <option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
+                        <option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
+                        <option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
+                        <option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
+                        <option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
+                        <option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
+                        <option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
+                        <option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
+                        <option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
+                        <option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
+                        <option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
+                        <option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
+                        <option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
+                        <option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
+                        <option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
+                        <option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
+                        <option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
+                        <option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
+                        <option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
+                        <option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
+                        <option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
+                        <option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
+                        <option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
+                        <option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
+                        <option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
+                        <option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
+                        <option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
+                        <option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
+                        <option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
+                        <option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
+                        <option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
+                        <option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
+                        <option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
+                        <option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
+                        <option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
+                        <option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
+                        <option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
+                        <option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
+                        <option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
+                        <option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
+                        <option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
+                        <option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
+                        <option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
+                        <option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
+                        <option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
+                        <option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
+                        <option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
+                        <option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
+                        <option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
+                        <option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
+                        <option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
+                        <option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
+                        <option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
+                        <option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
+                        <option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
+                        <option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
+                        <option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
+                        <option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
+                        <option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
+                        <option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
+                        <option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
+                        <option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
+                        <option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
+                        <option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
+                        <option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
+                        <option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
+                        <option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
+                        <option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
+                        <option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
+                        <option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
+                        <option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
+                        <option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
+                        <option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
+                        <option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
+                        <option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
+                        <option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
+                        <option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- ROW 2: Batch, Mfg, Exp, MRP in 4 Columns -->
+                  <div class="purchase-grid-4">
+                    <div class="field-group">
+                      <label>Batch No <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_batch" placeholder="ENTER BATCH NO" style="text-transform: uppercase;">
+                    </div>
+                    <div class="field-group">
+                      <label>Mfg Date <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_mfg" placeholder="MM/YYYY">
+                    </div>
+                    <div class="field-group">
+                      <label>Exp Date <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_exp" placeholder="MM/YYYY">
+                    </div>
+                    <div class="field-group">
+                      <label>MRP</label>
+                      <input type="number" class="p_mrp" placeholder="0.00" step="0.01">
+                    </div>
+                  </div>
+
+                  <!-- ROW 3: Quantity & COA Upload side-by-side -->
+                  <div class="purchase-grid-bottom">
+                    <div class="field-group">
+                      <label>Quantity <span style="color:var(--danger);">*</span></label>
+                      <input type="number" class="p_qty" value="1" min="1">
+                    </div>
+                    <div class="field-group">
+                      <label>Upload COA (PDF/JPG) <span style="color:var(--text-muted); font-weight:normal; font-size:0.8rem;">*Optional</span></label>
+                      <input type="file" class="p_coa" accept=".pdf, .jpg, .jpeg">
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
 
-            <div style="margin-top: 12px; text-align: right;">
-              <button onclick="addPurchaseRow()" class="btn-indigo" style="width: auto; padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-plus"></i> Add Another Product</button>
+            <!-- FIXED FOOTER -->
+            <div class="purchase-modal-footer">
+              <button onclick="addPurchaseRow()" class="btn-indigo" style="width: auto; padding: 10px 18px; font-size: 0.88rem;">
+                <i class="fa-solid fa-plus"></i> Add Another Product
+              </button>
+              <div style="display:flex; gap: 10px;">
+                <button onclick="closeModalAndResume()" class="btn-danger" style="width: auto; padding: 10px 20px;">Cancel</button>
+                <button onclick="savePurchaseModalData()" class="btn-success" style="width: auto; padding: 10px 24px;">
+                  <i class="fa-solid fa-check-double"></i> Submit All Entries
+                </button>
+              </div>
             </div>
 
-            <div style="display:flex; gap: 12px; margin-top:16px;">
-              <button onclick="savePurchaseModalData()" class="btn-success">Submit All Entries</button>
-              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
-            </div>
           </div>
         </div>
       `;
@@ -2245,13 +2897,22 @@ function filterAuditLogs() {
       clone.querySelectorAll("input, select").forEach(el => el.value = "");
       clone.querySelector(".p_qty").value = "1";
       
-      const removeDiv = document.createElement("div");
-      removeDiv.style.textAlign = "right";
-      removeDiv.style.marginTop = "8px";
-      removeDiv.innerHTML = `<button onclick="this.closest('.purchase-item-row').remove()" class="btn-danger" style="width: auto; padding: 4px 10px; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Remove</button>`;
-      clone.appendChild(removeDiv);
+      const removeSlot = clone.querySelector(".remove-btn-slot");
+      if (removeSlot) {
+        removeSlot.innerHTML = `<button onclick="this.closest('.purchase-item-row').remove(); updatePurchaseRowBadges();" class="btn-danger" style="width: auto; padding: 4px 10px; font-size: 0.78rem; border-radius: 50px;"><i class="fa-solid fa-trash"></i> Remove</button>`;
+      }
 
       container.appendChild(clone);
+      updatePurchaseRowBadges();
+      clone.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updatePurchaseRowBadges() {
+      const rows = document.querySelectorAll("#purchase_items_container .purchase-item-row");
+      rows.forEach((row, idx) => {
+        const badge = row.querySelector(".purchase-item-badge");
+        if (badge) badge.innerHTML = `<i class="fa-solid fa-box"></i> Product #${idx + 1}`;
+      });
     }
 
 async function savePurchaseModalData() {
@@ -2713,53 +3374,84 @@ async function savePurchaseModalData() {
       }
     }
 
-    function openHoldModal() {
+	function openHoldModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#d97706;"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</h3>
+          <div class="modal-box hold-modal-box">
             
-            <div style="display:flex; gap:16px; margin-bottom:12px; background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fde68a;">
-               <label><input type="radio" name="holdActionType" value="HOLD" checked onchange="loadHoldInventory('QA')"> Hold Item (From QA)</label>
-               <label><input type="radio" name="holdActionType" value="UNHOLD" onchange="loadHoldInventory('HOLD')"> Unhold Item (To Main WH)</label>
+            <!-- FIXED HEADER -->
+            <div class="hold-modal-header">
+              <div>
+                <h3 style="color:#d97706; font-size: 1.25rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-pause"></i> Hold / Unhold Item
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Quarantine defective batches or release them back to Main Warehouse.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div class="field-group">
-              <label>Product Name</label>
-              <select id="h_product" class="form-control" onchange="populateHoldBatches()">
-                <option value="">Loading products...</option>
-              </select>
-            </div>
-            
-            <div class="field-group">
-              <label>Batch No (Available Qty)</label>
-              <select id="h_batch" class="form-control" onchange="setMaxHoldQty()">
-                <option value="">Select Product First</option>
-              </select>
-            </div>
-            
-            <div class="field-group">
-              <label>Qty</label>
-              <input type="number" id="h_qty" value="1" min="1">
-              <small id="h_max_qty_label" style="color:var(--text-muted); font-weight: 600;"></small>
-            </div>
-            
-            <div class="field-group">
-              <label>Reason / Remarks <span style="color:var(--danger);">*</span></label>
-              <input type="text" id="h_reason" placeholder="Enter Hold/Unhold Reason (Mandatory)">
+            <!-- SCROLLABLE BODY -->
+            <div class="hold-modal-body">
+              
+              <!-- ACTION TYPE SELECTOR -->
+              <div class="hold-radio-card">
+                <label>
+                  <input type="radio" name="holdActionType" value="HOLD" checked onchange="loadHoldInventory('QA')"> 
+                  <span><i class="fa-solid fa-lock"></i> Hold Item (From QA)</span>
+                </label>
+                <label>
+                  <input type="radio" name="holdActionType" value="UNHOLD" onchange="loadHoldInventory('HOLD')"> 
+                  <span><i class="fa-solid fa-lock-open"></i> Unhold Item (To Main WH)</span>
+                </label>
+              </div>
+
+              <!-- MAIN INPUT CARD -->
+              <div class="hold-form-card">
+                <div class="field-group">
+                  <label><i class="fa-solid fa-capsules" style="color:var(--warning);"></i> Product Name <span style="color:var(--danger);">*</span></label>
+                  <select id="h_product" class="form-control" onchange="populateHoldBatches()">
+                    <option value="">Loading products...</option>
+                  </select>
+                </div>
+                
+                <div class="hold-grid-2">
+                  <div class="field-group">
+                    <label><i class="fa-solid fa-barcode" style="color:var(--warning);"></i> Batch No (Available Qty) <span style="color:var(--danger);">*</span></label>
+                    <select id="h_batch" class="form-control" onchange="setMaxHoldQty()">
+                      <option value="">Select Product First</option>
+                    </select>
+                  </div>
+                  
+                  <div class="field-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <label>Quantity <span style="color:var(--danger);">*</span></label>
+                      <small id="h_max_qty_label" style="color:#d97706; font-weight: 700; font-size: 0.76rem; background: #fffbeb; padding: 1px 8px; border-radius: 50px;"></small>
+                    </div>
+                    <input type="number" id="h_qty" value="1" min="1" style="font-weight: 700;">
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label><i class="fa-solid fa-comment-dots" style="color:var(--warning);"></i> Reason / Remarks <span style="color:var(--danger);">*</span></label>
+                  <input type="text" id="h_reason" placeholder="Enter Hold/Unhold Reason (Mandatory)">
+                </div>
+              </div>
+
             </div>
 
-            <div style="display:flex; gap:12px; margin-top:8px;">
-              <button onclick="executeHoldAction()" class="btn-warning">Submit</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            <!-- FIXED FOOTER -->
+            <div class="hold-modal-footer">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 20px;">Cancel</button>
+              <button onclick="executeHoldAction()" class="btn-warning" style="width: auto; padding: 10px 24px;">
+                <i class="fa-solid fa-check"></i> Submit Action
+              </button>
             </div>
+
           </div>
         </div>
       `;
       loadHoldInventory('QA');
     }
-
 
     function populateHoldBatches() {
       let selProd = document.getElementById('h_product').value;
@@ -2837,24 +3529,24 @@ async function savePurchaseModalData() {
       }
     }
 
-    function openTransferModal() {
+	function openTransferModal() {
       let currentWarehouse = sessionStorage.getItem("warehouse") || "QA (Quality Assurance)";
       
       let qaRemarkHtml = "";
       let warehouseToOptions = "";
 
-	if (currentWarehouse === 'QA (Quality Assurance)') {
+      if (currentWarehouse === 'QA (Quality Assurance)') {
         qaRemarkHtml = `
-          <div class="field-group" style="margin-top: 8px;">
-            <label>QA Remarks <span style="color:var(--danger);">*</span></label>
-            <select id="t_qa_remark_select" onchange="toggleQaRemarkOther(this)">
+          <div class="field-group" style="margin-top: 4px; padding-top: 12px; border-top: 1px dashed #c7d2fe;">
+            <label style="color: #3730a3;"><i class="fa-solid fa-clipboard-check"></i> QA Remarks <span style="color:var(--danger);">*</span></label>
+            <select id="t_qa_remark_select" onchange="toggleQaRemarkOther(this)" style="background: #ffffff;">
               <option value="">-- Select Remark --</option>
               <option value="Approved for Packing">Approved for Packing</option>
               <option value="Quality Checked - OK">Quality Checked - OK</option>
               <option value="Non Repairable - Damaged">Non Repairable - Damaged</option>
               <option value="Other">Other</option>
             </select>
-            <input type="text" id="t_qa_remark_other" placeholder="Type your custom remark here..." style="display:none; margin-top:8px;">
+            <input type="text" id="t_qa_remark_other" placeholder="Type your custom remark here..." style="display:none; margin-top:8px; background: #ffffff;">
           </div>
         `;
         warehouseToOptions = `
@@ -2902,48 +3594,82 @@ async function savePurchaseModalData() {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#4f46e5;"><i class="fa-solid fa-right-left"></i> Internal Stock Transfer</h3>
+          <div class="modal-box transfer-modal-box">
             
-            <div class="field-group">
-              <label>Product Name</label>
-              <select id="t_product" class="form-control" onchange="populateTransferBatches()">
-                <option value="">Loading products...</option>
-              </select>
+            <!-- FIXED HEADER -->
+            <div class="transfer-modal-header">
+              <div>
+                <h3 style="color:#4f46e5; font-size: 1.25rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-right-left"></i> Internal Stock Transfer
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Move verified inventory batches between warehouse locations.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div class="field-group">
-              <label>Batch No (Available Qty)</label>
-              <select id="t_batch" class="form-control" onchange="setMaxTransferQty()">
-                <option value="">Select Product First</option>
-              </select>
-            </div>
-            
-            <div class="field-group">
-              <label>Qty</label>
-              <input type="number" id="t_qty" value="1" min="1">
-              <small id="t_max_qty_label" style="color:var(--text-muted); font-weight: 600;"></small>
-            </div>
-            
-            <div class="field-group">
-              <label>Warehouse From (Logged In)</label>
-              <input type="text" id="t_from" value="${escapeHtml(currentWarehouse)}" readonly style="background:#f1f5f9; font-weight:700;">
-            </div>
-            
-            ${qaRemarkHtml}
+            <!-- SCROLLABLE BODY -->
+            <div class="transfer-modal-body">
+              
+              <!-- CARD 1: PRODUCT & BATCH DETAILS -->
+              <div class="transfer-section-card">
+                <div class="field-group">
+                  <label><i class="fa-solid fa-capsules" style="color:#4f46e5;"></i> Product Name <span style="color:var(--danger);">*</span></label>
+                  <select id="t_product" class="form-control" onchange="populateTransferBatches()">
+                    <option value="">Loading products...</option>
+                  </select>
+                </div>
+                
+                <div class="transfer-grid-2">
+                  <div class="field-group">
+                    <label><i class="fa-solid fa-barcode" style="color:#4f46e5;"></i> Batch No (Available Qty) <span style="color:var(--danger);">*</span></label>
+                    <select id="t_batch" class="form-control" onchange="setMaxTransferQty()">
+                      <option value="">Select Product First</option>
+                    </select>
+                  </div>
+                  
+                  <div class="field-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <label>Transfer Qty <span style="color:var(--danger);">*</span></label>
+                      <small id="t_max_qty_label" style="color:#4f46e5; font-weight: 700; font-size: 0.76rem; background: #eef2ff; padding: 1px 8px; border-radius: 50px;"></small>
+                    </div>
+                    <input type="number" id="t_qty" value="1" min="1" style="font-weight: 700;">
+                  </div>
+                </div>
+              </div>
 
-            <div class="field-group">
-              <label>Warehouse To</label>
-              <select id="t_to">
-                ${warehouseToOptions}
-              </select>
+              <!-- CARD 2: ROUTING (FROM -> TO) -->
+              <div class="transfer-route-card">
+                <div class="transfer-route-grid">
+                  <div class="field-group">
+                    <label style="color: #3730a3; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Warehouse From (Logged In)</label>
+                    <input type="text" id="t_from" value="${escapeHtml(currentWarehouse)}" readonly style="background:#e0e7ff; color:#1e1b4b; font-weight:700; border-color:#a5b4fc; cursor:not-allowed;">
+                  </div>
+
+                  <div class="transfer-arrow-badge" title="Transfer Direction">
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </div>
+
+                  <div class="field-group">
+                    <label style="color: #3730a3; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em;">Warehouse To <span style="color:var(--danger);">*</span></label>
+                    <select id="t_to" style="background:#ffffff; font-weight:600; border-color:#818cf8;">
+                      ${warehouseToOptions}
+                    </select>
+                  </div>
+                </div>
+
+                ${qaRemarkHtml}
+              </div>
+
             </div>
 
-            <div style="display:flex; gap:12px; margin-top:8px;">
-              <button onclick="promptTransferConfirmation()" class="btn-indigo">Transfer Stock</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            <!-- FIXED FOOTER -->
+            <div class="transfer-modal-footer">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 20px;">Cancel</button>
+              <button onclick="promptTransferConfirmation()" class="btn-indigo" style="width: auto; padding: 10px 24px;">
+                <i class="fa-solid fa-paper-plane"></i> Transfer Stock
+              </button>
             </div>
+
           </div>
         </div>
       `;
@@ -3034,7 +3760,7 @@ async function savePurchaseModalData() {
       }
     }
 
-    function promptTransferConfirmation() {
+	function promptTransferConfirmation() {
       let prod = document.getElementById("t_product").value.trim();
       let batch = document.getElementById("t_batch").value.trim();
       let qty = parseInt(document.getElementById("t_qty").value, 10) || 1;
@@ -3073,28 +3799,61 @@ async function savePurchaseModalData() {
         qaRemark: qaRemark
       };
 
-      let remarkHtml = qaRemark ? `<b>QA Remarks:</b> ${escapeHtml(qaRemark)}<br>` : "";
+      let remarkHtml = qaRemark ? `
+        <div style="grid-column: span 2; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+          <span style="color:var(--text-muted); font-size:0.78rem; text-transform:uppercase; font-weight:700;">QA Remarks</span>
+          <div style="font-weight:700; color:#3730a3; margin-top:2px;">${escapeHtml(qaRemark)}</div>
+        </div>` : "";
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 90vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#4f46e5;"><i class="fa-solid fa-triangle-exclamation"></i> Confirm Stock Transfer</h3>
-            <div style="background:#f8fafc; padding:16px; border-radius:8px; font-size:0.92rem; line-height:1.6; border: 1px solid var(--border-color);">
-              <b>Product:</b> ${escapeHtml(prod.toUpperCase())}<br>
-              <b>Batch No:</b> ${escapeHtml(batch.toUpperCase())}<br>
-              <b>Quantity:</b> ${formatNumber(qty)} pcs<br>
-              <b>From Location:</b> ${escapeHtml(fromWh)}<br>
-              <b>To Location:</b> ${escapeHtml(toWh)}<br>
-              ${remarkHtml}
+          <div class="modal-box transfer-modal-box" style="max-width: 540px !important;">
+            
+            <div class="transfer-modal-header">
+              <h3 style="color:#4f46e5; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                <i class="fa-solid fa-circle-check"></i> Confirm Stock Transfer
+              </h3>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p style="font-weight:700; color:var(--danger); font-size:0.9rem;">
-              Are you sure you want to transfer the stock?
-            </p>
-            <div style="display:flex; gap:12px; margin-top:8px;">
-              <button onclick="executeStockTransfer()" class="btn-success">Yes, Transfer</button>
-              <button onclick="openTransferModal()" class="btn-secondary">Back / Edit</button>
+
+            <div class="transfer-modal-body">
+              <div style="background:#ffffff; padding:18px; border-radius:10px; border: 1px solid #cbd5e1; display:grid; grid-template-columns: 1fr 1fr; gap: 14px; box-shadow: var(--shadow-sm);">
+                <div style="grid-column: span 2;">
+                  <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Product Name</span>
+                  <div style="font-weight:800; color:var(--text-main); font-size:1.02rem; margin-top:2px;">${escapeHtml(prod.toUpperCase())}</div>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Batch No</span>
+                  <div style="font-weight:700; color:var(--primary); margin-top:2px;">${escapeHtml(batch.toUpperCase())}</div>
+                </div>
+                <div>
+                  <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Transfer Quantity</span>
+                  <div style="font-weight:800; color:var(--success); font-size:1rem; margin-top:2px;">${formatNumber(qty)} pcs</div>
+                </div>
+                <div style="grid-column: span 2; background:#eef2ff; padding:12px; border-radius:8px; border:1px solid #c7d2fe; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div>
+                    <span style="color:#4f46e5; font-size:0.72rem; text-transform:uppercase; font-weight:700;">From</span>
+                    <div style="font-weight:700; color:#1e1b4b; font-size:0.9rem;">${escapeHtml(fromWh)}</div>
+                  </div>
+                  <i class="fa-solid fa-arrow-right" style="color:#4f46e5; font-size:1.1rem;"></i>
+                  <div style="text-align:right;">
+                    <span style="color:#4f46e5; font-size:0.72rem; text-transform:uppercase; font-weight:700;">To</span>
+                    <div style="font-weight:700; color:#1e1b4b; font-size:0.9rem;">${escapeHtml(toWh)}</div>
+                  </div>
+                </div>
+                ${remarkHtml}
+              </div>
+
+              <p style="font-weight:700; color:var(--danger); font-size:0.88rem; text-align:center; margin:0;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Are you sure you want to transfer this stock?
+              </p>
             </div>
+
+            <div class="transfer-modal-footer">
+              <button onclick="openTransferModal()" class="btn-secondary" style="width: auto; padding: 10px 18px;"><i class="fa-solid fa-arrow-left"></i> Back / Edit</button>
+              <button onclick="executeStockTransfer()" class="btn-success" style="width: auto; padding: 10px 24px;"><i class="fa-solid fa-check"></i> Yes, Transfer</button>
+            </div>
+
           </div>
         </div>
       `;
@@ -5961,207 +6720,244 @@ async function handleDispatchReturnPdfUpload(input) {
       }
     }
 
-    function openSalesReturnSuspenseModal() {
+	function openSalesReturnSuspenseModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 700px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--warning);"><i class="fa-solid fa-box-open"></i> Sales Return - Suspense Item</h3>
+          <div class="modal-box suspense-modal-box">
             
-            <div style="display: flex; gap: 20px; align-items: stretch; margin-top: 10px;">
-              <!-- Left Side (Inputs) -->
-              <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
-                <div class="field-group">
-              <label>Product Name</label>
-              <select id="sr_product" class="form-control">
-                <option value="">Select Product Name</option>
-<option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-<option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-<option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
-<option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
-<option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
-<option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
-<option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
-<option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
-<option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
-<option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
-<option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
-<option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
-<option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
-<option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
-<option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
-<option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
-<option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
-<option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
-<option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
-<option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
-<option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
-<option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
-<option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
-<option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
-<option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
-<option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
-<option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
-<option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
-<option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
-<option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
-<option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
-<option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
-<option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
-<option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
-<option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
-<option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
-<option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
-<option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
-<option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
-<option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
-<option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
-<option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
-<option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
-<option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
-<option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
-<option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
-<option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
-<option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
-<option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
-<option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
-<option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
-<option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
-<option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
-<option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
-<option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
-<option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
-<option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
-<option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
-<option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
-<option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
-<option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
-<option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
-<option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
-<option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
-<option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
-<option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
-<option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
-<option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
-<option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
-<option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
-<option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
-<option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
-<option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
-<option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
-<option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
-<option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
-<option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
-<option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
-<option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
-<option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
-<option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
-<option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
-<option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
-<option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
-<option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
-<option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
-<option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
-<option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
-<option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
-<option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
-<option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
-<option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
-<option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
-<option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
-<option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
-<option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
-<option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
-<option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
-<option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
-<option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
-<option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
-<option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
-<option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
-<option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
-<option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
-<option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
-<option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
-<option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
-<option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
-<option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
-<option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
-<option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
-<option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
-<option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
-<option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
-<option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
-<option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
-<option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
-<option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
-<option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
-<option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
-<option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
-<option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
-<option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
-<option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
-<option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
-<option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
-<option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
-<option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-<option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-<option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
-<option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
-<option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
-<option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
-<option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
-<option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
-<option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
-<option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
-<option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
-<option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
-<option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
-<option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
-<option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
-<option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
-<option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
-<option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
-<option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
-<option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>
-              </select>
-                </div>
-                <div class="field-group">
-                  <label>Batch no</label>
-                  <input type="text" id="sr_batch" placeholder="Enter Batch No." style="text-transform: uppercase;">
-                </div>
-                <div class="field-group">
-                  <label>Exp. Date</label>
-                  <input type="text" id="sr_exp" placeholder="MM/YY" oninput="updateSuspenseStatus()">
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                  <div class="field-group">
-                    <label>Qty.</label>
-                    <input type="number" id="sr_qty" value="0" min="0">
-                  </div>
-                  <div class="field-group">
-                    <label>Free</label>
-                    <input type="number" id="sr_free" value="0" min="0">
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label>MRP.</label>
-                  <input type="number" id="sr_mrp" placeholder="0.00" step="0.01" min="0">
-                </div>
+            <!-- FIXED HEADER -->
+            <div class="suspense-modal-header">
+              <div>
+                <h3 style="color:var(--warning); font-size: 1.25rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-box-open"></i> Sales Return - Suspense Item
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Manually inward unbilled/suspense return items with automatic expiry routing.</p>
               </div>
-              
-              <div style="flex: 0.8; background: var(--primary-light); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                 <h4 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Status</h4>
-                 <div id="sr_status_box" style="font-size: 1.4rem; font-weight: 800; color: var(--text-muted); padding: 10px; border-radius: 8px; width: 100%; background: #fff; box-shadow: var(--shadow-sm);">
-                    Pending
-                 </div>
-                 <p id="sr_days_text" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;"></p>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- SCROLLABLE BODY -->
+            <div class="suspense-modal-body">
+              <div class="suspense-layout-grid">
+                
+                <!-- LEFT SIDE: INPUT FORM CARD -->
+                <div class="suspense-form-card">
+                  <div class="field-group">
+                    <label><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--warning);"></i> Product Name <span style="color:var(--danger);">*</span></label>
+                    <select id="sr_product" class="form-control">
+                      <option value="">-- Select Product Name --</option>
+                      <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
+                      <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
+                      <option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
+                      <option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
+                      <option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
+                      <option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
+                      <option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
+                      <option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
+                      <option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
+                      <option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
+                      <option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
+                      <option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
+                      <option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
+                      <option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
+                      <option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
+                      <option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
+                      <option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
+                      <option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
+                      <option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
+                      <option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
+                      <option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
+                      <option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
+                      <option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
+                      <option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
+                      <option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
+                      <option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
+                      <option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
+                      <option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
+                      <option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
+                      <option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
+                      <option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
+                      <option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
+                      <option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
+                      <option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
+                      <option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
+                      <option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
+                      <option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
+                      <option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
+                      <option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
+                      <option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
+                      <option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
+                      <option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
+                      <option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
+                      <option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
+                      <option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
+                      <option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
+                      <option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
+                      <option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
+                      <option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
+                      <option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
+                      <option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
+                      <option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
+                      <option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
+                      <option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
+                      <option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
+                      <option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
+                      <option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
+                      <option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
+                      <option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
+                      <option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
+                      <option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
+                      <option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
+                      <option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
+                      <option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
+                      <option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
+                      <option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
+                      <option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
+                      <option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
+                      <option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
+                      <option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
+                      <option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
+                      <option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
+                      <option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
+                      <option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
+                      <option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
+                      <option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
+                      <option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
+                      <option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
+                      <option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
+                      <option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
+                      <option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
+                      <option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
+                      <option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
+                      <option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
+                      <option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
+                      <option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
+                      <option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
+                      <option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
+                      <option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
+                      <option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
+                      <option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
+                      <option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
+                      <option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
+                      <option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
+                      <option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
+                      <option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
+                      <option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
+                      <option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
+                      <option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
+                      <option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
+                      <option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
+                      <option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
+                      <option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
+                      <option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
+                      <option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
+                      <option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
+                      <option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
+                      <option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
+                      <option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
+                      <option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
+                      <option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
+                      <option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
+                      <option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
+                      <option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
+                      <option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
+                      <option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
+                      <option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
+                      <option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
+                      <option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
+                      <option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
+                      <option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
+                      <option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
+                      <option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
+                      <option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
+                      <option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
+                      <option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
+                      <option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
+                      <option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
+                      <option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
+                      <option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
+                      <option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
+                      <option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
+                      <option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
+                      <option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
+                      <option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
+                      <option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
+                      <option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
+                      <option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
+                      <option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
+                      <option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
+                      <option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
+                      <option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
+                      <option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
+                      <option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
+                      <option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
+                      <option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
+                      <option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>
+                    </select>
+                  </div>
+
+                  <!-- ROW 2: Batch No & Exp Date side-by-side -->
+                  <div class="suspense-grid-2">
+                    <div class="field-group">
+                      <label><i class="fa-solid fa-barcode" style="color:var(--warning);"></i> Batch No <span style="color:var(--danger);">*</span></label>
+                      <input type="text" id="sr_batch" placeholder="ENTER BATCH NO." style="text-transform: uppercase;">
+                    </div>
+                    <div class="field-group">
+                      <label><i class="fa-regular fa-calendar-check" style="color:var(--warning);"></i> Exp. Date <span style="color:var(--danger);">*</span></label>
+                      <input type="text" id="sr_exp" placeholder="MM/YY (e.g. 08/27)" oninput="updateSuspenseStatus()">
+                    </div>
+                  </div>
+
+                  <!-- ROW 3: Qty, Free, and MRP in 3 columns -->
+                  <div class="suspense-grid-3">
+                    <div class="field-group">
+                      <label>Qty <span style="color:var(--danger);">*</span></label>
+                      <input type="number" id="sr_qty" value="0" min="0" style="font-weight:700;">
+                    </div>
+                    <div class="field-group">
+                      <label>Free</label>
+                      <input type="number" id="sr_free" value="0" min="0">
+                    </div>
+                    <div class="field-group">
+                      <label>MRP (₹)</label>
+                      <input type="number" id="sr_mrp" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- RIGHT SIDE: LIVE ROUTING STATUS PANEL -->
+                <div class="suspense-status-panel">
+                  <div style="width:100%;">
+                    <span style="font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.08em; display:block; margin-bottom: 10px;">
+                      <i class="fa-solid fa-route"></i> Auto-Routing Status
+                    </span>
+                    <div id="sr_status_box" class="suspense-status-badge">
+                      Pending
+                    </div>
+                    <p id="sr_days_text" style="font-size: 0.82rem; font-weight: 700; color: #92400e; margin-top: 10px; min-height: 20px;">
+                      Enter Exp. Date (MM/YY) to check routing
+                    </p>
+                  </div>
+
+                  <div class="suspense-rule-list">
+                    <div style="font-weight: 800; margin-bottom: 4px; color: #92400e;"><i class="fa-solid fa-circle-info"></i> Routing Rules:</div>
+                    <div>• <b>&gt; 9 Months:</b> QA Inventory</div>
+                    <div>• <b>1 to 9 Months:</b> Near-Expiry</div>
+                    <div>• <b>Current / Past:</b> Expired Stock</div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <div style="display:flex; gap:12px; margin-top:16px;">
-              <button onclick="submitSalesReturnSuspense()" class="btn-success">Submit Entry</button>
-              <button onclick="closeModalAndResume()" class="btn-danger">Cancel</button>
+            <!-- FIXED FOOTER -->
+            <div class="suspense-modal-footer">
+              <button onclick="closeModalAndResume()" class="btn-danger" style="width: auto; padding: 10px 20px;">Cancel</button>
+              <button onclick="submitSalesReturnSuspense()" class="btn-success" style="width: auto; padding: 10px 24px;">
+                <i class="fa-solid fa-check-circle"></i> Submit Entry
+              </button>
             </div>
+
           </div>
         </div>
       `;
@@ -6532,54 +7328,71 @@ function downloadStockExcel(type) {
         sopHtml = `
           <b>Access Level:</b> Unrestricted System Control & Global Oversight.<br>
           <b>Available Modules:</b> ALL operational features, modules, and system reports.<br><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-            <li style="margin-bottom: 8px;"><b>Global Operations:</b> Admins & Master Users can execute any operation (Purchases, Transfers, PDF Parsing, Suspense Items, Holds) regardless of their designated warehouse.</li>
-            <li style="margin-bottom: 8px;"><b>Active Users Status:</b> Admins possess an exclusive module to monitor real-time user activity (Active/Inactive statuses) and download comprehensive historical login session logs in Excel format.</li>
-            <li style="margin-bottom: 8px;"><b>System Audit Logs:</b> Admins can track chronological actions performed by standard users within the platform.</li>
-            <li style="margin-bottom: 8px;"><b>Full Stock Reporting:</b> In the Stock Report module, Admins are presented with a choice to either generate a localized 'Current Warehouse Report' or a highly detailed 'Full Stock Report' that consolidates inventory data across all existing warehouses concurrently.</li>
+
+          <b>A. Purchase & QA Operations</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>New Purchase Entry:</b> Manually inward new stock into QA and Control Sample Room.</li>
+            <li style="margin-bottom: 4px;"><b>Pending COA Uploads:</b> Attach missing Certificates of Analysis (COA) PDFs/Images to pending purchases.</li>
+            <li style="margin-bottom: 4px;"><b>Hold / Unhold Item:</b> Quarantine specific product batches from QA to 'Hold Items', or release them to Main Warehouse upon resolution.</li>
+          </ul>
+
+          <b>B. PDF Automation & Dispatch</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Upload Sale Invoice (PDF):</b> Parse Marg ERP dispatch bills to deduct stock automatically from the Packing Area.</li>
+            <li style="margin-bottom: 4px;"><b>Upload Expiry/Damage Bill:</b> Parse PDFs to directly deduct expired or damaged stock from Expired Inventory into the Dump.</li>
+          </ul>
+
+          <b>C. Sales Returns (Automated & Manual)</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Upload Sales Return (PDF):</b> Process credit notes automatically. System routes items to QA (Usable) or Near-Expiry based on the expiry date calculation.</li>
+            <li style="margin-bottom: 4px;"><b>Sales Return-Suspense Item:</b> Manually process returns without a PDF. Auto-routes to QA (>9 months), Near-Expiry (<=9 months), or Expired based on live date.</li>
+          </ul>
+
+          <b>D. Advanced Analytics & Reporting</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;"><b>Product Performance:</b> View ABC classification (High/Stable/Low Demand) and monthly sales trends.</li>
+            <li style="margin-bottom: 4px;"><b>Full Stock Report:</b> Generate consolidated global stock reports across all warehouses or view individual locations.</li>
+            <li style="margin-bottom: 4px;"><b>Active Users & Audit Logs:</b> Monitor real-time online users, force logout inactive sessions, and track chronological actions performed by anyone.</li>
+            <li style="margin-bottom: 4px;"><b>Expired & Dump Inventory:</b> Dedicated modules to view and export data for completely expired or damaged/dumped stock.</li>
           </ul>
         `;
       } else if (userRole.includes("view-only") || userRole.includes("view only") || userRole.includes("manager")) {
         sopTitle = "VIEW-ONLY (MANAGER) SOP";
         sopHtml = `
           <b>Access Level:</b> Executive Monitoring and Analytical Reporting.<br>
-          <b>Available Modules:</b> Control Sample Room, Stock Report, Active Users, Stock Shortages, Bills Received Today, View Audit Logs.<br><br>
+          <b>Available Modules:</b> Control Sample Room, Stock Report, Product Performance, Active Users, Stock Shortages, Bills Received Today, View Audit Logs, Dump Inventory.<br><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
             <li style="margin-bottom: 8px;"><b>Functionality:</b> View-Only accounts are restricted from altering system data. All data entry forms, transfer functions, and PDF upload workflows are disabled.</li>
-            <li style="margin-bottom: 8px;"><b>Control Sample Room Access:</b> Management can view the dedicated Control Sample Room inventory table.</li>
-            <li style="margin-bottom: 8px;"><b>Audit Logging:</b> Management users can review operations executed within the system via System Audit Logs.</li>
-            <li style="margin-bottom: 8px;"><b>Report Exporting:</b> Management users retain full authorization to extract and download the Full Stock Report and Active Users session logs into Excel for external auditing and compliance checks.</li>
+            <li style="margin-bottom: 8px;"><b>Advanced Analytics:</b> Access 'Product Performance' to view ABC Classification (High/Stable/Low Demand) and monthly sales trends.</li>
+            <li style="margin-bottom: 8px;"><b>Audit & Users:</b> Management users can review operations executed within the system via System Audit Logs and monitor real-time Active Users.</li>
+            <li style="margin-bottom: 8px;"><b>Report Exporting:</b> Management users retain full authorization to extract and download Full Stock Reports, Dump Inventory, and Session logs into Excel for external auditing.</li>
           </ul>
         `;
       } else if (currentWh === "qa (quality assurance)") {
         sopTitle = "QUALITY ASSURANCE (QA) USER SOP";
         sopHtml = `
           <b>Access Level:</b> Core Inventory Inward and Quality Assurance.<br>
-          <b>Available Modules:</b> New Purchase Entry, Upload Sales Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Stock Report & Bills Received Today.<br><br>
+          <b>Available Modules:</b> New Purchase Entry, Upload Sales Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Pending COA Uploads, Stock Report & Bills Received Today.<br><br>
           
           <b>A. New Purchase Entry (Inwarding Stock)</b><br>
           This module is used to record newly received inventory.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the New Purchase Entry button.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Complete the mandatory fields in the entry form. Note: If the category is "Tablets", the system will automatically multiply the entered quantity by 10.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> Complete the mandatory fields (Category, Product, Batch, Dates, COA).</li>
             <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Submit Entry.</li>
           </ul>
 
-          <b>B. Upload Sales Return (PDF) - Processing Returns</b><br>
-          This module handles automated inwarding of stock returned from dispatch via Credit Notes or Return PDFs.<br>
+          <b>B. Processing Returns (PDF & Manual)</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Sales Return (PDF) and select the return document.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed details (Batch, Expiry Date, Billed Qty, Free Qty, MRP) in the confirmation popup.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Confirm & Sync.</li>
+            <li style="margin-bottom: 4px;"><b>Upload Sales Return (PDF):</b> Select a Credit Note PDF. Review parsed details, edit if needed, and Confirm. System will auto-route items based on expiry.</li>
+            <li style="margin-bottom: 4px;"><b>Sales Return-Suspense Item:</b> For manual returns without PDF. Enter details and the system will automatically classify it as Usable, Near-Expiry, or Expired.</li>
           </ul>
 
-          <b>C. Internal Stock Transfer</b><br>
-          This function routes verified stock from the QA department to other warehouse locations.<br>
+          <b>C. Internal Stock Transfer & Hold</b><br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Internal Stock Transfer.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select the product and batch.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Input quantity and <b>QA Remarks</b> (MANDATORY).</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Transfer Stock to finalize the movement.</li>
+            <li style="margin-bottom: 4px;"><b>Pending COA Uploads:</b> Upload missing COA files for previously entered purchases.</li>
+            <li style="margin-bottom: 4px;"><b>Hold / Unhold Item:</b> Quarantine defective items to 'Hold Items' or unhold them back to Main Warehouse.</li>
+            <li style="margin-bottom: 4px;"><b>Internal Stock Transfer:</b> Route verified stock to other warehouses. <b>QA Remarks</b> are MANDATORY.</li>
           </ul><br>
         `;
       } else if (currentWh === "packing area") {
@@ -6591,10 +7404,10 @@ function downloadStockExcel(type) {
           <b>A. Upload Sale Invoice (PDF) - Outward Dispatch</b><br>
           This module automates the deduction of stock based on digital dispatch invoices.<br>
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Upload Sale Invoice (PDF) and select the relevant invoice file from your local system.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> The system will parse the PDF and display a Verification Popup containing the extracted data.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review and verify the extracted fields.</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Yes, Proceed.</li>
+            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Upload Sale Invoice (PDF) and select the relevant invoice file from your system.</li>
+            <li style="margin-bottom: 4px;"><b>Step 2:</b> The system will parse the PDF and display a Verification Popup.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review and edit Batch/Qty if needed.</li>
+            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Yes, Proceed to deduct stock.</li>
           </ul>
 
           <b>B. Upload Expiry/Damage Bill</b><br>
@@ -6602,11 +7415,15 @@ function downloadStockExcel(type) {
           <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
             <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Expiry/Damage Bill and select the PDF.</li>
             <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed Product, Batch, and Total Quantity.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Yes, Proceed.</li>
+            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Yes, Proceed to deduct from Expired Inventory.</li>
+          </ul>
+          
+          <b>C. Internal Stock Transfer</b><br>
+          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+            <li style="margin-bottom: 4px;">Transfer stock to Near-Expiry, Damaged, or Expired Inventory directly.</li>
           </ul>
         `;
       } else if (currentWh === "main warehouse" || currentWh === "near-expiry" || currentWh === "damaged") {
-        // NAYA SECTION: Main Warehouse, Near-Expiry, and Damaged ke liye
         let upperWh = currentWh.toUpperCase();
         sopTitle = `${upperWh} USER SOP`;
         sopHtml = `
@@ -6631,7 +7448,6 @@ function downloadStockExcel(type) {
           </ul>
         `;
       } else {
-        // NAYA SECTION: Baki bache huye "Hold Items" ya kisi aur new location ke liye
         let upperWh = currentWh ? currentWh.toUpperCase() : "GENERAL";
         sopTitle = `${upperWh} USER SOP`;
         sopHtml = `
