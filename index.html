@@ -2396,6 +2396,228 @@
       }
     }
 
+	/* ==========================================================================
+       EXECUTIVE CORPORATE ERP UI (MINIMAL, CLASSY & ZERO SPEED IMPACT)
+       ========================================================================== */
+    body {
+      background-color: #f4f6f8;
+      background-image: none;
+      color: #0f172a;
+    }
+
+    .container {
+      max-width: 1440px;
+      gap: 20px;
+      padding: 20px 28px;
+    }
+
+    /* 1. Sober & Executive Top Header */
+    .branding-header {
+      background: #ffffff;
+      padding: 14px 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      border: 1px solid #e2e8f0;
+    }
+    .branding-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .branding-text h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+    .branding-text p {
+      font-size: 0.72rem;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-top: 1px;
+    }
+    .datetime-stamp-badge {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+      background: #f8fafc;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      font-family: var(--font-family);
+      letter-spacing: 0.01em;
+    }
+
+    /* 2. Main Dashboard Card */
+    .card {
+      background-color: #ffffff;
+      padding: 24px 28px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      border: 1px solid #e2e8f0;
+      gap: 24px;
+    }
+
+    /* 3. Clean Corporate User Bar */
+    .user-info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+      background: transparent;
+      border-radius: 0;
+    }
+    .corp-user-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-size: 0.88rem;
+      color: #475569;
+    }
+    .corp-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .corp-meta-item i {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+    .corp-meta-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+    .corp-meta-val {
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .corp-divider {
+      width: 1px;
+      height: 16px;
+      background-color: #cbd5e1;
+    }
+
+    /* 4. Classy White KPI Cards (With Subtle Left Accent & Inline Units) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .metric-card {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-left: 3px solid #1e40af !important;
+      padding: 16px 18px;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .metric-card.clickable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px -2px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1 !important;
+    }
+    .metric-card.main-wh-card { border-left-color: #6d28d9 !important; }
+    .metric-card.warning-card { border-left-color: #d97706 !important; }
+    .metric-card.danger-card  { border-left-color: #dc2626 !important; }
+    .metric-card.info-card    { border-left-color: #15803d !important; }
+
+    .metric-card span {
+      font-size: 0.72rem;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+    }
+    .metric-card h3 {
+      font-size: 1.65rem !important;
+      color: #0f172a !important;
+      font-weight: 800;
+      margin-top: 6px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    /* Fix: PCS / NOS ko number ke saath ek hi line me rakhne ke liye */
+    .metric-card h3 .unit-pcs {
+      display: inline !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      color: #64748b !important;
+      margin-left: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .view-stock-text {
+      font-size: 0.76rem !important;
+      color: #475569 !important;
+      font-weight: 600;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0.85;
+    }
+    .metric-card.clickable:hover .view-stock-text {
+      color: var(--primary) !important;
+      opacity: 1;
+      transform: none;
+    }
+
+    /* 5. Clean Section Headings & Structured ERP Buttons */
+    .erp-section {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+    }
+    .erp-section-title {
+      margin-bottom: 14px;
+      color: #334155;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .erp-section-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .action-grid button {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 6px;
+      justify-content: flex-start;
+      gap: 10px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      transition: all 0.15s ease;
+    }
+    .action-grid button i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.92rem;
+    }
+    .action-grid button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(15, 23, 42, 0.1);
+    }
+
   </style>
 </head>
 
@@ -3086,23 +3308,6 @@ async function showTodayBillsDetails() {
       openStockDetailsModal(title, content);
     }
 
-    function getBrandingHeader() {
-      return `
-        <div class="branding-header">
-          <div class="branding-left">
-            <img src="https://i.postimg.cc/XNwPRcH7/LOGO-2.jpg" alt="Hatvet Pharma Logo" style="height: 40px; width: auto; object-fit: contain; flex-shrink: 0;">
-            <div class="branding-text">
-              <h2>HATVET PHARMA PVT. LTD.</h2>
-              <p>INVENTORY MANAGEMENT SYSTEM</p>
-            </div>
-          </div>
-          <div class="datetime-stamp-badge" id="live-datetime-stamp">
-            -- Loading --
-          </div>
-        </div>
-      `;
-    }
-
     function getFooter() {
       return `<div class="footer">© 2026 Hatvet Pharma Pvt. Ltd. | Developed & Maintained by Sharma R.</div>`;
     }
@@ -3257,11 +3462,27 @@ async function showTodayBillsDetails() {
       fetchUserScansFromCloud(); 
     }
 
-	function showDashboard() {
+	function getBrandingHeader() {
+      return `
+        <div class="branding-header">
+          <div class="branding-left">
+            <img src="https://i.postimg.cc/XNwPRcH7/LOGO-2.jpg" alt="Hatvet Pharma Logo" style="height: 38px; width: auto; object-fit: contain; flex-shrink: 0;">
+            <div class="branding-text">
+              <h2>HATVET PHARMA PVT. LTD.</h2>
+              <p>INVENTORY MANAGEMENT SYSTEM</p>
+            </div>
+          </div>
+          <div class="datetime-stamp-badge" id="live-datetime-stamp">
+            -- Loading --
+          </div>
+        </div>
+      `;
+    }
+
+    function showDashboard() {
       const currentWh = sessionStorage.getItem("warehouse") || "";
       const userRole = sessionStorage.getItem("role") || "Standard";
       
-      // Do alag-alag sections ke liye variables banaye gaye hain
       let operationButtons = "";
       let reportingButtons = "";
       
@@ -3269,10 +3490,9 @@ async function showTodayBillsDetails() {
       const roleLower = userRole.toLowerCase();
       
       if (roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
-        // View Only roles ko operations nahi dikhenge, bas ek message aayega
         operationButtons = `
-          <div style="grid-column: span 3; display: flex; align-items: center; justify-content: center; padding: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px;">
-            <p style="color:var(--text-muted); font-size: 0.95rem; font-weight: 600; margin: 0;"><i class="fa-solid fa-lock"></i> Operations Disabled (View-Only Access)</p>
+          <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; padding: 16px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px;">
+            <p style="color:var(--text-muted); font-size: 0.88rem; font-weight: 600; margin: 0;"><i class="fa-solid fa-lock"></i> Operations Disabled (View-Only Access)</p>
           </div>
         `;
         reportingButtons = `
@@ -3283,7 +3503,6 @@ async function showTodayBillsDetails() {
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
         `;
       } else if (roleLower === "admin" || roleLower === "master user") {
-        // Admin ke liye Operations
         operationButtons = `
           <button onclick="openPurchaseModal()"><i class="fa-solid fa-cart-plus"></i> New Purchase Entry</button>
           <button onclick="triggerDispatchPdfSelect()"><i class="fa-solid fa-truck"></i> Upload Sale Invoice (PDF)</button>
@@ -3293,9 +3512,8 @@ async function showTodayBillsDetails() {
           <button onclick="openSalesReturnSuspenseModal()" class="btn-warning"><i class="fa-solid fa-box-open"></i> Sales Return-Suspense Item</button>
           <button onclick="openHoldModal()" class="btn-warning"><i class="fa-solid fa-pause"></i> Hold / Unhold Item</button>
           <button onclick="openPendingCOAModal()" style="background-color: #be123c; color: white;"><i class="fa-solid fa-file-circle-xmark"></i> Pending COA Uploads</button>
-	  <button onclick="openExpiredInventoryModal()" style="background-color: #991b1b; color: white;"><i class="fa-solid fa-calendar-xmark"></i> Expired Inventory</button>
+          <button onclick="openExpiredInventoryModal()" style="background-color: #991b1b; color: white;"><i class="fa-solid fa-calendar-xmark"></i> Expired Inventory</button>
         `;
-        // Admin ke liye Reporting
         reportingButtons = `
           <button onclick="openActiveUsersModal()" style="background-color: #0284c7; color: white;"><i class="fa-solid fa-users-viewfinder"></i> Active Users</button>
           <button onclick="showShortItemPage()" class="btn-secondary"><i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages</button>
@@ -3336,17 +3554,14 @@ async function showTodayBillsDetails() {
         }
       }
 
-      // Sirf Admin, Master User aur View Only (Manager) roles ko hi Dump Inventory tab show hoga
       if (roleLower === 'admin' || roleLower === 'master user' || roleLower.includes('view-only') || roleLower.includes('view only') || roleLower.includes('manager')) {
         reportingButtons += `<button onclick="openDumpInventoryModal()" style="background-color: #475569; color: white;"><i class="fa-solid fa-trash-can"></i> Dump Inventory</button>`;
       }
       
-      // Common Reporting Buttons
       reportingButtons += `<button onclick="openDailyWorkReportModal()" style="background-color: #8b5cf6; color: white;"><i class="fa-solid fa-chart-pie"></i> Daily Work Report</button>`;
       reportingButtons += `<button onclick="openAuditLogModal()" style="background-color: #3b82f6; color: white;"><i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs</button>`;
       reportingButtons += `<button onclick="showUserManual()" style="background-color: #334155; color: white;"><i class="fa-solid fa-book-open"></i> User Manual (SOP)</button>`;
 
-      // --- NAYA KPI ACCESS CONTROL LOGIC ---
       const isGlobalUser = (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view") || roleLower.includes("manager") || lowerWh === "all view");
       
       const qaActive = isGlobalUser || lowerWh === "qa (quality assurance)";
@@ -3362,13 +3577,19 @@ async function showTodayBillsDetails() {
            return `<div class="metric-card ${cardClass} clickable" onclick="${clickFunc}" title="Click to view details">
                      <span>${title}</span>
                      <h3 id="${valId}">Loading...</h3>
-                     <div class="view-stock-text">View Details <i class="fa-solid fa-arrow-right"></i></div>
+                     <div class="view-stock-text">
+                       <span>View Details</span>
+                       <i class="fa-solid fa-arrow-right"></i>
+                     </div>
                    </div>`;
          } else {
-           return `<div class="metric-card ${cardClass}" style="opacity: 0.85; cursor: not-allowed;" title="Access Restricted">
+           return `<div class="metric-card ${cardClass}" style="opacity: 0.75; cursor: not-allowed;" title="Access Restricted">
                      <span>${title}</span>
                      <h3 id="${valId}">Loading...</h3>
-                     <div class="view-stock-text" style="color: #94a3b8; opacity: 0.8;"><i class="fa-solid fa-lock"></i> Locked</div>
+                     <div class="view-stock-text" style="color: #94a3b8;">
+                       <span>Restricted</span>
+                       <i class="fa-solid fa-lock"></i>
+                     </div>
                    </div>`;
          }
       }
@@ -3376,19 +3597,32 @@ async function showTodayBillsDetails() {
       document.getElementById("app").innerHTML = `
         ${getBrandingHeader()}
         <div class="card">
-		<div class="user-info-bar">
-            <div class="user-details">
-              <b><i class="fa-solid fa-user"></i> </b> ${escapeHtml(sessionStorage.getItem("employee"))} &nbsp; | &nbsp; 
-              <b><i class="fa-solid fa-industry"></i> </b> ${escapeHtml(sessionStorage.getItem("warehouse"))}
+          <div class="user-info-bar">
+            <div class="corp-user-meta">
+              <div class="corp-meta-item">
+                <i class="fa-regular fa-user"></i>
+                <span class="corp-meta-label">User Name:</span>
+                <span class="corp-meta-val">${escapeHtml(sessionStorage.getItem("employee"))}</span>
+              </div>
+              <div class="corp-divider"></div>
+              <div class="corp-meta-item">
+                <i class="fa-solid fa-warehouse"></i>
+                <span class="corp-meta-label">Warehouse:</span>
+                <span class="corp-meta-val">${escapeHtml(sessionStorage.getItem("warehouse"))}</span>
+              </div>
+              <div class="corp-divider"></div>
+              <div class="corp-meta-item">
+                <i class="fa-solid fa-user-shield"></i>
+                <span class="corp-meta-label">Role:</span>
+                <span class="corp-meta-val">${escapeHtml(userRole)}</span>
+              </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
-              <!-- NEW NOTIFICATION BELL BUTTON -->
               <button id="expiryNotifBtn" onclick="openExpiredNotificationsModal()" class="notif-bell-btn" title="Expired Stock Notifications">
                 <i class="fa-solid fa-bell" style="font-size: 1.05rem;"></i>
                 <span id="expiryNotifBadge" class="notif-badge">0</span>
               </button>
 
-              <!-- EXISTING LOGOUT BUTTON -->
               <button onclick="logout()" class="logout-btn-innovative" title="Log out">
                 <i class="fa-solid fa-power-off"></i>
                 <span class="text">Log out</span>
@@ -3408,16 +3642,16 @@ async function showTodayBillsDetails() {
           </div>
 
           <!-- DYNAMIC OPERATIONS SECTION -->
-          <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
-            <h4 style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em;">OPERATIONS</h4>
+          <div class="erp-section">
+            <div class="erp-section-title">Operations</div>
             <div class="action-grid">
               ${operationButtons}
             </div>
           </div>
 
           <!-- DYNAMIC REPORTING SECTION -->
-          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 10px;">
-            <h4 style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em;">REPORTING & MANAGEMENT</h4>
+          <div class="erp-section">
+            <div class="erp-section-title">Reporting & Management</div>
             <div class="action-grid">
               ${reportingButtons}
             </div>
@@ -3427,7 +3661,7 @@ async function showTodayBillsDetails() {
         ${getFooter()}
       `;
       updateLiveDateTime();
-}
+    }
 
 	// 1. User se Date select karwane wala Modal
     function openDailyWorkReportModal() {
