@@ -1989,6 +1989,412 @@
         max-width: 100%;
       }
     }
+	/* --- PROFESSIONAL EXPIRED STOCK ALERTS MODAL UI STYLES --- */
+    .expiry-notif-modal-box {
+      max-width: 860px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .expiry-notif-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .expiry-notif-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Compact Warning Banner */
+    .expiry-warning-banner {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-left: 4px solid #e11d48;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #9f1239;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Single-Line Search + Export Toolbar */
+    .expiry-notif-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .expiry-search-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+    }
+    .expiry-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .expiry-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    /* Full-Height Scrollable Alerts List */
+    #expiryAlertsListContainer {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow-y: auto !important;
+      padding-right: 4px !important;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Sleek Horizontal Alert Row Card */
+    .expiry-alert-card {
+      background: #ffffff;
+      border: 1px solid #fecdd3;
+      border-left: 4px solid #e11d48;
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 0 !important;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .expiry-alert-card:hover {
+      background: #fff1f2;
+      border-color: #fda4af;
+      transform: translateX(2px);
+    }
+
+    .expiry-qty-box {
+      text-align: right;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 5px 12px;
+      border-radius: 8px;
+      min-width: 100px;
+      flex-shrink: 0;
+    }
+
+    .expiry-notif-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 640px) {
+      .expiry-notif-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .expiry-search-wrapper {
+        max-width: 100%;
+      }
+      .expiry-alert-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .expiry-qty-box {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+	/* --- PROFESSIONAL USER MANUAL (SOP) MODAL UI STYLES --- */
+    .sop-modal-box {
+      max-width: 1040px !important;
+      width: 96% !important;
+      height: 90vh !important;
+      max-height: 90vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .sop-modal-header {
+      padding: 14px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    /* Sticky Top Toolbar: Category Tabs + Search */
+    .sop-toolbar {
+      padding: 10px 24px !important;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .sop-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sop-tab-btn {
+      width: auto !important;
+      padding: 6px 12px !important;
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      border-radius: 50px !important;
+      background: #ffffff !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+      box-shadow: none !important;
+      cursor: pointer;
+      transition: all 0.15s ease !important;
+    }
+    .sop-tab-btn:hover {
+      border-color: var(--primary) !important;
+      color: var(--primary) !important;
+    }
+    .sop-tab-btn.active {
+      background: var(--primary) !important;
+      color: #ffffff !important;
+      border-color: var(--primary) !important;
+    }
+
+    .sop-search-box {
+      position: relative;
+      min-width: 240px;
+      flex: 1;
+      max-width: 300px;
+    }
+    .sop-search-box i {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .sop-search-box input {
+      padding: 6px 10px 6px 30px !important;
+      height: 32px !important;
+      font-size: 0.8rem !important;
+      border-radius: 50px !important;
+      background: #ffffff !important;
+    }
+
+    /* Scrollable SOP Content Area */
+    .sop-modal-body {
+      padding: 18px 24px !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sop-overview-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+
+    .sop-section-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .sop-section-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #dbeafe;
+    }
+
+    .sop-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .sop-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-top: 3px solid var(--primary);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sop-card.amber { border-top-color: #d97706; }
+    .sop-card.emerald { border-top-color: #059669; }
+    .sop-card.danger { border-top-color: #dc2626; }
+    .sop-card.purple { border-top-color: #7c3aed; }
+    .sop-card.indigo { border-top-color: #4f46e5; }
+
+    .sop-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .sop-card-head h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .sop-sheet-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .sop-step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 0.83rem;
+      color: #334155;
+      line-height: 1.45;
+    }
+
+    .sop-step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .sop-step-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.7rem;
+      min-width: 54px;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #bfdbfe;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .sop-rule-box {
+      background: #fffbeb;
+      border: 1px dashed #f59e0b;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      color: #92400e;
+      line-height: 1.45;
+      margin-top: auto;
+    }
+
+    .sop-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 820px) {
+      .sop-grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .sop-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sop-search-box {
+        max-width: 100%;
+      }
+    }
 
   </style>
 </head>
@@ -8327,178 +8733,487 @@ function downloadStockExcel(type) {
 	function showUserManual() {
       const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
       const currentWh = (sessionStorage.getItem("warehouse") || "").toLowerCase();
+      const rawWhName = sessionStorage.getItem("warehouse") || "Warehouse";
+
       let sopTitle = "";
-      let sopHtml = "";
+      let roleBadge = "";
+      let tabsHtml = "";
+      let finalSopBody = "";
 
-      if (userRole === "admin" || userRole === "master user") {
-        sopTitle = "ADMIN / MASTER USER SOP";
-        sopHtml = `
-          <b>Access Level:</b> Unrestricted System Control & Global Oversight.<br>
-          <b>Available Modules:</b> ALL operational features, modules, and system reports.<br><br>
+      const isAdminOrMaster = (userRole === "admin" || userRole === "master user");
+      const isViewOnly = (userRole.includes("view-only") || userRole.includes("view only") || userRole.includes("manager"));
 
-          <b>A. Purchase & QA Operations</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>New Purchase Entry:</b> Manually inward new stock into QA and Control Sample Room.</li>
-            <li style="margin-bottom: 4px;"><b>Pending COA Uploads:</b> Attach missing Certificates of Analysis (COA) PDFs/Images to pending purchases.</li>
-            <li style="margin-bottom: 4px;"><b>Hold / Unhold Item:</b> Quarantine specific product batches from QA to 'Hold Items', or release them to Main Warehouse upon resolution.</li>
+      // --- REUSABLE STEP-BY-STEP WORKFLOW CARDS ---
+      const cardPurchase = `
+        <div class="sop-card">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-cart-plus" style="color:var(--primary);"></i> New Purchase Entry</h4>
+            <span class="sop-sheet-tag">➔ QA & Sample Room</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>New Purchase Entry</b> and select the <b>Supplier Name</b> at the top (applies to all items below).</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Select <b>Category</b>, <b>Product Name</b>, enter <b>Batch No</b>, <b>Mfg Date</b> & <b>Exp Date</b> (strictly in <code>MM/YY</code> or <code>MM/YYYY</code> format), <b>MRP</b>, and <b>Quantity</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Attach the <b>COA File</b> (PDF/JPG max 5MB, optional at entry) and use <b>+ Add Another Product</b> for multi-item bills.</span></li>
+            <li><span class="sop-step-badge">STEP 4</span> <span>Click <b>Submit All Entries</b> to save stock to the cloud.</span></li>
           </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-System Rules:</b><br>
+            • <b>Tablets Multiplier:</b> If Category is <i>Tablets</i>, system automatically multiplies entered Qty by <b>10</b>.<br>
+            • <b>1-Pc Control Sample Split:</b> For every new <i>Product + Batch</i>, <b>1 pc</b> is auto-sent to <b>Control Sample Room</b> and remaining (<code>Qty - 1</code>) goes to <b>QA</b>.
+          </div>
+        </div>
+      `;
 
-          <b>B. PDF Automation & Dispatch</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Upload Sale Invoice (PDF):</b> Parse Marg ERP dispatch bills to deduct stock automatically from the Packing Area.</li>
-            <li style="margin-bottom: 4px;"><b>Upload Expiry/Damage Bill:</b> Parse PDFs to directly deduct expired or damaged stock from Expired Inventory into the Dump.</li>
+      const cardCoaHold = `
+        <div class="sop-card danger">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-file-circle-xmark" style="color:#be123c;"></i> Pending COA & Hold / Unhold</h4>
+            <span class="sop-sheet-tag">➔ QA / Hold / Main WH</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">COA 1</span> <span>Click <b>Pending COA Uploads</b> to view QA purchase batches missing their COA document.</span></li>
+            <li><span class="sop-step-badge">COA 2</span> <span>Search by Product/Batch/Supplier and click <b>Upload COA</b> (PDF/JPG max 5MB) to link the file.</span></li>
+            <li><span class="sop-step-badge">HOLD</span> <span>In <b>Hold / Unhold Item</b>, select <b>Hold Item (From QA)</b>, choose Product & Batch, enter Qty & mandatory Reason to move stock to <i>Hold Items</i>.</span></li>
+            <li><span class="sop-step-badge">UNHOLD</span> <span>Select <b>Unhold Item (To Main WH)</b>, confirm the original hold issue is resolved, and release stock into <b>Main Warehouse</b>.</span></li>
           </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-shield-halved"></i> Quality Control Rule:</b> Unholding any batch requires confirming that the original QA hold remark has been resolved.
+          </div>
+        </div>
+      `;
 
-          <b>C. Sales Returns (Automated & Manual)</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Upload Sales Return (PDF):</b> Process credit notes automatically. System routes items to QA (Usable) or Near-Expiry based on the expiry date calculation.</li>
-            <li style="margin-bottom: 4px;"><b>Sales Return-Suspense Item:</b> Manually process returns without a PDF. Auto-routes to QA (>9 months), Near-Expiry (<=9 months), or Expired based on live date.</li>
+      const cardSalesReturnPdf = `
+        <div class="sop-card emerald">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-rotate-left" style="color:#059669;"></i> Upload Sales Return (PDF)</h4>
+            <span class="sop-sheet-tag">➔ 90-Day Auto-Split</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>Upload Sales Return (PDF)</b> and select a standard Marg ERP Credit Note (CN) PDF file.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>System parses the PDF and opens the verification table. You can edit Batch, Exp, Qty, Free, and MRP if needed.</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Click <b>Confirm & Sync</b> to process the return and log it in <i>Dispatch Return Log</i>.</span></li>
           </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-code-branch"></i> PDF Return Bifurcation Rule:</b><br>
+            • <b>&gt; 90 Days to Expire:</b> Marked <i>Usable</i> and routed to <code>QA (Quality Assurance)</code>.<br>
+            • <b>&lt;= 90 Days to Expire:</b> Routed to <code>Near-Expiry</code> warehouse.
+          </div>
+        </div>
+      `;
 
-          <b>D. Advanced Analytics & Reporting</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Product Performance:</b> View ABC classification (High/Stable/Low Demand) and monthly sales trends.</li>
-            <li style="margin-bottom: 4px;"><b>Full Stock Report:</b> Generate consolidated global stock reports across all warehouses or view individual locations.</li>
-            <li style="margin-bottom: 4px;"><b>Active Users & Audit Logs:</b> Monitor real-time online users, force logout inactive sessions, and track chronological actions performed by anyone.</li>
-            <li style="margin-bottom: 4px;"><b>Expired & Dump Inventory:</b> Dedicated modules to view and export data for completely expired or damaged/dumped stock.</li>
+      const cardSuspenseReturn = `
+        <div class="sop-card amber">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-box-open" style="color:#d97706;"></i> Sales Return - Suspense Item</h4>
+            <span class="sop-sheet-tag">➔ 3-Stage Auto-Routing</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>For unbilled/manual returns without PDF, click <b>Sales Return-Suspense Item</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Select <b>Product Name</b>, enter <b>Batch No</b>, and type <b>Exp. Date</b> in <code>MM/YY</code> format (live routing status updates on the right).</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Enter <b>Qty</b>, <b>Free</b>, and <b>MRP</b>, then click <b>Submit Entry</b>.</span></li>
           </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-route"></i> 3-Stage Suspense Auto-Routing:</b><br>
+            • <b>&gt; 9 Months remaining:</b> Saved to <code>QA (Quality Assurance)</code><br>
+            • <b>1 to 9 Months remaining:</b> Saved to <code>Near-Expiry</code><br>
+            • <b>Current or Past Month (&lt;= 0):</b> Saved directly to <code>Expired</code>
+          </div>
+        </div>
+      `;
+
+      const cardTransfer = `
+        <div class="sop-card indigo">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-right-left" style="color:#4f46e5;"></i> Internal Stock Transfer</h4>
+            <span class="sop-sheet-tag">➔ Inter-Warehouse Flow</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>Internal Stock Transfer</b>. Your logged-in warehouse is automatically locked as <b>Warehouse From</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Select <b>Product Name</b> and <b>Batch No</b> (system displays live <code>Max Available pcs</code>).</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Enter <b>Transfer Qty</b> and choose <b>Warehouse To</b> from the allowed destination list.</span></li>
+            <li><span class="sop-step-badge">STEP 4</span> <span>${currentWh === 'qa (quality assurance)' || isAdminOrMaster ? 'Select mandatory <b>QA Remarks</b> (when transferring from QA), review' : 'Review'} the confirmation summary and click <b>Yes, Transfer</b>.</span></li>
+          </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-arrows-turn-to-dots"></i> Standard Stock Flow:</b><br>
+            <code>QA</code> ➔ <code>Main Warehouse</code> ➔ <code>Packing Area</code> ➔ <code>Near-Expiry / Damaged / Expired</code>.
+          </div>
+        </div>
+      `;
+
+      const cardBellAlerts = `
+        <div class="sop-card danger">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-bell" style="color:#dc2626;"></i> Expired Stock Alerts (Bell Icon)</h4>
+            <span class="sop-sheet-tag">➔ Auto-Expiry Detection</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>The top-right <b>Bell Icon</b> automatically checks active batches in your authorized warehouse on login.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Any batch reaching or passing its expiry month triggers a red badge count on the Bell icon.</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Click the <b>Bell Icon</b> to view/search expired batches or click <b>Export Excel</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 4</span> <span>Use <b>Internal Stock Transfer</b> to move those expired batches into <b>Expired Inventory</b>.</span></li>
+          </ul>
+          <div class="sop-rule-box">
+            <b><i class="fa-solid fa-bolt"></i> Action Required:</b> Clear expired batches promptly via Internal Stock Transfer so active stock remains accurate.
+          </div>
+        </div>
+      `;
+
+      const cardSaleInvoicePdf = `
+        <div class="sop-card emerald">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-truck" style="color:#059669;"></i> Upload Sale Invoice (PDF)</h4>
+            <span class="sop-sheet-tag">➔ Outward Dispatch</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>Upload Sale Invoice (PDF)</b> and select a Marg ERP Sale Invoice PDF.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Parser verifies Total Items & Total Qty against the PDF footer and opens the verification modal.</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Review or edit Batch No, Billed Qty, and Free Qty if required, then click <b>Yes, Proceed</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 4</span> <span>System checks for duplicate Invoice No, deducts stock from <b>Packing Area</b>, and records outward dispatch in <b>Dispatch Inventory</b>.</span></li>
+          </ul>
+        </div>
+      `;
+
+      const cardExpiryDamagePdf = `
+        <div class="sop-card danger">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-file-circle-exclamation" style="color:#dc2626;"></i> Upload Expiry / Damage Bill</h4>
+            <span class="sop-sheet-tag">➔ Expired to Dump</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>Upload Expiry/Damage Bill</b> and select the Marg Challan/Invoice PDF.</span></li>
+            <li><span class="sop-step-badge">STEP 2</span> <span>Verify the extracted row count and total quantity in the summary prompt.</span></li>
+            <li><span class="sop-step-badge">STEP 3</span> <span>Review/edit Batch No & Total Qty in the confirmation popup and click <b>Yes, Proceed</b>.</span></li>
+            <li><span class="sop-step-badge">STEP 4</span> <span>Stock is deducted from <b>Expired Inventory</b> and logged into <b>Damaged Dump</b>.</span></li>
+          </ul>
+        </div>
+      `;
+
+      const cardStandardReports = `
+        <div class="sop-card">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-chart-column" style="color:var(--primary);"></i> Stock Report & Live KPIs</h4>
+            <span class="sop-sheet-tag">➔ Warehouse Stock & Excel</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">KPI CARD</span> <span>Click your unlocked <b>Dashboard KPI Card(s)</b> to view live product-wise available quantities.</span></li>
+            <li><span class="sop-step-badge">STOCK</span> <span>Click <b>Stock Report</b> to view batch-wise stock (with Supplier Name, Batch, Exp, Available Qty, and MRP).</span></li>
+            <li><span class="sop-step-badge">EXPORT</span> <span>Click <b>Export Excel</b> inside the Stock Report to download an Excel sheet for physical verification.</span></li>
+          </ul>
+        </div>
+      `;
+
+      const cardPersonalLogs = `
+        <div class="sop-card purple">
+          <div class="sop-card-head">
+            <h4><i class="fa-solid fa-clock-rotate-left" style="color:#7c3aed;"></i> Daily Work Report & Audit Logs</h4>
+            <span class="sop-sheet-tag">➔ Personal Activity Tracking</span>
+          </div>
+          <ul class="sop-step-list">
+            <li><span class="sop-step-badge">WORK</span> <span>Click <b>Daily Work Report</b>, select a date, and click <b>Generate Report</b> to view your total completed actions for that day.</span></li>
+            <li><span class="sop-step-badge">AUDIT</span> <span>Click <b>View Audit Logs</b> and select a <b>From Date</b> and <b>To Date</b>.</span></li>
+            <li><span class="sop-step-badge">SEARCH</span> <span>Search your past entries by Product, Batch, or Action Type, or click <b>Export Excel</b>.</span></li>
+          </ul>
+        </div>
+      `;
+
+      if (isAdminOrMaster) {
+        sopTitle = "ADMIN / MASTER USER SOP & WORKFLOW";
+        roleBadge = "Unrestricted Global Access";
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Workflows</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('inward', this)"><i class="fa-solid fa-cart-plus"></i> 1. Inward & QA</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('transfer', this)"><i class="fa-solid fa-right-left"></i> 2. Transfer & Alerts</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('dispatch', this)"><i class="fa-solid fa-file-pdf"></i> 3. Dispatch & Returns</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('reports', this)"><i class="fa-solid fa-chart-pie"></i> 4. Reports & Admin</button>
         `;
-      } else if (userRole.includes("view-only") || userRole.includes("view only") || userRole.includes("manager")) {
-        sopTitle = "VIEW-ONLY (MANAGER) SOP";
-        sopHtml = `
-          <b>Access Level:</b> Executive Monitoring and Analytical Reporting.<br>
-          <b>Available Modules:</b> Control Sample Room, Stock Report, Product Performance, Active Users, Stock Shortages, Bills Received Today, View Audit Logs, Dump Inventory.<br><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-            <li style="margin-bottom: 8px;"><b>Functionality:</b> View-Only accounts are restricted from altering system data. All data entry forms, transfer functions, and PDF upload workflows are disabled.</li>
-            <li style="margin-bottom: 8px;"><b>Advanced Analytics:</b> Access 'Product Performance' to view ABC Classification (High/Stable/Low Demand) and monthly sales trends.</li>
-            <li style="margin-bottom: 8px;"><b>Audit & Users:</b> Management users can review operations executed within the system via System Audit Logs and monitor real-time Active Users.</li>
-            <li style="margin-bottom: 8px;"><b>Report Exporting:</b> Management users retain full authorization to extract and download Full Stock Reports, Dump Inventory, and Session logs into Excel for external auditing.</li>
-          </ul>
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="inward">
+            <div class="sop-section-title"><i class="fa-solid fa-boxes-packing"></i> 1. Purchase Inward & Quality Assurance (QA) Workflows</div>
+            <div class="sop-grid-2">${cardPurchase}${cardCoaHold}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="transfer">
+            <div class="sop-section-title"><i class="fa-solid fa-right-left"></i> 2. Internal Stock Transfer & Live Expiry Bell Alerts</div>
+            <div class="sop-grid-2">${cardTransfer}${cardBellAlerts}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="dispatch">
+            <div class="sop-section-title"><i class="fa-solid fa-file-pdf"></i> 3. PDF Automation, Outward Dispatch & Sales Returns</div>
+            <div class="sop-grid-2">${cardSaleInvoicePdf}${cardExpiryDamagePdf}${cardSalesReturnPdf}${cardSuspenseReturn}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="reports">
+            <div class="sop-section-title"><i class="fa-solid fa-chart-line"></i> 4. Analytics, Global Reports & Admin Governance</div>
+            <div class="sop-grid-2">
+              <div class="sop-card">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-chart-column" style="color:var(--primary);"></i> Global Stock, Sample, Expired & Dump</h4>
+                  <span class="sop-sheet-tag">➔ Multi-Sheet Excel Exports</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">KPIs</span> <span>Click any of the <b>8 Dashboard KPI Cards</b> to inspect live product-wise stock or today's received bills.</span></li>
+                  <li><span class="sop-step-badge">STOCK</span> <span>Use <b>Stock Report</b> to view/export either <b>Current Warehouse</b> or <b>Full Global Stock Report</b>.</span></li>
+                  <li><span class="sop-step-badge">SHORT</span> <span>Use <b>Stock Shortages</b> to check products with combined <i>QA + Packing</i> stock under <b>1,000 pcs</b>.</span></li>
+                  <li><span class="sop-step-badge">BUCKETS</span> <span>Use <b>Control Sample Room</b>, <b>Expired Inventory</b>, and <b>Dump Inventory</b> to audit and export records.</span></li>
+                </ul>
+              </div>
+              <div class="sop-card purple">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-users-gear" style="color:#7c3aed;"></i> ABC Performance, Active Users & Audit</h4>
+                  <span class="sop-sheet-tag">➔ Admin Governance</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">ABC</span> <span>Open <b>Product Performance</b> to analyze <b>High Demand</b> (Top 80%), <b>Stable Demand</b> (15%), <b>Low Demand</b> (5%) & 3-Month Sales Trends.</span></li>
+                  <li><span class="sop-step-badge">USERS</span> <span>Open <b>Active Users</b> to monitor Online/Offline staff, click <b>Force Logout</b> to end stuck sessions, or export <b>Login History</b>.</span></li>
+                  <li><span class="sop-step-badge">WORK</span> <span>Open <b>Daily Work Report</b> to inspect date-wise action counts across all employees.</span></li>
+                  <li><span class="sop-step-badge">AUDIT</span> <span>Open <b>View Audit Logs</b> to filter and export chronological user operations.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
         `;
+
+      } else if (isViewOnly) {
+        sopTitle = "VIEW-ONLY (MANAGEMENT) SOP";
+        roleBadge = "Executive Monitoring & Reporting Only";
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Guides</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('kpis', this)"><i class="fa-solid fa-gauge-high"></i> 1. Live KPIs & Alerts</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('reports', this)"><i class="fa-solid fa-file-excel"></i> 2. Stock & Shortages</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('analytics', this)"><i class="fa-solid fa-magnifying-glass-chart"></i> 3. Performance & Audit Logs</button>
+        `;
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="kpis">
+            <div class="sop-section-title"><i class="fa-solid fa-gauge-high"></i> 1. Executive Dashboard KPIs & Expiry Alerts</div>
+            <div class="sop-grid-2">
+              <div class="sop-card">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-eye" style="color:var(--primary);"></i> View-Only Access & Live KPI Cards</h4>
+                  <span class="sop-sheet-tag">➔ Read-Only Oversight</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">ACCESS</span> <span>All data-altering operations (Purchase, Transfer, PDF Uploads) are disabled to protect inventory integrity.</span></li>
+                  <li><span class="sop-step-badge">BILLS</span> <span>Click <b>Bills Received Today</b> to inspect all purchase entries inwarded today.</span></li>
+                  <li><span class="sop-step-badge">STOCK</span> <span>Click any warehouse KPI card (<i>QA, Main WH, Packing, Near-Expiry, Dispatched, Damaged, Hold</i>) for live product totals.</span></li>
+                </ul>
+              </div>
+              ${cardBellAlerts}
+            </div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="reports">
+            <div class="sop-section-title"><i class="fa-solid fa-chart-column"></i> 2. Stock Reports, Sample Room & Shortages</div>
+            <div class="sop-grid-2">
+              <div class="sop-card emerald">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-file-excel" style="color:#059669;"></i> Full Stock & Control Sample Room</h4>
+                  <span class="sop-sheet-tag">➔ Excel Exports</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">STOCK</span> <span>Click <b>Stock Report</b> ➔ <b>Full Stock Report</b> to view all warehouse locations with Supplier, Batch, Exp & MRP.</span></li>
+                  <li><span class="sop-step-badge">SAMPLE</span> <span>Click <b>Control Sample Room</b> to search and export retained sample batches.</span></li>
+                </ul>
+              </div>
+              <div class="sop-card amber">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-triangle-exclamation" style="color:#d97706;"></i> Shortages & Dump Inventory</h4>
+                  <span class="sop-sheet-tag">➔ Risk Monitoring</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">SHORT</span> <span>Click <b>Stock Shortages</b> to view items with less than <b>1,000 pcs</b> across QA + Packing Area.</span></li>
+                  <li><span class="sop-step-badge">DUMP</span> <span>Click <b>Dump Inventory</b> to view and export all damaged/expired dumped stock records.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="analytics">
+            <div class="sop-section-title"><i class="fa-solid fa-magnifying-glass-chart"></i> 3. ABC Product Performance & User Auditing</div>
+            <div class="sop-grid-2">
+              <div class="sop-card indigo">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-magnifying-glass-chart" style="color:#0284c7;"></i> Product Performance (ABC Analysis)</h4>
+                  <span class="sop-sheet-tag">➔ Demand & Trends</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">STEP 1</span> <span>Click <b>Product Performance</b> and select a date range (or leave blank for All-Time report).</span></li>
+                  <li><span class="sop-step-badge">STEP 2</span> <span>Review <b>High Demand</b> (Top 80% volume), <b>Stable Demand</b> (Next 15%), and <b>Low Demand</b> (Bottom 5%) items along with 3-Month trends.</span></li>
+                </ul>
+              </div>
+              <div class="sop-card purple">
+                <div class="sop-card-head">
+                  <h4><i class="fa-solid fa-users-viewfinder" style="color:#7c3aed;"></i> Active Users, Work Summary & Audit Logs</h4>
+                  <span class="sop-sheet-tag">➔ Staff Oversight</span>
+                </div>
+                <ul class="sop-step-list">
+                  <li><span class="sop-step-badge">USERS</span> <span>Click <b>Active Users</b> to check real-time online staff and export system login history.</span></li>
+                  <li><span class="sop-step-badge">LOGS</span> <span>Use <b>Daily Work Report</b> and <b>View Audit Logs</b> to review and export staff operations.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+
       } else if (currentWh === "qa (quality assurance)") {
         sopTitle = "QUALITY ASSURANCE (QA) USER SOP";
-        sopHtml = `
-          <b>Access Level:</b> Core Inventory Inward and Quality Assurance.<br>
-          <b>Available Modules:</b> New Purchase Entry, Upload Sales Return (PDF), Sales Return-Suspense Item, Internal Stock Transfer, Hold / Unhold Item, Pending COA Uploads, Stock Report & Bills Received Today.<br><br>
-          
-          <b>A. New Purchase Entry (Inwarding Stock)</b><br>
-          This module is used to record newly received inventory.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the New Purchase Entry button.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Complete the mandatory fields (Category, Product, Batch, Dates, COA).</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Submit Entry.</li>
-          </ul>
-
-          <b>B. Processing Returns (PDF & Manual)</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Upload Sales Return (PDF):</b> Select a Credit Note PDF. Review parsed details, edit if needed, and Confirm. System will auto-route items based on expiry.</li>
-            <li style="margin-bottom: 4px;"><b>Sales Return-Suspense Item:</b> For manual returns without PDF. Enter details and the system will automatically classify it as Usable, Near-Expiry, or Expired.</li>
-          </ul>
-
-          <b>C. Internal Stock Transfer & Hold</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Pending COA Uploads:</b> Upload missing COA files for previously entered purchases.</li>
-            <li style="margin-bottom: 4px;"><b>Hold / Unhold Item:</b> Quarantine defective items to 'Hold Items' or unhold them back to Main Warehouse.</li>
-            <li style="margin-bottom: 4px;"><b>Internal Stock Transfer:</b> Route verified stock to other warehouses. <b>QA Remarks</b> are MANDATORY.</li>
-          </ul><br>
+        roleBadge = "QA Inward, Returns & Quality Control";
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All QA Workflows</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('inward', this)"><i class="fa-solid fa-cart-plus"></i> 1. Purchase, COA & Hold</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('returns', this)"><i class="fa-solid fa-rotate-left"></i> 2. Sales Returns</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('transfer', this)"><i class="fa-solid fa-right-left"></i> 3. Transfer & Reports</button>
         `;
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="inward">
+            <div class="sop-section-title"><i class="fa-solid fa-boxes-packing"></i> 1. Purchase Inward, Pending COA & Hold / Unhold</div>
+            <div class="sop-grid-2">${cardPurchase}${cardCoaHold}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="returns">
+            <div class="sop-section-title"><i class="fa-solid fa-rotate-left"></i> 2. Sales Return Processing (PDF & Suspense Item)</div>
+            <div class="sop-grid-2">${cardSalesReturnPdf}${cardSuspenseReturn}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="transfer">
+            <div class="sop-section-title"><i class="fa-solid fa-right-left"></i> 3. QA Stock Transfer, Expiry Alerts & Reports</div>
+            <div class="sop-grid-2">${cardTransfer}${cardBellAlerts}${cardStandardReports}${cardPersonalLogs}</div>
+          </div>
+        `;
+
       } else if (currentWh === "packing area") {
         sopTitle = "PACKING AREA USER SOP";
-        sopHtml = `
-          <b>Access Level:</b> Dispatch Operations, and Automated Bill Document Parsing.<br>
-          <b>Available Modules:</b> Upload Sale Invoice (PDF), Upload Expiry/Damage Bill, Internal Stock Transfer, & Stock Report.<br><br>
-          
-          <b>A. Upload Sale Invoice (PDF) - Outward Dispatch</b><br>
-          This module automates the deduction of stock based on digital dispatch invoices.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on Upload Sale Invoice (PDF) and select the relevant invoice file from your system.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> The system will parse the PDF and display a Verification Popup.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Review and edit Batch/Qty if needed.</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Click Yes, Proceed to deduct stock.</li>
-          </ul>
-
-          <b>B. Upload Expiry/Damage Bill</b><br>
-          This module processes invoices explicitly dealing with expired or damaged goods.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click Upload Expiry/Damage Bill and select the PDF.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Review the parsed Product, Batch, and Total Quantity.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click Yes, Proceed to deduct from Expired Inventory.</li>
-          </ul>
-          
-          <b>C. Internal Stock Transfer</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;">Transfer stock to Near-Expiry, Damaged, or Expired Inventory directly.</li>
-          </ul>
+        roleBadge = "Outward Dispatch & Bill Automation";
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Packing Workflows</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('dispatch', this)"><i class="fa-solid fa-truck"></i> 1. Dispatch & Expiry Bills</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('transfer', this)"><i class="fa-solid fa-right-left"></i> 2. Stock Transfer & Alerts</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('reports', this)"><i class="fa-solid fa-chart-column"></i> 3. Reports & Logs</button>
         `;
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="dispatch">
+            <div class="sop-section-title"><i class="fa-solid fa-file-pdf"></i> 1. Outward Sale Dispatch & Expiry/Damage Bill PDF</div>
+            <div class="sop-grid-2">${cardSaleInvoicePdf}${cardExpiryDamagePdf}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="transfer">
+            <div class="sop-section-title"><i class="fa-solid fa-right-left"></i> 2. Internal Stock Transfer & Packing Expiry Alerts</div>
+            <div class="sop-grid-2">${cardTransfer}${cardBellAlerts}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="reports">
+            <div class="sop-section-title"><i class="fa-solid fa-chart-column"></i> 3. Packing Stock Report & Personal Logs</div>
+            <div class="sop-grid-2">${cardStandardReports}${cardPersonalLogs}</div>
+          </div>
+        `;
+
       } else if (currentWh === "main warehouse" || currentWh === "near-expiry" || currentWh === "damaged") {
-        let upperWh = currentWh.toUpperCase();
+        let upperWh = rawWhName.toUpperCase();
         sopTitle = `${upperWh} USER SOP`;
-        sopHtml = `
-          <b>Access Level:</b> Standard Inventory Routing & Reporting.<br>
-          <b>Available Modules:</b> Internal Stock Transfer, Stock Report, Daily Work Report, View Audit Logs.<br><br>
-          
-          <b>A. Internal Stock Transfer</b><br>
-          This function allows you to route verified stock from your location to other designated warehouse locations.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>Internal Stock Transfer</b> button.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select the Product Name and its corresponding Batch No.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Enter the exact Quantity you wish to transfer.</li>
-            <li style="margin-bottom: 4px;"><b>Step 4:</b> Select the Destination Warehouse and click <b>Transfer Stock</b>.</li>
-          </ul>
-
-          <b>B. Stock Report & Auditing</b><br>
-          View and export your current inventory levels and personal operations.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>Stock Report</b> button to view available quantities.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Click on <b>Export Excel</b> if you need a downloaded sheet.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Use <b>View Audit Logs</b> or <b>Daily Work Report</b> to verify your past entries.</li>
-          </ul>
+        roleBadge = `${rawWhName} Routing & Reporting`;
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Workflows</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('transfer', this)"><i class="fa-solid fa-right-left"></i> 1. Transfer & Expiry Alerts</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('reports', this)"><i class="fa-solid fa-chart-column"></i> 2. Stock Report & Logs</button>
         `;
-      } else {
-        let upperWh = currentWh ? currentWh.toUpperCase() : "GENERAL";
-        sopTitle = `${upperWh} USER SOP`;
-        sopHtml = `
-          <b>Access Level:</b> Inventory Management & Standard Operations.<br>
-          <b>Available Modules:</b> New Purchase Entry, Internal Stock Transfer, Stock Report, Daily Work Report, View Audit Logs.<br><br>
-          
-          <b>A. New Purchase Entry</b><br>
-          Used to record new stock directly into this location.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on the <b>New Purchase Entry</b> button.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Fill in Supplier, Product, Batch, Mfg, Exp, MRP, and Qty.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Click <b>Submit All Entries</b>.</li>
-          </ul>
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="transfer">
+            <div class="sop-section-title"><i class="fa-solid fa-right-left"></i> 1. Internal Stock Transfer & Live Expiry Alerts</div>
+            <div class="sop-grid-2">${cardTransfer}${cardBellAlerts}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="reports">
+            <div class="sop-section-title"><i class="fa-solid fa-chart-column"></i> 2. ${escapeHtml(rawWhName)} Stock Report & Activity Logs</div>
+            <div class="sop-grid-2">${cardStandardReports}${cardPersonalLogs}</div>
+          </div>
+        `;
 
-          <b>B. Internal Stock Transfer</b><br>
-          Used to move verified stock to other locations.<br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on <b>Internal Stock Transfer</b>.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Select Product Name, Batch No, and enter Quantity.</li>
-            <li style="margin-bottom: 4px;"><b>Step 3:</b> Select Destination Warehouse and submit.</li>
-          </ul>
-          
-          <b>C. Stock Report</b><br>
-          <ul style="padding-left: 20px; margin-top: 8px; margin-bottom: 12px;">
-            <li style="margin-bottom: 4px;"><b>Step 1:</b> Click on <b>Stock Report</b> to view current availability.</li>
-            <li style="margin-bottom: 4px;"><b>Step 2:</b> Use the <b>Export Excel</b> button to download data.</li>
-          </ul>
+      } else {
+        let upperWh = rawWhName.toUpperCase();
+        sopTitle = `${upperWh} USER SOP`;
+        roleBadge = "Standard Operations & Reporting";
+        tabsHtml = `
+          <button class="sop-tab-btn active" onclick="filterSopCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Workflows</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('ops', this)"><i class="fa-solid fa-cart-plus"></i> 1. Operations</button>
+          <button class="sop-tab-btn" onclick="filterSopCategory('reports', this)"><i class="fa-solid fa-chart-column"></i> 2. Reports & Logs</button>
+        `;
+        finalSopBody = `
+          <div class="sop-section-block" data-sop-cat="ops">
+            <div class="sop-section-title"><i class="fa-solid fa-boxes-packing"></i> 1. Authorized Warehouse Operations</div>
+            <div class="sop-grid-2">${cardPurchase}${cardTransfer}</div>
+          </div>
+          <div class="sop-section-block" data-sop-cat="reports">
+            <div class="sop-section-title"><i class="fa-solid fa-chart-column"></i> 2. Stock Reports & Activity Logs</div>
+            <div class="sop-grid-2">${cardStandardReports}${cardPersonalLogs}</div>
+          </div>
         `;
       }
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 85vh; overflow-y: auto; max-width: 800px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-              <i class="fa-solid fa-book-open"></i> ${sopTitle}
-            </h3>
-            <div style="margin-top: 12px; font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
-              ${sopHtml}
+          <div class="modal-box sop-modal-box">
+            
+            <!-- FIXED HEADER -->
+            <div class="sop-modal-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-book-open"></i> ${sopTitle}
+                </h3>
+                <span style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                  <i class="fa-solid fa-user-shield"></i> ${escapeHtml(roleBadge)}
+                </span>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 16px; width: 100%;">Close Manual</button>
+
+            <!-- ROLE-SPECIFIC STICKY TABS & SEARCH TOOLBAR -->
+            <div class="sop-toolbar">
+              <div class="sop-tabs">
+                ${tabsHtml}
+              </div>
+              <div class="sop-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="sopSearchInput" placeholder="Search workflow, rule, or step..." onkeyup="searchSopManual()">
+              </div>
+            </div>
+
+            <!-- SCROLLABLE BODY (BLUE BANNER REMOVED) -->
+            <div class="sop-modal-body" id="sopModalBody">
+              ${finalSopBody}
+            </div>
+
+            <!-- FIXED FOOTER -->
+            <div class="sop-modal-footer">
+              <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Tip: Use the category buttons above to filter your assigned workflows.
+              </span>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close Manual</button>
+            </div>
+
           </div>
         </div>
       `;
+    }
+
+    function filterSopCategory(cat, btnElem) {
+      document.querySelectorAll(".sop-tab-btn").forEach(b => b.classList.remove("active"));
+      if (btnElem) btnElem.classList.add("active");
+      let searchInput = document.getElementById("sopSearchInput");
+      if (searchInput) searchInput.value = "";
+
+      document.querySelectorAll("#sopModalBody .sop-section-block").forEach(sec => {
+        sec.querySelectorAll(".sop-card").forEach(c => c.style.display = "flex");
+        if (cat === "all" || sec.getAttribute("data-sop-cat") === cat) {
+          sec.style.display = "flex";
+        } else {
+          sec.style.display = "none";
+        }
+      });
+    }
+
+    function searchSopManual() {
+      let q = (document.getElementById("sopSearchInput")?.value || "").toLowerCase().trim();
+      document.querySelectorAll("#sopModalBody .sop-section-block").forEach(sec => {
+        let hasVisibleCard = false;
+        sec.querySelectorAll(".sop-card").forEach(card => {
+          if (!q || card.innerText.toLowerCase().includes(q)) {
+            card.style.display = "flex";
+            hasVisibleCard = true;
+          } else {
+            card.style.display = "none";
+          }
+        });
+        sec.style.display = hasVisibleCard ? "flex" : "none";
+      });
     }
 
 	async function openPendingCOAModal() {
@@ -9537,12 +10252,11 @@ async function forceUserLogout(username) {
       }
     }
 
-    async function openExpiredNotificationsModal() {
-      // Sirf tabhi wait karega agar pehli baar abhi tak data load na hua ho, warna 0.01 sec me khulega!
+	async function openExpiredNotificationsModal() {
       if (!window.expiredAlertsLoaded) {
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 500px; text-align: center;">
+            <div class="modal-box" style="max-width: 440px; text-align: center;">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
               <h3 style="color: #dc2626;"><i class="fa-solid fa-spinner fa-spin"></i> Checking Expired Batches...</h3>
             </div>
@@ -9567,43 +10281,55 @@ async function forceUserLogout(username) {
       let contentHtml = "";
       if (alerts.length === 0) {
         contentHtml = `
-          <div style="text-align: center; padding: 30px 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #15803d;">
-            <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; margin-bottom: 10px;"></i>
-            <h4 style="margin-bottom: 4px;">No Expired Stock Found!</h4>
+          <div style="text-align: center; padding: 40px 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; color: #15803d; margin: auto 0;">
+            <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+            <h4 style="margin-bottom: 4px; font-size: 1.1rem;">No Expired Stock Found!</h4>
             <p style="font-size: 0.85rem;">There are currently no expired product batches in <b>${escapeHtml(scopeLabel)}</b>.</p>
           </div>
         `;
       } else {
         let cardsHtml = alerts.map((item) => `
           <div class="expiry-alert-card" data-search="${escapeHtml((item.location + ' ' + item.product + ' ' + item.batch + ' ' + item.expFormatted).toLowerCase())}">
-            <div style="flex: 1;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;">
-                <span style="background: #e11d48; color: #fff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                <span style="background: #e11d48; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.03em;">
                   <i class="fa-solid fa-warehouse"></i> ${escapeHtml(item.location)}
                 </span>
-                <span style="background: #fee2e2; color: #991b1b; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
-                  Expiry: ${escapeHtml(item.expFormatted)}
+                <span style="background: #f1f5f9; color: #0f172a; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; border: 1px solid #cbd5e1; font-family: monospace, var(--font-family);">
+                  Batch: <b style="color:#dc2626;">${escapeHtml(item.batch)}</b>
+                </span>
+                <span style="background: #fee2e2; color: #991b1b; font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                  <i class="fa-regular fa-calendar-xmark"></i> Exp: ${escapeHtml(item.expFormatted)}
                 </span>
               </div>
-              <div style="font-size: 0.92rem; color: #0f172a; line-height: 1.45;">
-                Batch <b style="color: #dc2626;">${escapeHtml(item.batch)}</b> of <b>${escapeHtml(item.product)}</b> has expired in <b>${escapeHtml(item.location)}</b>.
+              <div style="font-size: 0.88rem; color: #0f172a; line-height: 1.35;">
+                <b>${escapeHtml(item.product)}</b> <span style="color:var(--text-muted); font-size:0.82rem;">— expired in ${escapeHtml(item.location)}</span>
               </div>
             </div>
-            <div style="text-align: right; min-width: 95px;">
-              <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 700;">Avail Qty</span>
-              <span style="font-size: 1.05rem; font-weight: 800; color: #dc2626;">${formatNumber(item.qty)} pcs</span>
+            <div class="expiry-qty-box">
+              <span style="font-size: 0.68rem; color: #991b1b; display: block; text-transform: uppercase; font-weight: 700;">Avail Qty</span>
+              <span style="font-size: 0.98rem; font-weight: 800; color: #dc2626;">${formatNumber(item.qty)} pcs</span>
             </div>
           </div>
         `).join("");
 
         contentHtml = `
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <input type="text" id="notifSearchInput" placeholder="Search by Warehouse, Product, or Batch..." onkeyup="filterExpiryNotifications()" style="flex: 1; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-            <button onclick="exportExpiredAlertsExcel()" class="btn-emerald" style="width: auto; padding: 9px 14px; font-size: 0.85rem;">
+          <div class="expiry-warning-banner">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>These batches have reached or passed their expiry month. Please move them to <b>Expired Inventory</b> via Internal Stock Transfer.</span>
+          </div>
+
+          <div class="expiry-notif-toolbar">
+            <div class="expiry-search-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="notifSearchInput" placeholder="Search by Warehouse, Product, or Batch..." onkeyup="filterExpiryNotifications()">
+            </div>
+            <button onclick="exportExpiredAlertsExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
               <i class="fa-solid fa-file-excel"></i> Export Excel
             </button>
           </div>
-          <div id="expiryAlertsListContainer" style="max-height: 60vh; overflow-y: auto; padding-right: 4px;">
+
+          <div id="expiryAlertsListContainer">
             ${cardsHtml}
           </div>
         `;
@@ -9611,19 +10337,31 @@ async function forceUserLogout(username) {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color: #dc2626; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span><i class="fa-solid fa-bell"></i> Expired Stock Alerts</span>
-              <span style="font-size: 0.8rem; background: #fee2e2; color: #991b1b; padding: 3px 10px; border-radius: 50px;">${escapeHtml(scopeLabel)}: ${alerts.length} Batches</span>
-            </h3>
-            <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: -8px;">
-              The following product batches have reached or passed their expiry month. Please transfer them to <b>Expired Inventory</b> via Internal Stock Transfer.
-            </p>
-            ${contentHtml}
-            <div style="text-align: right; margin-top: 10px;">
-              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+          <div class="modal-box expiry-notif-modal-box">
+            
+            <!-- FIXED HEADER -->
+            <div class="expiry-notif-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="color: #dc2626; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; margin: 0;">
+                  <i class="fa-solid fa-bell"></i> Expired Stock Alerts
+                </h3>
+                <span style="font-size: 0.76rem; background: #fee2e2; color: #991b1b; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #fecaca;">
+                  ${escapeHtml(scopeLabel)}: ${alerts.length} Batches
+                </span>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
+
+            <!-- BODY -->
+            <div class="expiry-notif-body">
+              ${contentHtml}
+            </div>
+
+            <!-- FIXED FOOTER -->
+            <div class="expiry-notif-footer">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
+            </div>
+
           </div>
         </div>
       `;
