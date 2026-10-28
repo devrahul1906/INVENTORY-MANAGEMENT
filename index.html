@@ -1393,6 +1393,603 @@
       }
     }
 
+	/* --- PROFESSIONAL PRODUCT PERFORMANCE & ABC ANALYZER UI STYLES --- */
+    .analyzer-date-modal-box {
+      max-width: 500px !important;
+      width: 95% !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .analyzer-modal-box {
+      max-width: 1180px !important;
+      width: 96% !important;
+      height: 92vh !important;
+      max-height: 92vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .analyzer-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .analyzer-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Compact 3-Column ABC Cards */
+    .analyzer-kpi-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .analyzer-kpi-card {
+      padding: 10px 16px !important;
+      border-radius: 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid transparent;
+    }
+    .analyzer-kpi-card.high {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      border-left: 4px solid #16a34a;
+    }
+    .analyzer-kpi-card.stable {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left: 4px solid #d97706;
+    }
+    .analyzer-kpi-card.low {
+      background: #fef2f2;
+      border-color: #fecaca;
+      border-left: 4px solid #dc2626;
+    }
+
+    /* Search & Export Toolbar */
+    .analyzer-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .analyzer-search-box {
+      position: relative;
+      flex: 1;
+      max-width: 420px;
+    }
+    .analyzer-search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .analyzer-search-box input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    /* Full-Height Scrollable Table Container */
+    .analyzer-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .analyzer-table {
+      width: 100% !important;
+      min-width: 960px !important;
+      border-collapse: collapse !important;
+      font-size: 0.84rem !important;
+      margin: 0 !important;
+    }
+
+    .analyzer-table th {
+      background: #e0f2fe !important;
+      color: #0369a1 !important;
+      font-weight: 700 !important;
+      padding: 10px 14px !important;
+      border-bottom: 1px solid #bae6fd !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .analyzer-table td {
+      padding: 8px 14px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+
+    .analyzer-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .analyzer-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Demand Tag Pill Badges */
+    .demand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.76rem;
+    }
+    .demand-badge.high {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .demand-badge.stable {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .demand-badge.low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Monthly Trend Pill */
+    .trend-pill-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .analyzer-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 900px) {
+      .analyzer-kpi-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .analyzer-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .analyzer-search-box {
+        max-width: 100%;
+      }
+    }
+
+	/* --- PROFESSIONAL HISTORICAL AUDIT LOGS MODAL UI STYLES --- */
+    .audit-date-modal-box {
+      max-width: 480px !important;
+      width: 95% !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .audit-modal-box {
+      max-width: 1060px !important;
+      width: 96% !important;
+      height: 90vh !important;
+      max-height: 90vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .audit-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .audit-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Top Toolbar (Search + Count Badge + Export Button) */
+    .audit-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .audit-search-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 460px;
+    }
+    .audit-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .audit-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .audit-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audit-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Maximized Full-Height Scrollable Table Container */
+    .audit-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .audit-table {
+      width: 100% !important;
+      min-width: 820px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .audit-table th {
+      background: var(--primary-light) !important;
+      color: var(--primary) !important;
+      font-weight: 700 !important;
+      padding: 10px 14px !important;
+      border-bottom: 1px solid #bfdbfe !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .audit-table td {
+      padding: 9px 14px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+
+    .audit-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .audit-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .audit-role-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-left: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .audit-action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      border: 1px solid #bfdbfe;
+      white-space: nowrap;
+    }
+
+    .audit-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .audit-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .audit-search-wrapper {
+        max-width: 100%;
+      }
+      .audit-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
+	/* --- PROFESSIONAL MISSING COA APPROVALS MODAL UI STYLES --- */
+    .coa-modal-box {
+      max-width: 980px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .coa-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .coa-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Pending Counter */
+    .coa-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .coa-search-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+    }
+    .coa-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .coa-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .coa-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #be123c;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* Maximized Full-Height Scrollable Table Container */
+    .coa-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .coa-table {
+      width: 100% !important;
+      min-width: 780px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .coa-table th {
+      background: #fff1f2 !important;
+      color: #be123c !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #fecdd3 !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .coa-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+
+    /* Supplier & Product column wrap support if needed */
+    .coa-table td:nth-child(1),
+    .coa-table td:nth-child(3) {
+      white-space: normal !important;
+    }
+
+    .coa-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .coa-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .coa-batch-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-family: monospace, var(--font-family);
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+    }
+
+    .coa-upload-btn {
+      padding: 6px 14px !important;
+      font-size: 0.78rem !important;
+      width: auto !important;
+      border-radius: 50px !important;
+      background-color: #be123c !important;
+      color: #ffffff !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+    .coa-upload-btn:hover {
+      background-color: #9f1239 !important;
+      transform: translateY(-1px);
+    }
+
+    .coa-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 680px) {
+      .coa-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .coa-search-wrapper {
+        max-width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -2621,35 +3218,52 @@ async function showTodayBillsDetails() {
       });
     }
 
-function openAuditLogModal() {
+	function openAuditLogModal() {
       let today = new Date().toISOString().split('T')[0];
       
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 450px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date to view and export Audit Logs.</p>
+          <div class="modal-box audit-date-modal-box">
             
-            <div class="field-group" style="margin-top: 10px;">
-              <label>From Date</label>
-              <input type="date" id="auditSelectFromDate" value="${today}" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
-            </div>
-            <div class="field-group" style="margin-top: 10px;">
-              <label>To Date</label>
-              <input type="date" id="auditSelectToDate" value="${today}" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            <!-- HEADER -->
+            <div class="audit-modal-header">
+              <div>
+                <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-clock-rotate-left"></i> Audit Logs Date Range
+                </h3>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-top: 2px;">Select From and To date to view and export Audit Logs.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div style="display:flex; gap:12px; margin-top:20px;">
-              <button onclick="fetchAndShowAuditLogs()" class="btn-primary" style="background-color: var(--primary); color: white;"><i class="fa-solid fa-list-check"></i> View Logs</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            <!-- BODY: 2-Column Side-by-Side Date Inputs -->
+            <div style="padding: 20px 24px; background: #f8fafc;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #ffffff; padding: 16px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: var(--shadow-sm);">
+                <div class="field-group">
+                  <label style="color:var(--primary); font-size: 0.82rem;"><i class="fa-regular fa-calendar"></i> From Date</label>
+                  <input type="date" id="auditSelectFromDate" value="${today}" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem; font-weight: 600;">
+                </div>
+                <div class="field-group">
+                  <label style="color:var(--primary); font-size: 0.82rem;"><i class="fa-regular fa-calendar-check"></i> To Date</label>
+                  <input type="date" id="auditSelectToDate" value="${today}" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem; font-weight: 600;">
+                </div>
+              </div>
             </div>
+            
+            <!-- FOOTER -->
+            <div class="audit-modal-footer" style="justify-content: flex-end;">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 18px;">Cancel</button>
+              <button onclick="fetchAndShowAuditLogs()" class="btn-primary" style="background-color: var(--primary); color: white; width: auto; padding: 10px 22px;">
+                <i class="fa-solid fa-list-check"></i> View Logs
+              </button>
+            </div>
+
           </div>
         </div>
       `;
     }
 
-	async function fetchAndShowAuditLogs() {
+    async function fetchAndShowAuditLogs() {
       let fromDateVal = document.getElementById("auditSelectFromDate").value;
       let toDateVal = document.getElementById("auditSelectToDate").value;
 
@@ -2665,7 +3279,7 @@ function openAuditLogModal() {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Audit Logs...</h3>
           </div>
@@ -2697,52 +3311,93 @@ function openAuditLogModal() {
         window.currentAuditLogs = logs;
         window.auditExportDateRange = { from: fromDateVal, to: toDateVal };
 
+        let totalLogsCount = logs ? logs.length : 0;
+
         let tbody = "";
-        if(!logs || logs.length === 0) {
-            tbody = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: var(--danger); font-weight: 500;">No historical audit logs found for the selected dates.</td></tr>`;
+        if (!logs || logs.length === 0) {
+            tbody = `<tr><td colspan="4" style="text-align:center; padding: 30px 20px; color: var(--danger); font-weight: 600;"><i class="fa-solid fa-circle-exclamation"></i> No historical audit logs found for the selected dates.</td></tr>`;
         } else {
             tbody = logs.map(log => `
               <tr>
-                <td>${escapeHtml(log.timestamp)}</td>
-                <td><b>${escapeHtml(log.user)}</b> <br><small style="color:var(--text-muted);">${escapeHtml(log.role)}</small></td>
-                <td><span style="color:var(--primary); font-weight: 600;">${escapeHtml(log.actionType)}</span></td>
-                <td>${escapeHtml(log.details)}</td>
+                <td style="white-space:nowrap; font-family: monospace, var(--font-family); font-size: 0.82rem; color: #334155; font-weight: 600;">
+                  <i class="fa-regular fa-clock" style="color:var(--text-muted); margin-right:4px;"></i>${escapeHtml(log.timestamp)}
+                </td>
+                <td style="white-space:nowrap;">
+                  <b>${escapeHtml(log.user)}</b>
+                  <span class="audit-role-badge">${escapeHtml(log.role)}</span>
+                </td>
+                <td style="white-space:nowrap;">
+                  <span class="audit-action-badge">${escapeHtml(log.actionType)}</span>
+                </td>
+                <td style="color: #1e293b; line-height: 1.4;">${escapeHtml(log.details)}</td>
               </tr>
             `).join("");
         }
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-list-check"></i> Historical Audit Logs <small style="font-size:0.9rem; color:var(--text-muted);">(${fromDateVal} to ${toDateVal})</small></h3>
+            <div class="modal-box audit-modal-box">
               
-              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
-                <p style="font-size:0.85rem; color:var(--text-muted); margin: 0;">Showing access-based historical operations log.</p>
-                <button onclick="executeAuditExcelExport()" class="btn-emerald" style="width: auto; padding: 6px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+              <!-- FIXED COMPACT HEADER -->
+              <div class="audit-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-list-check"></i> Historical Audit Logs
+                  </h3>
+                  <span style="font-size: 0.76rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                    <i class="fa-regular fa-calendar"></i> ${fromDateVal} to ${toDateVal}
+                  </span>
+                </div>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="audit-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR: SEARCH + TOTAL COUNT + EXPORT -->
+                <div class="audit-toolbar">
+                  <div class="audit-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="auditSearchInput" placeholder="Search by User, Action Type, or Details..." onkeyup="filterAuditLogs()">
+                  </div>
+                  
+                  <div class="audit-toolbar-right">
+                    <div class="audit-stat-pill">
+                      <i class="fa-solid fa-layer-group"></i> Total Logs: <span>${totalLogsCount}</span>
+                    </div>
+                    <button onclick="executeAuditExcelExport()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="audit-table-container">
+                  <table class="audit-table" id="auditLogTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 18%;">Timestamp</th>
+                        <th style="width: 22%;">User & Role</th>
+                        <th style="width: 18%;">Action Type</th>
+                        <th>Operation Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
 
-              <div class="field-group" style="margin-bottom: 12px;">
-                <input type="text" id="auditSearchInput" placeholder="Search by User, Action Type, or Details..." onkeyup="filterAuditLogs()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <!-- FIXED COMPACT FOOTER -->
+              <div class="audit-modal-footer">
+                <button onclick="openAuditLogModal()" class="btn-indigo" style="width: auto; padding: 9px 16px; font-size: 0.85rem;">
+                  <i class="fa-solid fa-calendar-days"></i> Change Date
+                </button>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
               </div>
-              
-              <table class="pdf-item-table" style="font-size: 0.85rem;" id="auditLogTable">
-                <thead>
-                  <tr>
-                    <th style="width: 18%;">Timestamp</th>
-                    <th style="width: 20%;">User & Role</th>
-                    <th style="width: 22%;">Action Type</th>
-                    <th>Details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${tbody}
-                </tbody>
-              </table>
-              <div style="display:flex; justify-content:space-between; margin-top: 15px;">
-                  <button onclick="openAuditLogModal()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date</button>
-                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
-              </div>
+
             </div>
           </div>
         `;
@@ -2752,6 +3407,7 @@ function openAuditLogModal() {
         closeModalAndResume();
       }
     }
+
 	// --- HISTORICAL AUDIT LOGS SEARCH FILTER ---
 function filterAuditLogs() {
   let filterInput = document.getElementById("auditSearchInput");
@@ -7845,12 +8501,12 @@ function downloadStockExcel(type) {
       `;
     }
 
-    async function openPendingCOAModal() {
+	async function openPendingCOAModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color: #be123c;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Pending COAs...</h3>
+            <h3 style="color: #be123c; text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Pending COAs...</h3>
           </div>
         </div>
       `;
@@ -7862,11 +8518,14 @@ function downloadStockExcel(type) {
         if (data.length === 0) {
           document.getElementById("modal-container").innerHTML = `
             <div class="modal-overlay">
-              <div class="modal-box" style="max-width: 600px; text-align: center;">
+              <div class="modal-box" style="max-width: 480px; text-align: center; padding: 32px 24px;">
                 <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-                <h3 style="color:var(--success);"><i class="fa-solid fa-check-circle"></i> No Pending COAs!</h3>
-                <p>All products have their COAs uploaded successfully.</p>
-                <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 15px;">Close</button>
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto;">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 style="color:var(--success); margin-top: 12px;">No Pending COAs!</h3>
+                <p style="color:var(--text-muted); font-size: 0.9rem;">All products have their Certificates of Analysis (COA) uploaded successfully.</p>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 16px; width: auto; padding: 8px 28px; margin-left: auto; margin-right: auto;">Close</button>
               </div>
             </div>`;
           return;
@@ -7885,36 +8544,72 @@ function downloadStockExcel(type) {
           return `
           <tr id="pending_row_${item.rowIdx}">
             <td><b>${escapeHtml(item.product)}</b></td>
-            <td>${escapeHtml(item.batch)}</td>
-            <td>${escapeHtml(item.supplier)}</td>
-            <td>${escapeHtml(formattedDate)}</td>
+            <td><span class="coa-batch-badge">${escapeHtml(item.batch)}</span></td>
+            <td style="color: #334155; font-weight: 500;">${escapeHtml(item.supplier)}</td>
+            <td style="color: var(--text-muted); font-weight: 600; font-size: 0.82rem;">
+              <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>${escapeHtml(formattedDate)}
+            </td>
             <td style="text-align:center;">
                <input type="file" id="inline_coa_${item.rowIdx}" accept=".pdf, .jpg, .jpeg" style="display:none;" onchange="executeInlineCOAUpload(${item.rowIdx})">
-               <button onclick="document.getElementById('inline_coa_${item.rowIdx}').click()" class="btn-indigo" style="padding: 6px 12px; font-size: 0.8rem; width: auto;"><i class="fa-solid fa-upload"></i> Upload COA</button>
+               <button onclick="document.getElementById('inline_coa_${item.rowIdx}').click()" class="coa-upload-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Upload COA</button>
             </td>
           </tr>
         `}).join("");
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 950px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color: #be123c;"><i class="fa-solid fa-file-circle-xmark"></i> Missing COA Approvals</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted);">Upload COA PDFs or Images for the following pending entries.</p>
+            <div class="modal-box coa-modal-box">
               
-              <table class="pdf-item-table" style="font-size: 0.85rem;">
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Batch</th>
-                    <th>Supplier</th>
-                    <th>Entry Date</th>
-                    <th style="text-align:center;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-              </table>
-              <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 15px;">Close Panel</button>
+              <!-- FIXED HEADER -->
+              <div class="coa-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color: #be123c; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-file-circle-xmark"></i> Missing COA Approvals
+                  </h3>
+                  <span style="font-size: 0.76rem; background: #fff1f2; color: #be123c; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #fecdd3;">
+                    PDF / JPG Max 5MB
+                  </span>
+                </div>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="coa-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR: SEARCH + PENDING COUNT -->
+                <div class="coa-toolbar">
+                  <div class="coa-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="coaSearchInput" placeholder="Search by Product, Batch, or Supplier..." onkeyup="filterPendingCOATable()">
+                  </div>
+                  <div class="coa-stat-pill">
+                    <i class="fa-solid fa-clock"></i> Pending Uploads: <span id="pendingCoaCountVal">${data.length}</span>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="coa-table-container">
+                  <table class="coa-table" id="pendingCoaTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 32%;">Product Name</th>
+                        <th style="width: 14%;">Batch No</th>
+                        <th style="width: 26%;">Supplier Name</th>
+                        <th style="width: 14%;">Entry Date</th>
+                        <th style="text-align:center; width: 14%;">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              <!-- FIXED FOOTER -->
+              <div class="coa-modal-footer">
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close Panel</button>
+              </div>
+
             </div>
           </div>
         `;
@@ -7922,6 +8617,13 @@ function downloadStockExcel(type) {
         alert("Error loading pending COAs: " + e.message);
         closeModalAndResume();
       }
+    }
+	function filterPendingCOATable() {
+      let q = (document.getElementById("coaSearchInput")?.value || "").toLowerCase();
+      let rows = document.querySelectorAll("#pendingCoaTable tbody tr");
+      rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
     }
 
     async function executeInlineCOAUpload(rowIdx) {
@@ -8005,27 +8707,48 @@ async function forceUserLogout(username) {
     
     let analyzerDataCache = null;
 
-    function openProductAnalyzerDateModal() {
+	function openProductAnalyzerDateModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 450px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#0ea5e9;"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for the analysis. <b>Leave blank for "All Time" report.</b></p>
+          <div class="modal-box analyzer-date-modal-box">
             
-            <div class="field-group" style="margin-top: 10px;">
-              <label>From Date (Optional)</label>
-              <input type="date" id="analyzerFromDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
-            </div>
-            <div class="field-group" style="margin-top: 10px;">
-              <label>To Date (Optional)</label>
-              <input type="date" id="analyzerToDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            <!-- HEADER -->
+            <div class="analyzer-modal-header">
+              <div>
+                <h3 style="color:#0284c7; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance Range
+                </h3>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-top: 2px;">Select a date range for ABC analysis & demand trends.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div style="display:flex; gap:12px; margin-top:20px;">
-              <button onclick="fetchAndShowProductAnalyzer()" class="btn-primary" style="background-color: #0ea5e9; color: white; width:100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-bolt"></i> Generate Report</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary" style="width:100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; cursor: pointer; background: #f1f5f9;">Cancel</button>
+            <!-- BODY -->
+            <div style="padding: 20px 24px; background: #f8fafc; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-left: 4px solid #0284c7; padding: 10px 14px; border-radius: 8px; font-size: 0.8rem; color: #0c4a6e;">
+                <i class="fa-solid fa-circle-info"></i> <b>Tip:</b> Leave both dates blank to generate an <b>"All Time"</b> performance report.
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #ffffff; padding: 16px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: var(--shadow-sm);">
+                <div class="field-group">
+                  <label style="color:#0369a1; font-size: 0.82rem;"><i class="fa-regular fa-calendar"></i> From Date (Optional)</label>
+                  <input type="date" id="analyzerFromDate" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem;">
+                </div>
+                <div class="field-group">
+                  <label style="color:#0369a1; font-size: 0.82rem;"><i class="fa-regular fa-calendar-check"></i> To Date (Optional)</label>
+                  <input type="date" id="analyzerToDate" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem;">
+                </div>
+              </div>
             </div>
+            
+            <!-- FOOTER -->
+            <div class="analyzer-modal-footer" style="justify-content: flex-end;">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 18px;">Cancel</button>
+              <button onclick="fetchAndShowProductAnalyzer()" class="btn-primary" style="background-color: #0284c7; color: white; width: auto; padding: 10px 22px;">
+                <i class="fa-solid fa-bolt"></i> Generate Report
+              </button>
+            </div>
+
           </div>
         </div>
       `;
@@ -8037,10 +8760,10 @@ async function forceUserLogout(username) {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width: 440px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#0ea5e9; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Performance...</h3>
-            <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Calculating live data based on your selected dates. This may take few seconds...</p>
+            <h3 style="color:#0284c7; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Performance...</h3>
+            <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:8px;">Calculating live ABC classification & monthly trends...</p>
           </div>
         </div>
       `;
@@ -8075,22 +8798,17 @@ async function forceUserLogout(username) {
       
       let tbody = "";
       analyzerDataCache.items.forEach((item, idx) => {
-        let tagIcon = "";
-        let tagColor = "";
+        let badgeClass = "";
         let displayTag = "";
         
-        // FIX: Display Tags changed to 'Demand' while keeping colors accurate
         if (item.tag === "High Moving") {
-          tagIcon = '<i class="fa-solid fa-circle" style="color: #16a34a;"></i>';
-          tagColor = "#16a34a"; // Green
+          badgeClass = "high";
           displayTag = "High Demand";
         } else if (item.tag === "Medium Moving") {
-          tagIcon = '<i class="fa-solid fa-circle" style="color: #d97706;"></i>';
-          tagColor = "#d97706"; // Yellow
+          badgeClass = "stable";
           displayTag = "Stable Demand";
         } else {
-          tagIcon = '<i class="fa-solid fa-circle" style="color: #dc2626;"></i>';
-          tagColor = "#dc2626"; // Red
+          badgeClass = "low";
           displayTag = "Low Demand";
         }
 
@@ -8100,79 +8818,119 @@ async function forceUserLogout(username) {
         else if (item.trend === "Dead") trendIcon = `<i class="fa-solid fa-triangle-exclamation" style="color: #dc2626;" title="Dead"></i>`;
         else trendIcon = `<i class="fa-solid fa-arrow-right" style="color: #64748b;" title="Stable"></i>`;
 
-        let trendText = `${headers.m3}: ${formatNumber(item.m3)} | ${headers.m2}: ${formatNumber(item.m2)} | ${headers.m1}: ${formatNumber(item.m1)} ${trendIcon}`;
+        let trendHtml = `
+          <div class="trend-pill-group">
+            <span>${headers.m3}: <b>${formatNumber(item.m3)}</b></span>
+            <span style="color:#cbd5e1;">|</span>
+            <span>${headers.m2}: <b>${formatNumber(item.m2)}</b></span>
+            <span style="color:#cbd5e1;">|</span>
+            <span>${headers.m1}: <b>${formatNumber(item.m1)}</b></span>
+            <span style="margin-left:4px;">${trendIcon}</span>
+          </div>
+        `;
 
         tbody += `
           <tr>
-            <td>${idx + 1}</td>
+            <td style="color:var(--text-muted); font-weight:600; width: 5%;">${idx + 1}</td>
             <td><b>${escapeHtml(item.product)}</b></td>
-            <td style="text-align:right; font-weight:700;">${formatNumber(item.stock)}</td>
-            <td style="text-align:right;">${formatNumber(item.totalSold)}</td>
-            <td style="text-align:center; font-weight:600;">${item.perc}%</td>
-            <td style="color:${tagColor}; font-weight:700;">${tagIcon} ${displayTag}</td>
-            <td style="font-size:0.8rem; color:var(--text-muted);">${trendText}</td>
+            <td style="text-align:right; font-weight:700; color:var(--text-main);">${formatNumber(item.stock)}</td>
+            <td style="text-align:right; font-weight:700; color:#0284c7;">${formatNumber(item.totalSold)}</td>
+            <td style="text-align:center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.78rem;">${item.perc}%</span></td>
+            <td>
+              <span class="demand-badge ${badgeClass}">
+                <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> ${displayTag}
+              </span>
+            </td>
+            <td>${trendHtml}</td>
           </tr>
         `;
       });
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <!-- MODAL BOX FIXED HEIGHT FOR SCROLLING -->
-          <div class="modal-box" style="max-width: 1100px; height: 95vh; display: flex; flex-direction: column; padding: 24px; overflow: hidden;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+          <div class="modal-box analyzer-modal-box">
             
-            <!-- HEADER (FIXED) -->
-            <h3 style="color:#0ea5e9; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-shrink: 0;">
-              <i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance & ABC Classification
-            </h3>
-
-            <!-- TOP FILTERS & ACTIONS (FIXED) -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; flex-shrink: 0;">
-              <div style="display:flex; gap: 12px; flex: 1;">
-                <div class="field-group" style="flex: 1; max-width: 300px;">
-                  <label><i class="fa-solid fa-magnifying-glass"></i> Search Product</label>
-                  <input type="text" id="analyzerSearchInput" placeholder="Type Product Name or Tag..." onkeyup="filterAnalyzerTable()" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
-                </div>
+            <!-- FIXED HEADER -->
+            <div class="analyzer-modal-header">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <h3 style="color:#0284c7; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-magnifying-glass-chart"></i> Product Performance & ABC Classification
+                </h3>
+                <span style="font-size: 0.76rem; background: #e0f2fe; color: #0369a1; padding: 3px 10px; border-radius: 50px; font-weight: 700;">
+                  <i class="fa-regular fa-clock"></i> ${escapeHtml(analyzerDataCache.lastUpdated)}
+                </span>
               </div>
-              <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                <span style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;"><i class="fa-solid fa-clock"></i> ${escapeHtml(analyzerDataCache.lastUpdated)}</span>
-                <button onclick="exportAnalyzerExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export to Excel</button>
-              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- SCROLLABLE AREA (CARDS + TABLE) -->
-            <div style="flex: 1 1 auto; overflow-y: auto; padding-right: 8px; min-height: 0;">
+            <!-- BODY -->
+            <div class="analyzer-modal-body">
               
-              <!-- SUMMARY CARDS -->
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
-                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
-                  <h4 style="color: #16a34a; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-bolt"></i> HIGH DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Top 80% Vol)</small></h4>
-                  <div style="font-size: 1.5rem; font-weight: 800; color: #15803d;">${summary.high.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.high.vol)} pcs</b></div>
-                  <div style="font-size: 0.75rem; font-style: italic; color: #16a34a; margin-top: 8px;">Action: Maintain optimal stock levels.</div>
+              <!-- SLEEK 3-COLUMN KPI SUMMARY BAR -->
+              <div class="analyzer-kpi-grid">
+                <div class="analyzer-kpi-card high">
+                  <div>
+                    <div style="color: #16a34a; font-size: 0.78rem; font-weight: 800; text-transform: uppercase;">
+                      <i class="fa-solid fa-bolt"></i> High Demand <span style="font-weight:600; color:var(--text-muted);">(Top 80%)</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">
+                      Sold: <b style="color:#15803d;">${formatNumber(summary.high.vol)} pcs</b> • Maintain stock
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.45rem; font-weight: 800; color: #15803d; line-height: 1;">${summary.high.count}</span>
+                    <span style="display:block; font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Items</span>
+                  </div>
                 </div>
 
-                <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
-                  <h4 style="color: #d97706; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-truck"></i> STABLE DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Next 15% Vol)</small></h4>
-                  <div style="font-size: 1.5rem; font-weight: 800; color: #b45309;">${summary.med.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.med.vol)} pcs</b></div>
-                  <div style="font-size: 0.75rem; font-style: italic; color: #d97706; margin-top: 8px;">Action: Monitor demand & replenish.</div>
+                <div class="analyzer-kpi-card stable">
+                  <div>
+                    <div style="color: #d97706; font-size: 0.78rem; font-weight: 800; text-transform: uppercase;">
+                      <i class="fa-solid fa-truck"></i> Stable Demand <span style="font-weight:600; color:var(--text-muted);">(Next 15%)</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">
+                      Sold: <b style="color:#b45309;">${formatNumber(summary.med.vol)} pcs</b> • Monitor & refill
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.45rem; font-weight: 800; color: #b45309; line-height: 1;">${summary.med.count}</span>
+                    <span style="display:block; font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Items</span>
+                  </div>
                 </div>
 
-                <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 16px; border-radius: 8px; box-shadow: var(--shadow-sm);">
-                  <h4 style="color: #dc2626; font-size: 1rem; margin-bottom: 8px;"><i class="fa-solid fa-hourglass-end"></i> LOW DEMAND <small style="color:var(--text-muted); font-size:0.75rem;">(Bottom 5% Vol)</small></h4>
-                  <div style="font-size: 1.5rem; font-weight: 800; color: #b91c1c;">${summary.slow.count} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Products</span></div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Total Sold: <b>${formatNumber(summary.slow.vol)} pcs</b></div>
-                  <div style="font-size: 0.75rem; font-style: italic; color: #dc2626; margin-top: 8px;">Action: Control replenishment & clear excess stock.</div>
+                <div class="analyzer-kpi-card low">
+                  <div>
+                    <div style="color: #dc2626; font-size: 0.78rem; font-weight: 800; text-transform: uppercase;">
+                      <i class="fa-solid fa-hourglass-end"></i> Low Demand <span style="font-weight:600; color:var(--text-muted);">(Bottom 5%)</span>
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 2px;">
+                      Sold: <b style="color:#b91c1c;">${formatNumber(summary.slow.vol)} pcs</b> • Control excess
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.45rem; font-weight: 800; color: #b91c1c; line-height: 1;">${summary.slow.count}</span>
+                    <span style="display:block; font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Items</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- DETAILED TABLE -->
-              <div style="border: 1px solid var(--border-color); border-radius: 4px;">
-                <table class="pdf-item-table" id="analyzerTable" style="margin-top: 0; min-width: 950px; font-size: 0.85rem; border: none; width: 100%;">
-                  <thead style="position: sticky; top: 0; z-index: 10; background: var(--primary-light); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <!-- SINGLE-LINE SEARCH & EXPORT TOOLBAR -->
+              <div class="analyzer-toolbar">
+                <div class="analyzer-search-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="analyzerSearchInput" placeholder="Search by Product Name or Demand Tag..." onkeyup="filterAnalyzerTable()">
+                </div>
+                <button onclick="exportAnalyzerExcel()" class="btn-emerald" style="width: auto; padding: 8px 18px; height: 38px; font-size: 0.85rem;">
+                  <i class="fa-solid fa-file-excel"></i> Export to Excel
+                </button>
+              </div>
+
+              <!-- MAXIMIZED TABLE CONTAINER -->
+              <div class="analyzer-table-container">
+                <table class="analyzer-table" id="analyzerTable">
+                  <thead>
                     <tr>
-                      <th style="width: 5%;">Sr. No</th>
+                      <th style="width: 5%;">Sr.</th>
                       <th>Product Name</th>
                       <th style="text-align:right;">Current Stock</th>
                       <th style="text-align:right;">Total Sold</th>
@@ -8187,12 +8945,14 @@ async function forceUserLogout(username) {
                 </table>
               </div>
 
-            </div> <!-- END SCROLLABLE AREA -->
+            </div>
 
-            <!-- BOTTOM BUTTONS (FIXED) -->
-            <div style="display:flex; justify-content:space-between; margin-top:15px; flex-shrink: 0;">
-              <button onclick="openProductAnalyzerDateModal()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date Range</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
+            <!-- FIXED FOOTER -->
+            <div class="analyzer-modal-footer">
+              <button onclick="openProductAnalyzerDateModal()" class="btn-indigo" style="width: auto; padding: 9px 16px; font-size: 0.85rem;">
+                <i class="fa-solid fa-calendar-days"></i> Change Date Range
+              </button>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
             </div>
 
           </div>
