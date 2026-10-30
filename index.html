@@ -2618,6 +2618,818 @@
       box-shadow: 0 4px 8px rgba(15, 23, 42, 0.1);
     }
 
+	/* --- PROFESSIONAL CONTROL SAMPLE ROOM MODAL UI STYLES --- */
+    .sample-modal-box {
+      max-width: 980px !important;
+      width: 96% !important;
+      height: 90vh !important;
+      max-height: 90vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .sample-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .sample-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Summary Pills + Export */
+    .sample-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .sample-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+      max-width: 400px;
+    }
+    .sample-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .sample-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .sample-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sample-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      color: #0f766e;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Maximized Full-Height Scrollable Table Container */
+    .sample-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sample-table {
+      width: 100% !important;
+      min-width: 740px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .sample-table th {
+      background: #f0fdfa !important;
+      color: #0f766e !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #99f6e4 !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .sample-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+
+    .sample-table td:first-child {
+      white-space: normal !important;
+    }
+
+    .sample-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .sample-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .sample-batch-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 9px;
+      border-radius: 6px;
+      font-family: monospace, var(--font-family);
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+    }
+
+    .sample-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #ccfbf1;
+      color: #0f766e;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+
+    .sample-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .sample-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .sample-search-wrapper {
+        max-width: 100%;
+      }
+      .sample-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+	
+	/* --- PROFESSIONAL STOCK REPORT MODAL UI STYLES --- */
+    .stock-select-modal-box {
+      max-width: 480px !important;
+      width: 95% !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .stock-option-btn {
+      width: 100% !important;
+      padding: 16px 18px !important;
+      background: #ffffff !important;
+      color: var(--text-main) !important;
+      border: 1px solid #cbd5e1 !important;
+      border-left: 5px solid var(--primary) !important;
+      border-radius: 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      text-align: left !important;
+      box-shadow: var(--shadow-sm) !important;
+      transition: all 0.2s ease !important;
+    }
+    .stock-option-btn:hover {
+      border-color: var(--primary) !important;
+      background: var(--primary-light) !important;
+      transform: translateX(3px);
+    }
+
+    .stock-modal-box {
+      max-width: 1160px !important;
+      width: 96% !important;
+      height: 90vh !important;
+      max-height: 90vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .stock-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .stock-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Counters + Export */
+    .stock-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .stock-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 250px;
+      max-width: 420px;
+    }
+    .stock-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .stock-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .stock-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stock-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Maximized Full-Height Scrollable Table Container */
+    .stock-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stock-table {
+      width: 100% !important;
+      min-width: 920px !important;
+      border-collapse: collapse !important;
+      font-size: 0.84rem !important;
+      margin: 0 !important;
+    }
+
+    .stock-table th {
+      background: var(--primary-light) !important;
+      color: var(--primary) !important;
+      font-weight: 700 !important;
+      padding: 10px 14px !important;
+      border-bottom: 1px solid #bfdbfe !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .stock-table td {
+      padding: 8px 14px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+
+    .stock-table td:nth-child(3),
+    .stock-table td:nth-child(4) {
+      white-space: normal !important;
+    }
+
+    .stock-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .stock-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .stock-loc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border: 1px solid #c7d2fe;
+      white-space: nowrap;
+    }
+
+    .stock-batch-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace, var(--font-family);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+    }
+
+    .stock-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.84rem;
+    }
+
+    .stock-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 768px) {
+      .stock-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .stock-search-wrapper {
+        max-width: 100%;
+      }
+      .stock-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
+	/* --- PROFESSIONAL SHORT ITEM LIST (STOCK SHORTAGES) MODAL UI STYLES --- */
+    .short-modal-box {
+      max-width: 980px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .short-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .short-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Counters + Export */
+    .short-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .short-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+      max-width: 400px;
+    }
+    .short-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .short-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .short-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .short-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #b45309;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .short-stat-pill.critical {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+
+    /* Maximized Scrollable Table Container */
+    .short-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .short-table {
+      width: 100% !important;
+      min-width: 720px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .short-table th {
+      background: #fffbeb !important;
+      color: #b45309 !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #fde68a !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .short-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+
+    .short-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .short-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .short-loc-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      margin: 2px 4px 2px 0;
+      white-space: nowrap;
+    }
+
+    .short-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .short-status-badge.critical {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .short-status-badge.low {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .short-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .short-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .short-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .short-search-wrapper {
+        max-width: 100%;
+      }
+      .short-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
+	/* --- PROFESSIONAL EXPIRED INVENTORY MODAL UI STYLES --- */
+    .expired-inv-modal-box {
+      max-width: 980px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .expired-inv-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .expired-inv-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Counters + Export */
+    .expired-inv-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .expired-inv-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+      max-width: 400px;
+    }
+    .expired-inv-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .expired-inv-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .expired-inv-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .expired-inv-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* Maximized Scrollable Table Container */
+    .expired-inv-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .expired-inv-table {
+      width: 100% !important;
+      min-width: 720px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .expired-inv-table th {
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #fecaca !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .expired-inv-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+
+    .expired-inv-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .expired-inv-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .expired-inv-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .expired-inv-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .expired-inv-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .expired-inv-search-wrapper {
+        max-width: 100%;
+      }
+      .expired-inv-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
   </style>
 </head>
 
@@ -3037,13 +3849,12 @@ function formatShortDate(rawStr) {
       return rawStr;
     }
 
-async function showSampleRoomStockDetails() {
-      // Loading screen
+	async function showSampleRoomStockDetails() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</h3>
+            <h3 style="color:#0d9488; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Sample Room...</h3>
           </div>
         </div>
       `;
@@ -3067,58 +3878,96 @@ async function showSampleRoomStockDetails() {
         // Global variable for Excel Export
         window.currentSampleRoomData = validList;
 
+        let totalBatches = validList.length;
+        let totalUnits = validList.reduce((sum, item) => sum + (parseInt(item.qty, 10) || 0), 0);
+
         let tbody = "";
         
         if (validList.length === 0) {
-          tbody = `<tr><td colspan="6" style="text-align:center; padding: 20px; color:var(--text-muted);">No products found in Control Sample Room.</td></tr>`;
+          tbody = `<tr><td colspan="6" style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-weight: 600;"><i class="fa-solid fa-vial-circle-check"></i> No products found in Control Sample Room.</td></tr>`;
         } else {
           validList.sort((a, b) => String(a.product || "").localeCompare(String(b.product || "")));
           tbody = validList.map(item => `
             <tr>
               <td><b>${escapeHtml(item.product)}</b></td>
-              <td>${escapeHtml(item.batch)}</td>
-              <td>${escapeHtml(formatShortDate(item.mfg))}</td>
-              <td>${escapeHtml(formatShortDate(item.exp))}</td>
-              <td>${escapeHtml(item.mrp)}</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)} pcs</td>
+              <td><span class="sample-batch-badge">${escapeHtml(item.batch)}</span></td>
+              <td style="color: #475569; font-weight: 600;">${escapeHtml(formatShortDate(item.mfg) || "-")}</td>
+              <td style="color: #0f766e; font-weight: 700;">${escapeHtml(formatShortDate(item.exp) || "-")}</td>
+              <td style="font-weight: 600;">${escapeHtml(item.mrp ? "₹" + item.mrp : "-")}</td>
+              <td style="text-align: right;"><span class="sample-qty-badge">${formatNumber(item.qty)} pcs</span></td>
             </tr>
           `).join("");
         }
 
-        // Custom Modal Layout with Search and Export
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
+            <div class="modal-box sample-modal-box">
               
-              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 12px; gap: 10px;">
-                <div class="field-group" style="flex: 1;">
-                  <input type="text" id="sampleRoomSearchInput" placeholder="Search by Product, Batch, or MRP..." onkeyup="filterSampleRoom()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <!-- FIXED HEADER -->
+              <div class="sample-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:#0d9488; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-vials"></i> Control Sample Room
+                  </h3>
+                  <span style="font-size: 0.75rem; background: #f0fdfa; color: #0f766e; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #99f6e4;">
+                    1 Pc Retained Reference per Batch
+                  </span>
                 </div>
-                <button onclick="exportSampleRoomExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="sample-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR: SEARCH + COUNTERS + EXPORT -->
+                <div class="sample-toolbar">
+                  <div class="sample-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="sampleRoomSearchInput" placeholder="Search by Product, Batch, or MRP..." onkeyup="filterSampleRoom()">
+                  </div>
+                  
+                  <div class="sample-toolbar-right">
+                    <div class="sample-stat-pill">
+                      <i class="fa-solid fa-boxes-stacked"></i> Batches: <span>${formatNumber(totalBatches)}</span>
+                    </div>
+                    <div class="sample-stat-pill">
+                      <i class="fa-solid fa-vial"></i> Total Qty: <span>${formatNumber(totalUnits)} pcs</span>
+                    </div>
+                    <button onclick="exportSampleRoomExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="sample-table-container">
+                  <table class="sample-table" id="sampleRoomTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 36%;">Product Name</th>
+                        <th style="width: 16%;">Batch No</th>
+                        <th style="width: 12%;">Mfg Date</th>
+                        <th style="width: 12%;">Exp Date</th>
+                        <th style="width: 12%;">MRP</th>
+                        <th style="text-align: right; width: 12%;">Total Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
 
-              <div style="overflow-x: auto;">
-                <table class="pdf-item-table" id="sampleRoomTable" style="min-width: 650px; font-size: 0.85rem;">
-                  <thead>
-                    <tr>
-                      <th>Product Name</th>
-                      <th>Batch</th>
-                      <th>Mfg</th>
-                      <th>Exp</th>
-                      <th>MRP</th>
-                      <th style="text-align: right;">Total Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${tbody}
-                  </tbody>
-                </table>
+              <!-- FIXED FOOTER -->
+              <div class="sample-modal-footer">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                  <i class="fa-solid fa-circle-info" style="color:#0d9488;"></i> Auto-populated with 1 sample unit whenever a new batch is inwarded in Purchase Entry.
+                </span>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
               </div>
-              <div style="text-align:right; margin-top: 15px;">
-                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
-              </div>
+
             </div>
           </div>
         `;
@@ -3127,7 +3976,7 @@ async function showSampleRoomStockDetails() {
           <div class="modal-overlay">
             <div class="modal-box">
               <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
+              <h3 style="color:#0d9488;"><i class="fa-solid fa-vials"></i> Control Sample Room</h3>
               <p style="color:var(--danger); text-align:center; padding: 20px;"><b>Error Details:</b><br><br>${escapeHtml(e.message)}</p>
               <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
             </div>
@@ -8722,81 +9571,231 @@ async function handleDispatchReturnPdfUpload(input) {
     async function handlePurchasePdfUpload(input) { if (input.files && input.files.length > 0) alert("PDF Selected!"); closeModalAndResume(); input.value = ""; }
     function closeModalAndResume() { document.getElementById("modal-container").innerHTML = ""; }
 
-    function showShortItemPage() {
-      document.getElementById("app").innerHTML = `
-        ${getBrandingHeader()}
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="color: var(--text-main);"><i class="fa-solid fa-triangle-exclamation"></i> Short Item List</h3>
-            <button onclick="showDashboard()" class="btn-secondary" style="width: auto; padding: 8px 18px;"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+	function showShortItemPage() {
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box short-modal-box">
+            
+            <!-- FIXED HEADER -->
+            <div class="short-modal-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="color:#d97706; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages (Short Item List)
+                </h3>
+                <span style="font-size: 0.75rem; background: #fffbeb; color: #b45309; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #fde68a;">
+                  Threshold: &lt; 1,000 pcs (QA + Packing Area)
+                </span>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- BODY -->
+            <div id="short-item-container" class="short-modal-body">
+              <div style="text-align:center; padding: 40px 20px; margin: auto 0; color: #d97706;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.8rem; margin-bottom: 10px;"></i>
+                <div style="font-weight: 700; font-size: 1rem;">Loading Short Items...</div>
+              </div>
+            </div>
+
+            <!-- FIXED FOOTER -->
+            <div class="short-modal-footer">
+              <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                <i class="fa-solid fa-circle-info" style="color:#d97706;"></i> Shows active products whose combined stock in QA + Packing Area is below 1,000 pcs.
+              </span>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
+            </div>
+
           </div>
-          <div id="short-item-container" style="margin-top: 15px;"></div>
         </div>
-        ${getFooter()}
       `;
-      updateLiveDateTime();
       loadShortItemList();
     }
 
     async function loadShortItemList() {
       let container = document.getElementById('short-item-container'); 
-      container.innerHTML = "<div style='text-align:center; padding: 20px;'><i class='fa-solid fa-spinner fa-spin'></i> <b>Loading Short Items...</b></div>";
+      if (!container) return;
       
       try {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=shortItems`);
         let items = await response.json();
         
-        items = items.filter(item => item.qty > 0);
+        items = (Array.isArray(items) ? items : []).filter(item => parseFloat(item.qty) > 0);
+        items.sort((a, b) => parseFloat(a.qty) - parseFloat(b.qty)); // Lowest stock sabse upar dikhega
 
-        let html = '';
-        if(!items || items.length === 0) {
-          html = "<div style='text-align:center; padding: 15px; background: #d1e7dd; color: #0f5132; border-radius: 6px;'>All items have sufficient stock (1000 or more) or are empty.</div>";
-        } else {
-          let rows = items.map(item => `
-            <tr>
-              <td style="padding:10px; border:1px solid var(--border-color);"><b>${escapeHtml(item.productName)}</b></td>
-              <td style="padding:10px; border:1px solid var(--border-color); color: var(--danger); font-weight: bold;">${formatNumber(item.qty)}</td>
-              <td style="padding:10px; border:1px solid var(--border-color);">${escapeHtml(item.location)}</td>
-            </tr>
-          `).join("");
+        window.currentShortItemsData = items;
 
-          html = `<table class="pdf-item-table" style="width:100%; border-collapse:collapse;">
-                    <thead>
-                      <tr>
-                        <th style="padding:10px; border:1px solid var(--border-color);">Product Name</th>
-                        <th style="padding:10px; border:1px solid var(--border-color);">Quantity</th>
-                        <th style="padding:10px; border:1px solid var(--border-color);">Warehouse Location</th>
-                      </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                  </table>`;
+        if (items.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center; padding: 40px 20px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 10px; margin: auto 0;">
+              <i class="fa-solid fa-circle-check" style="font-size: 2.4rem; margin-bottom: 10px;"></i>
+              <h4 style="font-size: 1.1rem; margin-bottom: 4px;">All Stock Levels Sufficient!</h4>
+              <p style="font-size: 0.85rem;">All active items currently have 1,000 pcs or more across QA & Packing Area.</p>
+            </div>
+          `;
+          return;
         }
-        container.innerHTML = html;
+
+        let totalShortProducts = items.length;
+        let criticalCount = items.filter(i => parseFloat(i.qty) < 250).length;
+
+        let rows = items.map((item, idx) => {
+          let qtyNum = parseFloat(item.qty) || 0;
+          let isCritical = qtyNum < 250;
+          let statusBadge = isCritical
+            ? `<span class="short-status-badge critical"><i class="fa-solid fa-fire-flame-curved"></i> Critical (&lt;250)</span>`
+            : `<span class="short-status-badge low"><i class="fa-solid fa-arrow-trend-down"></i> Low Stock</span>`;
+
+          let locBadges = String(item.location || "")
+            .split(",")
+            .map(l => l.trim())
+            .filter(Boolean)
+            .map(l => `<span class="short-loc-pill"><i class="fa-solid fa-warehouse" style="color:#64748b;"></i> ${escapeHtml(l)}</span>`)
+            .join("");
+
+          return `
+            <tr>
+              <td style="color:var(--text-muted); font-weight:600; width: 6%;">${idx + 1}</td>
+              <td><b>${escapeHtml(item.productName)}</b></td>
+              <td>${locBadges || escapeHtml(item.location)}</td>
+              <td style="text-align:center;">${statusBadge}</td>
+              <td style="text-align:right;"><span class="short-qty-badge">${formatNumber(qtyNum)} pcs</span></td>
+            </tr>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <!-- SINGLE-LINE TOOLBAR: SEARCH + STATS + EXCEL EXPORT -->
+          <div class="short-toolbar">
+            <div class="short-search-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="shortItemSearchInput" placeholder="Search by Product Name or Location..." onkeyup="filterShortItemTable()">
+            </div>
+
+            <div class="short-toolbar-right">
+              <div class="short-stat-pill">
+                <i class="fa-solid fa-box-open"></i> Short Items: <span>${formatNumber(totalShortProducts)}</span>
+              </div>
+              <div class="short-stat-pill critical">
+                <i class="fa-solid fa-triangle-exclamation"></i> Critical (&lt;250): <span>${formatNumber(criticalCount)}</span>
+              </div>
+              <button onclick="exportShortItemsExcel()" class="btn-emerald" style="width:auto; padding:8px 16px; height:38px; font-size:0.84rem;">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- MAXIMIZED SCROLLABLE TABLE -->
+          <div class="short-table-container">
+            <table class="short-table" id="shortItemTable">
+              <thead>
+                <tr>
+                  <th style="width: 6%;">Sr.</th>
+                  <th style="width: 34%;">Product Name</th>
+                  <th style="width: 32%;">Warehouse Location Breakdown</th>
+                  <th style="text-align:center; width: 14%;">Priority Status</th>
+                  <th style="text-align:right; width: 14%;">Total Available</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
       } catch (error) {
-         console.error(error);
-         container.innerHTML = "<div style='text-align:center; padding: 15px; background: #f8d7da; color: #842029; border-radius: 6px;'>Error loading data.</div>";
+        console.error(error);
+        container.innerHTML = `<div style="text-align:center; padding: 25px; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px;"><b>Error loading data:</b> ${escapeHtml(error.message)}</div>`;
       }
     }
 
-    function openStockReportModal() {
+    function filterShortItemTable() {
+      let q = (document.getElementById("shortItemSearchInput")?.value || "").toLowerCase();
+      let rows = document.querySelectorAll("#shortItemTable tbody tr");
+      rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
+    }
+
+    function exportShortItemsExcel() {
+      if (!window.currentShortItemsData || window.currentShortItemsData.length === 0) {
+        alert("No short items available to export.");
+        return;
+      }
+
+      let exportData = window.currentShortItemsData.map((item, idx) => {
+        let qtyNum = parseFloat(item.qty) || 0;
+        return {
+          "Sr.No": idx + 1,
+          "Product Name": item.productName || "N/A",
+          "Total Available Qty (Pcs)": qtyNum,
+          "Shortage Status": qtyNum < 250 ? "Critical (< 250 Pcs)" : "Low Stock (< 1000 Pcs)",
+          "Warehouse Breakdown": item.location || "N/A"
+        };
+      });
+
+      let ws = XLSX.utils.json_to_sheet(exportData);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Stock Shortages");
+      XLSX.writeFile(wb, `Stock_Shortages_List_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+	function openStockReportModal() {
       const userRole = sessionStorage.getItem("role") || "Standard";
       const wh = sessionStorage.getItem("warehouse") || "";
       const roleLower = userRole.toLowerCase();
 
       if (roleLower === "admin" || roleLower === "master user" || roleLower.includes("view-only") || roleLower.includes("view only") || roleLower.includes("manager")) {
-        let currentWhBtn = wh === "All View" ? "" : `<button onclick="loadCurrentWarehouseReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">1. Current Warehouse Stock Report</button>`;
+        let currentWhBtn = wh === "All View" ? "" : `
+          <button onclick="loadCurrentWarehouseReport()" class="stock-option-btn">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <div style="width:40px; height:40px; border-radius:8px; background:#eff6ff; color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+                <i class="fa-solid fa-warehouse"></i>
+              </div>
+              <div>
+                <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);">1. Current Warehouse Stock Report</div>
+                <div style="font-size:0.78rem; color:var(--text-muted); font-weight:500;">View stock only for <b>${escapeHtml(wh)}</b></div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--primary);"></i>
+          </button>
+        `;
         let titleNum = wh === "All View" ? "1." : "2.";
         
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> Select Stock Report</h3>
-              <div style="display:flex; flex-direction:column; gap:16px; margin-top:10px;">
-                ${currentWhBtn}
-                <button onclick="loadFullStockReport()" class="btn-indigo" style="padding: 16px; font-size: 1rem;">${titleNum} Full Stock Report</button>
-                <button onclick="closeModalAndResume()" class="btn-secondary">Cancel</button>
+            <div class="modal-box stock-select-modal-box">
+              
+              <!-- HEADER -->
+              <div class="stock-modal-header">
+                <div>
+                  <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-chart-column"></i> Select Stock Report
+                  </h3>
+                  <p style="font-size:0.78rem; color:var(--text-muted); margin-top: 2px;">Choose report scope to view and export inventory.</p>
+                </div>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
               </div>
+
+              <!-- BODY -->
+              <div style="padding: 20px 24px; background: #f8fafc; display:flex; flex-direction:column; gap:12px;">
+                ${currentWhBtn}
+                <button onclick="loadFullStockReport()" class="stock-option-btn" style="border-left-color: #4f46e5 !important;">
+                  <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="width:40px; height:40px; border-radius:8px; background:#eef2ff; color:#4f46e5; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+                      <i class="fa-solid fa-earth-asia"></i>
+                    </div>
+                    <div>
+                      <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);">${titleNum} Full Stock Report</div>
+                      <div style="font-size:0.78rem; color:var(--text-muted); font-weight:500;">Consolidated stock across all warehouse locations</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-right" style="color:#4f46e5;"></i>
+                </button>
+              </div>
+
+              <!-- FOOTER -->
+              <div class="stock-modal-footer" style="justify-content: flex-end;">
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 22px; font-size: 0.85rem;">Cancel</button>
+              </div>
+
             </div>
           </div>
         `;
@@ -8805,12 +9804,12 @@ async function handleDispatchReturnPdfUpload(input) {
       }
     }
 	
-	async function loadCurrentWarehouseReport() {
+    async function loadCurrentWarehouseReport() {
       let wh = sessionStorage.getItem("warehouse") || "";
       
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Detailed Report...</h3>
           </div>
@@ -8832,7 +9831,7 @@ async function handleDispatchReturnPdfUpload(input) {
     async function loadFullStockReport() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Full Report...</h3>
           </div>
@@ -8850,85 +9849,146 @@ async function handleDispatchReturnPdfUpload(input) {
       }
     }
 
-	// --- 3. UNIFIED RENDER FUNCTION (Dono Reports ke liye ek hi UI) ---
-function renderFullStockReport(data, reportType = "Full") {
-  let groupedData = {};
-  
-  if (data && data.length > 0) {
-    data.forEach(item => {
-      let shortExp = item.exp ? formatShortDate(item.exp.toString()) : "";
-      let loc = item.location ? item.location.toString().trim() : "N/A";
-      let prod = item.product ? item.product.toString().trim() : "N/A";
-      let batch = item.batch ? item.batch.toString().trim() : "N/A";
-      let mrp = item.mrp ? item.mrp.toString().trim() : "0.00";
-      let sup = item.supplier ? item.supplier.toString().trim() : "N/A"; 
+    // --- 3. UNIFIED RENDER FUNCTION (Dono Reports ke liye ek hi UI) ---
+    function renderFullStockReport(data, reportType = "Full") {
+      let groupedData = {};
       
-      let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp + "|" + sup;
-      
-      if (!groupedData[key]) {
-        groupedData[key] = { location: loc, product: prod, batch: batch, supplier: sup, exp: shortExp, mrp: mrp, qty: 0 };
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          let shortExp = item.exp ? formatShortDate(item.exp.toString()) : "";
+          let loc = item.location ? item.location.toString().trim() : "N/A";
+          let prod = item.product ? item.product.toString().trim() : "N/A";
+          let batch = item.batch ? item.batch.toString().trim() : "N/A";
+          let mrp = item.mrp ? item.mrp.toString().trim() : "0.00";
+          let sup = item.supplier ? item.supplier.toString().trim() : "N/A"; 
+          
+          let key = loc + "|" + prod + "|" + batch + "|" + shortExp + "|" + mrp + "|" + sup;
+          
+          if (!groupedData[key]) {
+            groupedData[key] = { location: loc, product: prod, batch: batch, supplier: sup, exp: shortExp, mrp: mrp, qty: 0 };
+          }
+          
+          let itemQty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
+          groupedData[key].qty += itemQty;
+        });
       }
       
-      let itemQty = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
-      groupedData[key].qty += itemQty;
-    });
-  }
-  
-  let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
-  aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
-  
-  AppState.stockData = aggregatedArray; 
+      let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
+      aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+      
+      AppState.stockData = aggregatedArray; 
 
-  let tbody = "";
-  if (aggregatedArray.length === 0) {
-    tbody = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No stock available</td></tr>`;
-  } else {
-    tbody = aggregatedArray.map((item, idx) => `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>${escapeHtml(item.location)}</td>
-        <td>${escapeHtml(item.supplier)}</td> <!-- Supplier Name yaha shift kiya -->
-        <td><b>${escapeHtml(item.product)}</b></td>
-        <td>${escapeHtml(item.batch)}</td>
-        <td>${escapeHtml(item.exp)}</td>
-        <td style="text-align:right; font-weight:bold; color:var(--primary);">${formatNumber(item.qty)}</td>
-        <td>${escapeHtml(item.mrp)}</td>
-      </tr>
-    `).join("");
-  }
+      let totalBatches = aggregatedArray.length;
+      let totalStockQty = aggregatedArray.reduce((sum, item) => sum + (parseFloat(item.qty) || 0), 0);
 
-  let title = reportType === "Full" ? "Full Stock Report" : `Current Stock: ${escapeHtml(reportType)}`;
+      let tbody = "";
+      if (aggregatedArray.length === 0) {
+        tbody = `<tr><td colspan="8" style="text-align:center; padding: 30px 20px; color: var(--text-muted); font-weight: 600;"><i class="fa-solid fa-box-open"></i> No stock available for this view.</td></tr>`;
+      } else {
+        tbody = aggregatedArray.map((item, idx) => `
+          <tr>
+            <td style="color:var(--text-muted); font-weight:600; width: 4%;">${idx + 1}</td>
+            <td><span class="stock-loc-badge"><i class="fa-solid fa-warehouse"></i> ${escapeHtml(item.location)}</span></td>
+            <td style="color:#334155; font-weight:500;">${escapeHtml(item.supplier)}</td>
+            <td><b>${escapeHtml(item.product)}</b></td>
+            <td><span class="stock-batch-badge">${escapeHtml(item.batch)}</span></td>
+            <td style="color:#0f172a; font-weight:600;">${escapeHtml(item.exp || "-")}</td>
+            <td style="text-align:right;"><span class="stock-qty-badge">${formatNumber(item.qty)}</span></td>
+            <td style="font-weight:600; color:#475569;">${escapeHtml(item.mrp ? "₹" + item.mrp : "-")}</td>
+          </tr>
+        `).join("");
+      }
 
-  document.getElementById("modal-container").innerHTML = `
-    <div class="modal-overlay">
-      <div class="modal-box" style="max-width: 1050px; max-height: 90vh; overflow-y: auto;">
-        <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-        <h3 style="color:var(--primary);"><i class="fa-solid fa-chart-column"></i> ${title}</h3>
-        <div style="display:flex; justify-content:space-between; margin-top:8px;">
-          <button onclick="downloadStockExcel('${escapeHtml(reportType)}')" class="btn-emerald" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-          <button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:8px 16px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      let title = reportType === "Full" ? "Full Stock Report" : `Current Stock: ${escapeHtml(reportType)}`;
+      let scopeBadge = reportType === "Full" ? "All Warehouses Consolidated" : escapeHtml(reportType);
+
+      const userRole = (sessionStorage.getItem("role") || "Standard").toLowerCase();
+      const canSwitchReport = (userRole === "admin" || userRole === "master user" || userRole.includes("view") || userRole.includes("manager"));
+
+      document.getElementById("modal-container").innerHTML = `
+        <div class="modal-overlay">
+          <div class="modal-box stock-modal-box">
+            
+            <!-- FIXED HEADER -->
+            <div class="stock-modal-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-chart-column"></i> ${title}
+                </h3>
+                <span style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                  <i class="fa-solid fa-layer-group"></i> ${scopeBadge}
+                </span>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="stock-modal-body">
+              
+              <!-- SINGLE-LINE TOOLBAR: LIVE SEARCH + STATS + EXPORT -->
+              <div class="stock-toolbar">
+                <div class="stock-search-wrapper">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="stockReportSearchInput" placeholder="Search by Product, Batch, Supplier, or Location..." onkeyup="filterStockReportTable()">
+                </div>
+
+                <div class="stock-toolbar-right">
+                  <div class="stock-stat-pill">
+                    <i class="fa-solid fa-barcode"></i> Batches: <span>${formatNumber(totalBatches)}</span>
+                  </div>
+                  <div class="stock-stat-pill" style="background:#f0fdf4; border-color:#bbf7d0; color:#15803d;">
+                    <i class="fa-solid fa-cubes"></i> Total Qty: <span>${formatNumber(totalStockQty)} pcs</span>
+                  </div>
+                  <button onclick="downloadStockExcel('${escapeHtml(reportType)}')" class="btn-emerald" style="width:auto; padding:8px 16px; height:38px; font-size:0.84rem;">
+                    <i class="fa-solid fa-file-excel"></i> Export Excel
+                  </button>
+                </div>
+              </div>
+
+              <!-- MAXIMIZED SCROLLABLE TABLE -->
+              <div class="stock-table-container">
+                <table class="stock-table" id="stockReportTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 5%;">Sr.</th>
+                      <th style="width: 16%;">Location</th>
+                      <th style="width: 20%;">Supplier Name</th>
+                      <th style="width: 24%;">Product Name</th>
+                      <th style="width: 11%;">Batch No.</th>
+                      <th style="width: 8%;">Expiry</th>
+                      <th style="text-align:right; width: 9%;">Avail Qty</th>
+                      <th style="width: 7%;">MRP</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tbody}
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+            <!-- FIXED FOOTER -->
+            <div class="stock-modal-footer">
+              <div>
+                ${canSwitchReport ? `<button onclick="openStockReportModal()" class="btn-secondary" style="width:auto; padding:9px 18px; font-size:0.85rem;"><i class="fa-solid fa-arrow-left"></i> Back to Report Selection</button>` : `<span style="font-size:0.78rem; color:var(--text-muted); font-weight:600;"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Showing live batch-wise available stock.</span>`}
+              </div>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width:auto; padding:9px 24px; font-size:0.85rem;">Close</button>
+            </div>
+
+          </div>
         </div>
-        <table class="pdf-item-table" style="margin-top:16px; font-size: 0.8rem;">
-          <thead>
-            <tr>
-              <th style="width: 5%;">Sr.No</th>
-              <th>Location</th>
-              <th>Supplier Name</th> <!-- Supplier Name yaha shift kiya -->
-              <th>Product Name</th>
-              <th>Batch No.</th>
-              <th>Expiry Date</th>
-              <th style="text-align:right;">Available Qty</th>
-              <th>MRP</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tbody}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
+      `;
+    }
+
+    function filterStockReportTable() {
+      let q = (document.getElementById("stockReportSearchInput")?.value || "").toLowerCase();
+      let rows = document.querySelectorAll("#stockReportTable tbody tr");
+      rows.forEach(row => {
+        if (row.cells.length < 2) return;
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
+    }
 
 // --- 4. UNIFIED EXCEL EXPORT ---
 function downloadStockExcel(type) {
@@ -10156,13 +11216,12 @@ async function forceUserLogout(username) {
       }
     }
 	
-	// --- 1. EXPIRED INVENTORY MODAL (SAME LAYOUT AS DUMP INVENTORY) ---
-    async function openExpiredInventoryModal() {
+	async function openExpiredInventoryModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 600px;">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:#475569; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Expired Inventory...</h3>
+            <h3 style="color:#991b1b; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Expired Inventory...</h3>
           </div>
         </div>
       `;
@@ -10174,19 +11233,21 @@ async function forceUserLogout(username) {
         // Raw Data Excel Export ke liye globally save kar rahe hain
         window.currentExpiredData = res;
 
+        let validList = (Array.isArray(res) ? res : []).filter(item => (parseFloat(item.qty) || 0) > 0);
+
+        let totalProducts = validList.length;
+        let totalExpiredQty = validList.reduce((sum, item) => sum + (parseFloat(item.qty) || 0), 0);
+
         let tbody = "";
-        if (!res || res.length === 0) {
-          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Expired Inventory.</td></tr>`;
+        if (validList.length === 0) {
+          tbody = `<tr><td colspan="2" style="text-align:center; padding: 30px 20px; color: var(--text-muted); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> No records found in Expired Inventory.</td></tr>`;
         } else {
-          // Product-wise Qty sum karke group karna (Bilkul Dump Inventory ki tarah)
+          // Product-wise Qty sum karke group karna
           let groupedData = {};
-          res.forEach(item => {
+          validList.forEach(item => {
             let p = item.product;
             if (!groupedData[p]) {
-              groupedData[p] = {
-                product: p,
-                qty: 0
-              };
+              groupedData[p] = { product: p, qty: 0 };
             }
             groupedData[p].qty += (parseFloat(item.qty) || 0);
           });
@@ -10194,45 +11255,81 @@ async function forceUserLogout(username) {
           let aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
           aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
 
-          aggregatedArray.forEach((item) => {
-            tbody += `
-              <tr>
-                <td><b>${escapeHtml(item.product)}</b></td>
-                <td style="text-align: right; color: var(--danger); font-weight: bold;">${formatNumber(item.qty)}</td>
-              </tr>
-            `;
-          });
+          tbody = aggregatedArray.map((item, idx) => `
+            <tr>
+              <td style="color:var(--text-muted); font-weight:600; width: 8%;">${idx + 1}</td>
+              <td><b>${escapeHtml(item.product)}</b></td>
+              <td style="text-align: right;"><span class="expired-inv-qty-badge">${formatNumber(item.qty)} pcs</span></td>
+            </tr>
+          `).join("");
         }
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:#475569;"><i class="fa-solid fa-calendar-xmark"></i> Expired Inventory</h3>
+            <div class="modal-box expired-inv-modal-box">
               
-              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
-                <div class="field-group" style="flex: 1;">
-                  <input type="text" id="expiredSearchInput" placeholder="Search by Product Name..." onkeyup="filterExpiredInventory()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <!-- FIXED HEADER -->
+              <div class="expired-inv-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:#991b1b; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-calendar-xmark"></i> Expired Inventory Audit
+                  </h3>
+                  <span style="font-size: 0.75rem; background: #fef2f2; color: #991b1b; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #fecaca;">
+                    Quarantined Expired Stock
+                  </span>
                 </div>
-                <button onclick="exportExpiredInventoryExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="expired-inv-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR: SEARCH + COUNTERS + EXPORT -->
+                <div class="expired-inv-toolbar">
+                  <div class="expired-inv-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="expiredSearchInput" placeholder="Search by Product Name..." onkeyup="filterExpiredInventory()">
+                  </div>
+
+                  <div class="expired-inv-toolbar-right">
+                    <div class="expired-inv-stat-pill">
+                      <i class="fa-solid fa-boxes-stacked"></i> Items: <span>${formatNumber(totalProducts)}</span>
+                    </div>
+                    <div class="expired-inv-stat-pill">
+                      <i class="fa-solid fa-cubes"></i> Total Qty: <span>${formatNumber(totalExpiredQty)} pcs</span>
+                    </div>
+                    <button onclick="exportExpiredInventoryExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="expired-inv-table-container">
+                  <table class="expired-inv-table" id="expiredInventoryTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 8%;">Sr.</th>
+                        <th style="width: 62%;">Product Name</th>
+                        <th style="text-align: right; width: 30%;">Total Expired Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
 
-              <div style="overflow-x: auto;">
-                <table class="pdf-item-table" id="expiredInventoryTable" style="min-width: 650px; font-size: 0.85rem;">
-                  <thead>
-                    <tr>
-                      <th>Product Name</th>
-                      <th style="text-align: right;">Total Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${tbody}
-                  </tbody>
-                </table>
+              <!-- FIXED FOOTER -->
+              <div class="expired-inv-modal-footer">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                  <i class="fa-solid fa-circle-info" style="color:#991b1b;"></i> Grouped product totals transferred from active warehouses due to expiry.
+                </span>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
               </div>
-              <div style="text-align:right; margin-top: 15px;">
-                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
-              </div>
+
             </div>
           </div>
         `;
