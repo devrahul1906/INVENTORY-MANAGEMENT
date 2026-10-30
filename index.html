@@ -3430,6 +3430,316 @@
       }
     }
 
+	/* --- PROFESSIONAL DAMAGED DUMP INVENTORY MODAL UI STYLES --- */
+    .dump-inv-modal-box {
+      max-width: 980px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .dump-inv-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .dump-inv-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Counters + Export */
+    .dump-inv-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .dump-inv-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+      max-width: 400px;
+    }
+    .dump-inv-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .dump-inv-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .dump-inv-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dump-inv-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .dump-inv-stat-pill.danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+
+    /* Maximized Scrollable Table Container */
+    .dump-inv-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dump-inv-table {
+      width: 100% !important;
+      min-width: 720px !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .dump-inv-table th {
+      background: #f1f5f9 !important;
+      color: #334155 !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #cbd5e1 !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .dump-inv-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+
+    .dump-inv-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .dump-inv-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .dump-inv-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .dump-inv-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .dump-inv-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .dump-inv-search-wrapper {
+        max-width: 100%;
+      }
+      .dump-inv-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
+	/* --- CUSTOM ENTERPRISE ALERT / NOTIFICATION POPUP STYLES --- */
+    .custom-alert-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999; /* Sabhi modals ke upar dikhega */
+      padding: 20px;
+      animation: fadeInAlert 0.15s ease-out;
+    }
+
+    .custom-alert-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 14px;
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.2), 0 8px 15px -6px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      animation: popInAlert 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .custom-alert-top-bar {
+      height: 6px;
+      width: 100%;
+    }
+    .custom-alert-box.success .custom-alert-top-bar { background: #16a34a; }
+    .custom-alert-box.error .custom-alert-top-bar { background: #dc2626; }
+    .custom-alert-box.warning .custom-alert-top-bar { background: #d97706; }
+    .custom-alert-box.info .custom-alert-top-bar { background: #1e40af; }
+
+    .custom-alert-body {
+      padding: 24px 24px 20px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .custom-alert-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+    .custom-alert-box.success .custom-alert-icon { background: #dcfce7; color: #16a34a; }
+    .custom-alert-box.error .custom-alert-icon { background: #fee2e2; color: #dc2626; }
+    .custom-alert-box.warning .custom-alert-icon { background: #fef3c7; color: #d97706; }
+    .custom-alert-box.info .custom-alert-icon { background: #dbeafe; color: #1e40af; }
+
+    .custom-alert-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .custom-alert-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0 0 6px 0;
+      letter-spacing: -0.01em;
+    }
+    .custom-alert-box.success .custom-alert-title { color: #15803d; }
+    .custom-alert-box.error .custom-alert-title { color: #b91c1c; }
+    .custom-alert-box.warning .custom-alert-title { color: #b45309; }
+    .custom-alert-box.info .custom-alert-title { color: #1e3a8a; }
+
+    .custom-alert-message {
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.55;
+      white-space: pre-line;
+      word-break: break-word;
+      max-height: 55vh;
+      overflow-y: auto;
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-weight: 500;
+    }
+
+	.custom-alert-footer {
+      padding: 12px 24px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .custom-alert-cancel-btn {
+      width: auto !important;
+      min-width: 95px;
+      padding: 9px 20px !important;
+      font-size: 0.88rem !important;
+      font-weight: 700 !important;
+      border-radius: 8px !important;
+      background: #ffffff !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+      cursor: pointer;
+      box-shadow: none !important;
+    }
+    .custom-alert-cancel-btn:hover {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+
+    .custom-alert-box.success .custom-alert-btn { background: #16a34a !important; }
+    .custom-alert-box.success .custom-alert-btn:hover { background: #15803d !important; }
+    .custom-alert-box.error .custom-alert-btn { background: #dc2626 !important; }
+    .custom-alert-box.error .custom-alert-btn:hover { background: #b91c1c !important; }
+    .custom-alert-box.warning .custom-alert-btn { background: #d97706 !important; }
+    .custom-alert-box.warning .custom-alert-btn:hover { background: #b45309 !important; }
+    .custom-alert-box.info .custom-alert-btn { background: #1e40af !important; }
+    .custom-alert-box.info .custom-alert-btn:hover { background: #1e3a8a !important; }
+
+    @keyframes fadeInAlert { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popInAlert { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
   </style>
 </head>
 
@@ -3448,6 +3758,147 @@
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx7noUWGrHVPTQHOBBtX7wHSjC8a1r1dB11EOlS1B67bkUWEGqQ-fskGMooedYxSOzQ/exec";
+
+	// =========================================================================
+    // GLOBAL CUSTOM ALERT OVERRIDE (REPLACES "This page says" BROWSER POPUP)
+    // =========================================================================
+    window.alert = function(rawMessage) {
+      let msg = String(rawMessage ?? "").trim();
+      // =========================================================================
+    // GLOBAL CUSTOM CONFIRM POPUP (REPLACES OK/CANCEL BROWSER CONFIRM DIALOG)
+    // =========================================================================
+    window.customConfirm = function(rawMessage, customTitle = "Confirm Action") {
+      return new Promise((resolve) => {
+        let msg = String(rawMessage ?? "").trim();
+        let lowerMsg = msg.toLowerCase();
+
+        let type = "info";
+        let icon = "fa-circle-question";
+
+        if (msg.includes("⚠️") || msg.includes("⚠") || lowerMsg.includes("unhold") || lowerMsg.includes("logout")) {
+          type = "warning";
+          icon = "fa-triangle-exclamation";
+        } else if (lowerMsg.includes("summary") || lowerMsg.includes("invoice")) {
+          type = "success";
+          icon = "fa-file-circle-check";
+        }
+
+        let cleanMsg = msg.replace(/^[✅❌⚠️⚠]+\s*/, "").trim();
+
+        let existing = document.getElementById("hatvet-custom-confirm");
+        if (existing) existing.remove();
+
+        let overlay = document.createElement("div");
+        overlay.id = "hatvet-custom-confirm";
+        overlay.className = "custom-alert-overlay";
+        overlay.innerHTML = `
+          <div class="custom-alert-box ${type}">
+            <div class="custom-alert-top-bar"></div>
+            <div class="custom-alert-body">
+              <div class="custom-alert-icon">
+                <i class="fa-solid ${icon}"></i>
+              </div>
+              <div class="custom-alert-content">
+                <h4 class="custom-alert-title">${escapeHtml(customTitle)}</h4>
+                <div class="custom-alert-message">${escapeHtml(cleanMsg)}</div>
+              </div>
+            </div>
+            <div class="custom-alert-footer">
+              <button id="hatvet-confirm-cancel" class="custom-alert-cancel-btn">Cancel</button>
+              <button id="hatvet-confirm-ok" class="custom-alert-btn">OK, Continue</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const cleanup = (result) => {
+          overlay.remove();
+          resolve(result);
+        };
+
+        document.getElementById("hatvet-confirm-ok").onclick = () => cleanup(true);
+        document.getElementById("hatvet-confirm-cancel").onclick = () => cleanup(false);
+
+        setTimeout(() => {
+          document.getElementById("hatvet-confirm-ok")?.focus();
+        }, 30);
+      });
+    };
+
+      // Auto-detect alert type (Success / Error / Warning / Info)
+      let type = "info";
+      let title = "System Notification";
+      let icon = "fa-circle-info";
+      let lowerMsg = msg.toLowerCase();
+
+      if (msg.includes("✅") || lowerMsg.includes("successfully") || lowerMsg.includes("verified") || lowerMsg.includes("proceeded")) {
+        type = "success";
+        title = "Action Successful";
+        icon = "fa-circle-check";
+      } else if (
+        msg.includes("❌") || 
+        lowerMsg.includes("error") || 
+        lowerMsg.includes("failed") || 
+        lowerMsg.includes("rejected") || 
+        lowerMsg.includes("denied") || 
+        lowerMsg.includes("blocked") || 
+        lowerMsg.includes("invalid")
+      ) {
+        type = "error";
+        title = "Alert / Action Blocked";
+        icon = "fa-circle-xmark";
+      } else if (
+        msg.includes("⚠️") || 
+        msg.includes("⚠") || 
+        lowerMsg.includes("please") || 
+        lowerMsg.includes("low") || 
+        lowerMsg.includes("cannot") || 
+        lowerMsg.includes("restricted") || 
+        lowerMsg.includes("mismatch")
+      ) {
+        type = "warning";
+        title = "Attention Required";
+        icon = "fa-triangle-exclamation";
+      }
+
+      // Clean leading emojis so icon & text look neat
+      let cleanMsg = msg.replace(/^[✅❌⚠️⚠]+\s*/, "").trim();
+
+      // Remove existing alert overlay if any
+      let existing = document.getElementById("hatvet-custom-alert");
+      if (existing) existing.remove();
+
+      let overlay = document.createElement("div");
+      overlay.id = "hatvet-custom-alert";
+      overlay.className = "custom-alert-overlay";
+      overlay.innerHTML = `
+        <div class="custom-alert-box ${type}">
+          <div class="custom-alert-top-bar"></div>
+          <div class="custom-alert-body">
+            <div class="custom-alert-icon">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div class="custom-alert-content">
+              <h4 class="custom-alert-title">${title}</h4>
+              <div class="custom-alert-message">${escapeHtml(cleanMsg)}</div>
+            </div>
+          </div>
+          <div class="custom-alert-footer">
+            <button id="hatvet-custom-alert-ok" class="custom-alert-btn" onclick="document.getElementById('hatvet-custom-alert')?.remove()">
+              OK, Got It
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Focus OK button so user can also press Enter or Space to close
+      setTimeout(() => {
+        document.getElementById("hatvet-custom-alert-ok")?.focus();
+      }, 30);
+    };
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -5759,11 +6210,12 @@ async function savePurchaseModalData() {
       return;
     }
 
-    const confirmed = window.confirm(
+	const confirmed = await customConfirm(
       `PDF extraction summary\n\nInvoice: ${invoiceNo}\nPages: ${pdf.numPages}\nDetected rows: ${detectedRows.length}` +
       (expectedItems != null ? `\nPDF footer item count: ${expectedItems}` : "") +
       (expectedQty != null ? `\nPDF footer total Qty: ${expectedQty}` : "") +
-      `\nTotal extracted Qty: ${totalExtractedQty}\n\nPlease compare the row count and quantities with the PDF before continuing.`
+      `\nTotal extracted Qty: ${totalExtractedQty}\n\nPlease compare the row count and quantities with the PDF before continuing.`,
+      "Verify PDF Extraction Summary"
     );
     if (!confirmed) return;
 
@@ -5982,9 +6434,9 @@ async function savePurchaseModalData() {
         return;
       }
 
-      if (type === "UNHOLD") {
+	if (type === "UNHOLD") {
          let holdReason = batchElement.options[batchElement.selectedIndex].getAttribute('data-reason') || "No reason specified";
-         let isResolved = confirm(`⚠️ UNHOLD CONFIRMATION\n\nThis product was originally held for the following reason:\n"${holdReason}"\n\nHas this issue been resolved? Are you sure you want to Unhold?`);
+         let isResolved = await customConfirm(`⚠️ UNHOLD CONFIRMATION\n\nThis product was originally held for the following reason:\n"${holdReason}"\n\nHas this issue been resolved? Are you sure you want to Unhold?`, "Unhold Confirmation");
          if (!isResolved) {
             return; 
          }
@@ -10693,8 +11145,8 @@ function downloadStockExcel(type) {
     
     function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&quot;").replace(/'/g, "&#039;"); }
 
-async function forceUserLogout(username) {
-      if (!confirm(`Are you sure you want to force logout ${username}?`)) return;
+	async function forceUserLogout(username) {
+      if (!(await customConfirm(`Are you sure you want to force logout ${username}?`, "Confirm Force Logout"))) return;
       
       try {
         let response = await fetch(`${GOOGLE_SHEET_URL}?action=forceLogout&targetUser=${encodeURIComponent(username)}`);
@@ -11022,7 +11474,7 @@ async function forceUserLogout(username) {
 	async function openDumpInventoryModal() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 600px;">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:#475569; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Dump Inventory...</h3>
           </div>
@@ -11033,72 +11485,109 @@ async function forceUserLogout(username) {
         let res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getDamagedDumpData`);
         if (res && res.status === "error") throw new Error(res.message);
 
-        // Raw Data Excel Export ke liye globally save kar rahe hain (Isko change nahi kiya hai)
+        // Raw Data Excel Export ke liye globally save kar rahe hain
         window.currentDumpData = res;
 
-        let tbody = "";
-        if (!res || res.length === 0) {
-          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Damaged Dump.</td></tr>`;
-        } else {
-          
-          // GROUPING LOGIC (UI ke liye 1 Product 1 Baar aayega or Qty Plus ho jayegi)
+        let aggregatedArray = [];
+        let totalDumpedQty = 0;
+
+        if (Array.isArray(res) && res.length > 0) {
           let groupedData = {};
           res.forEach(item => {
             let p = item.product;
-            if(!groupedData[p]) {
-              groupedData[p] = {
-                product: p,
-                qty: 0
-              };
+            let q = parseFloat(item.qty) || 0;
+            if (!groupedData[p]) {
+              groupedData[p] = { product: p, qty: 0 };
             }
-            // Qty ko sum karna
-            groupedData[p].qty += item.qty;
+            groupedData[p].qty += q;
+            totalDumpedQty += q;
           });
 
-          // Object to array & Alphabetical Sort
-          let aggregatedArray = Object.values(groupedData);
+          aggregatedArray = Object.values(groupedData).filter(item => item.qty > 0);
           aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+        }
 
-          // Screen par sirf Product aur Qty show karenge
-          aggregatedArray.forEach((item) => {
-             tbody += `
-               <tr>
-                 <td><b>${escapeHtml(item.product)}</b></td>
-                 <td style="text-align: right; color: var(--danger); font-weight: bold;">${formatNumber(item.qty)}</td>
-               </tr>
-             `;
-          });
+        let totalProducts = aggregatedArray.length;
+
+        let tbody = "";
+        if (aggregatedArray.length === 0) {
+          tbody = `<tr><td colspan="3" style="text-align:center; padding: 30px 20px; color: var(--text-muted); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> No records found in Damaged Dump.</td></tr>`;
+        } else {
+          tbody = aggregatedArray.map((item, idx) => `
+            <tr>
+              <td style="color:var(--text-muted); font-weight:600; width: 8%;">${idx + 1}</td>
+              <td><b>${escapeHtml(item.product)}</b></td>
+              <td style="text-align: right;"><span class="dump-inv-qty-badge">${formatNumber(item.qty)} pcs</span></td>
+            </tr>
+          `).join("");
         }
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 850px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:#475569;"><i class="fa-solid fa-trash-can"></i> Damaged Dump Inventory</h3>
+            <div class="modal-box dump-inv-modal-box">
               
-              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
-                <div class="field-group" style="flex: 1;">
-                  <input type="text" id="dumpSearchInput" placeholder="Search by Product Name..." onkeyup="filterDumpInventory()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <!-- FIXED HEADER -->
+              <div class="dump-inv-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:#475569; font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-trash-can"></i> Damaged Dump Inventory
+                  </h3>
+                  <span style="font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #cbd5e1;">
+                    Disposed / Dumped Stock Log
+                  </span>
                 </div>
-                <button onclick="exportDumpInventoryExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="dump-inv-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR: SEARCH + COUNTERS + EXPORT -->
+                <div class="dump-inv-toolbar">
+                  <div class="dump-inv-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="dumpSearchInput" placeholder="Search by Product Name..." onkeyup="filterDumpInventory()">
+                  </div>
+
+                  <div class="dump-inv-toolbar-right">
+                    <div class="dump-inv-stat-pill">
+                      <i class="fa-solid fa-boxes-stacked"></i> Products: <span>${formatNumber(totalProducts)}</span>
+                    </div>
+                    <div class="dump-inv-stat-pill danger">
+                      <i class="fa-solid fa-trash-arrow-up"></i> Total Dumped: <span>${formatNumber(totalDumpedQty)} pcs</span>
+                    </div>
+                    <button onclick="exportDumpInventoryExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="dump-inv-table-container">
+                  <table class="dump-inv-table" id="dumpInventoryTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 8%;">Sr.</th>
+                        <th style="width: 62%;">Product Name</th>
+                        <th style="text-align: right; width: 30%;">Total Dumped Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
 
-              <div style="overflow-x: auto;">
-                <table class="pdf-item-table" id="dumpInventoryTable" style="min-width: 650px; font-size: 0.85rem;">
-                  <thead>
-                    <tr>
-                      <th>Product Name</th>
-                      <th style="text-align: right;">Total Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${tbody}
-                  </tbody>
-                </table>
+              <!-- FIXED FOOTER -->
+              <div class="dump-inv-modal-footer">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                  <i class="fa-solid fa-circle-info" style="color:#475569;"></i> Export Excel includes full batch-wise, challan-wise & date-wise dump history.
+                </span>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
               </div>
-              <div style="text-align:right; margin-top: 15px;">
-                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
-              </div>
+
             </div>
           </div>
         `;
@@ -11107,6 +11596,7 @@ async function forceUserLogout(username) {
         closeModalAndResume();
       }
     }
+
 	function filterDumpInventory() {
       let filter = document.getElementById("dumpSearchInput").value.toLowerCase();
       let rows = document.querySelectorAll("#dumpInventoryTable tbody tr");
