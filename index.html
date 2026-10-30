@@ -3447,7 +3447,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyonfe4sUDAVmjHoCcucXGdB5rbTRpgjSsx-tSm9z4WGLzs3jdaPNziQejG_qWFTLLk/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx7noUWGrHVPTQHOBBtX7wHSjC8a1r1dB11EOlS1B67bkUWEGqQ-fskGMooedYxSOzQ/exec";
 
     let userScansCache = [];
     let holdInvCache = [];
@@ -9583,7 +9583,7 @@ async function handleDispatchReturnPdfUpload(input) {
                   <i class="fa-solid fa-triangle-exclamation"></i> Stock Shortages (Short Item List)
                 </h3>
                 <span style="font-size: 0.75rem; background: #fffbeb; color: #b45309; padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #fde68a;">
-                  Threshold: &lt; 1,000 pcs (QA + Packing Area)
+                  Threshold: &lt; 1,000 pcs (QA + Main WH + Packing Area)
                 </span>
               </div>
               <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
@@ -9600,7 +9600,7 @@ async function handleDispatchReturnPdfUpload(input) {
             <!-- FIXED FOOTER -->
             <div class="short-modal-footer">
               <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
-                <i class="fa-solid fa-circle-info" style="color:#d97706;"></i> Shows active products whose combined stock in QA + Packing Area is below 1,000 pcs.
+                <i class="fa-solid fa-circle-info" style="color:#d97706;"></i> Shows active products whose combined stock in QA + Main WH + Packing Area is below 1,000 pcs.
               </span>
               <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
             </div>
@@ -9629,7 +9629,7 @@ async function handleDispatchReturnPdfUpload(input) {
             <div style="text-align:center; padding: 40px 20px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; border-radius: 10px; margin: auto 0;">
               <i class="fa-solid fa-circle-check" style="font-size: 2.4rem; margin-bottom: 10px;"></i>
               <h4 style="font-size: 1.1rem; margin-bottom: 4px;">All Stock Levels Sufficient!</h4>
-              <p style="font-size: 0.85rem;">All active items currently have 1,000 pcs or more across QA & Packing Area.</p>
+              <p style="font-size: 0.85rem;">All active items currently have 1,000 pcs or more across QA, Main Warehouse & Packing Area.</p>
             </div>
           `;
           return;
