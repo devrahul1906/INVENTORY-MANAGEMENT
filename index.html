@@ -3740,6 +3740,203 @@
     @keyframes fadeInAlert { from { opacity: 0; } to { opacity: 1; } }
     @keyframes popInAlert { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+	/* --- PROFESSIONAL DASHBOARD KPI DETAILS MODAL UI STYLES --- */
+    .kpi-date-modal-box {
+      max-width: 480px !important;
+      width: 95% !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+
+    .kpi-modal-box {
+      max-width: 880px !important;
+      width: 96% !important;
+      height: 88vh !important;
+      max-height: 88vh !important;
+      padding: 0 !important;
+      gap: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      border-radius: 12px !important;
+    }
+    .kpi-modal-box.wide {
+      max-width: 1080px !important;
+    }
+
+    .kpi-modal-header {
+      padding: 12px 24px !important;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .kpi-modal-body {
+      padding: 14px 24px !important;
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      background: #f8fafc;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Single-Line Toolbar: Search + Counters + Export */
+    .kpi-toolbar {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-shrink: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .kpi-search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+      max-width: 380px;
+    }
+    .kpi-search-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .kpi-search-wrapper input {
+      padding: 8px 12px 8px 34px !important;
+      height: 38px !important;
+      font-size: 0.85rem !important;
+      background: #ffffff !important;
+      border-radius: 8px !important;
+      width: 100%;
+    }
+
+    .kpi-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-stat-pill {
+      height: 38px;
+      padding: 0 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .kpi-stat-pill.emerald {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #15803d;
+    }
+
+    /* Full-Height Scrollable Table Container */
+    .kpi-table-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 0.85rem !important;
+      margin: 0 !important;
+    }
+
+    .kpi-table th {
+      background: var(--primary-light) !important;
+      color: var(--primary) !important;
+      font-weight: 700 !important;
+      padding: 10px 16px !important;
+      border-bottom: 1px solid #bfdbfe !important;
+      border-top: none !important;
+      white-space: nowrap !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+    }
+
+    .kpi-table td {
+      padding: 9px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      vertical-align: middle !important;
+    }
+
+    .kpi-table tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+    .kpi-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .kpi-qty-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+    .kpi-qty-badge.emerald {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .kpi-modal-footer {
+      padding: 10px 24px !important;
+      border-top: 1px solid var(--border-color);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    @media(max-width: 720px) {
+      .kpi-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+      .kpi-search-wrapper {
+        max-width: 100%;
+      }
+      .kpi-toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
   </style>
 </head>
 
@@ -4128,39 +4325,53 @@ setInterval(async () => {
     function showExpiredStockDetails() { fetchKpiDetails("Near-Expiry Stock", "<i class='fa-solid fa-clock-rotate-left'></i>", "Near-Expiry"); }
 		
 	function showDispatchStockDetails() {
-      let today = new Date();
-      let toDateStr = today.toISOString().split('T')[0];
-      
-      let pastSixMonths = new Date();
-      pastSixMonths.setMonth(today.getMonth() - 6);
-      let fromDateStr = pastSixMonths.toISOString().split('T')[0];
-
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 450px;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Select Date Range</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 12px;">Select From and To date for Dispatched Qty. <b>If left blank, system will automatically show data for the last 6 months.</b></p>
+          <div class="modal-box kpi-date-modal-box">
             
-            <div class="field-group" style="margin-top: 10px;">
-              <label>From Date (Optional)</label>
-              <input type="date" id="dispatchFromDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+            <!-- HEADER -->
+            <div class="kpi-modal-header">
+              <div>
+                <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                  <i class="fa-solid fa-calendar-days"></i> Dispatched Qty Date Range
+                </h3>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-top: 2px;">Select From and To date for outward dispatch records.</p>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="field-group" style="margin-top: 10px;">
-              <label>To Date (Optional)</label>
-              <input type="date" id="dispatchToDate" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 1rem;">
+
+            <!-- BODY -->
+            <div style="padding: 20px 24px; background: #f8fafc; display: flex; flex-direction: column; gap: 14px;">
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 8px; font-size: 0.8rem; color: #1e3a8a;">
+                <i class="fa-solid fa-circle-info"></i> <b>Default Range:</b> If left blank, the system automatically shows dispatched data for the <b>last 6 months</b>.
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #ffffff; padding: 16px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: var(--shadow-sm);">
+                <div class="field-group">
+                  <label style="color:var(--primary); font-size: 0.82rem;"><i class="fa-regular fa-calendar"></i> From Date (Optional)</label>
+                  <input type="date" id="dispatchFromDate" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem;">
+                </div>
+                <div class="field-group">
+                  <label style="color:var(--primary); font-size: 0.82rem;"><i class="fa-regular fa-calendar-check"></i> To Date (Optional)</label>
+                  <input type="date" id="dispatchToDate" style="padding: 9px 10px; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; font-size: 0.9rem;">
+                </div>
+              </div>
             </div>
             
-            <div style="display:flex; gap:12px; margin-top:20px;">
-              <button onclick="fetchAndShowDispatchData()" class="btn-primary" style="background-color: var(--primary); color: white; width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-bolt"></i> Generate Report</button>
-              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; cursor: pointer; background: #f1f5f9;">Cancel</button>
+            <!-- FOOTER -->
+            <div class="kpi-modal-footer" style="justify-content: flex-end;">
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 10px 18px;">Cancel</button>
+              <button onclick="fetchAndShowDispatchData()" class="btn-primary" style="background-color: var(--primary); color: white; width: auto; padding: 10px 22px;">
+                <i class="fa-solid fa-bolt"></i> Generate Report
+              </button>
             </div>
+
           </div>
         </div>
       `;
     }
 
-	async function fetchAndShowDispatchData() {
+    async function fetchAndShowDispatchData() {
       let fromDateVal = document.getElementById("dispatchFromDate").value;
       let toDateVal = document.getElementById("dispatchToDate").value;
 
@@ -4179,7 +4390,7 @@ setInterval(async () => {
 
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 600px;">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
             <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Dispatch Details...</h3>
           </div>
@@ -4218,63 +4429,106 @@ setInterval(async () => {
 
         window.currentDispatchFullData = res;
 
-        let tbody = "";
-        if (!res || res.length === 0) {
-          tbody = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in Dispatch Inventory for the selected range.</td></tr>`;
-        } else {
+        let aggregatedArray = [];
+        let grandTotalDispatched = 0;
+
+        if (res && res.length > 0) {
           let groupedData = {};
           res.forEach(item => {
             let p = item.product;
+            let q = parseFloat(String(item.qty).replace(/,/g, '')) || 0;
             if(!groupedData[p]) groupedData[p] = 0;
-            groupedData[p] += (parseFloat(String(item.qty).replace(/,/g, '')) || 0);
+            groupedData[p] += q;
           });
 
-          let aggregatedArray = Object.keys(groupedData).map(p => ({ product: p, totalQty: groupedData[p] }));
-          aggregatedArray = aggregatedArray.filter(item => item.totalQty > 0);
+          aggregatedArray = Object.keys(groupedData)
+            .map(p => ({ product: p, totalQty: groupedData[p] }))
+            .filter(item => item.totalQty > 0);
           aggregatedArray.sort((a, b) => a.product.localeCompare(b.product));
+          grandTotalDispatched = aggregatedArray.reduce((s, i) => s + i.totalQty, 0);
+        }
 
-          aggregatedArray.forEach((item) => {
-             tbody += `
-               <tr>
-                 <td><b>${escapeHtml(item.product)}</b></td>
-                 <td style="text-align: right; color: var(--primary); font-weight: bold;">${formatNumber(item.totalQty)} pcs</td>
-               </tr>
-             `;
-          });
+        let tbody = "";
+        if (aggregatedArray.length === 0) {
+          tbody = `<tr><td colspan="3" style="text-align:center; padding: 30px 20px; color: var(--text-muted); font-weight: 600;"><i class="fa-solid fa-box-open"></i> No records found in Dispatch Inventory for the selected range.</td></tr>`;
+        } else {
+          tbody = aggregatedArray.map((item, idx) => `
+            <tr>
+              <td style="color:var(--text-muted); font-weight:600; width: 8%;">${idx + 1}</td>
+              <td><b>${escapeHtml(item.product)}</b></td>
+              <td style="text-align: right;"><span class="kpi-qty-badge emerald">${formatNumber(item.totalQty)} pcs</span></td>
+            </tr>
+          `).join("");
         }
 
         let rangeLabel = `${fromDate.toLocaleDateString('en-GB')} to ${toDate.toLocaleDateString('en-GB')}`;
 
         document.getElementById("modal-container").innerHTML = `
           <div class="modal-overlay">
-            <div class="modal-box" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
-              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-              <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Dispatched Qty Details <small style="font-size: 0.8rem; color: var(--text-muted);">(${rangeLabel})</small></h3>
+            <div class="modal-box kpi-modal-box">
               
-              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; margin-bottom: 15px; gap: 10px;">
-                <div class="field-group" style="flex: 1;">
-                  <input type="text" id="dispatchSearchInput" placeholder="Search by Product Name..." onkeyup="filterDispatchDetails()" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <!-- FIXED HEADER -->
+              <div class="kpi-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-truck-fast"></i> Dispatched Qty Details
+                  </h3>
+                  <span style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                    <i class="fa-regular fa-calendar"></i> ${rangeLabel}
+                  </span>
                 </div>
-                <button onclick="exportDispatchExcel()" class="btn-emerald" style="width: auto; padding: 10px 16px; font-size: 0.85rem;"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              
+              <!-- BODY -->
+              <div class="kpi-modal-body">
+                
+                <!-- SINGLE-LINE TOOLBAR -->
+                <div class="kpi-toolbar">
+                  <div class="kpi-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="dispatchSearchInput" placeholder="Search by Product Name..." onkeyup="filterDispatchDetails()">
+                  </div>
+
+                  <div class="kpi-toolbar-right">
+                    <div class="kpi-stat-pill">
+                      <i class="fa-solid fa-boxes-stacked"></i> Products: <span>${formatNumber(aggregatedArray.length)}</span>
+                    </div>
+                    <div class="kpi-stat-pill emerald">
+                      <i class="fa-solid fa-cubes"></i> Total Dispatched: <span>${formatNumber(grandTotalDispatched)} pcs</span>
+                    </div>
+                    <button onclick="exportDispatchExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="kpi-table-container">
+                  <table class="kpi-table" id="dispatchDetailsTable">
+                    <thead>
+                      <tr>
+                        <th style="width: 8%;">Sr.</th>
+                        <th style="width: 64%;">Product Name</th>
+                        <th style="text-align: right; width: 28%;">Total Dispatched Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
 
-              <div style="overflow-x: auto;">
-                <table class="pdf-item-table" id="dispatchDetailsTable" style="width: 100%; font-size: 0.85rem;">
-                  <thead>
-                    <tr>
-                      <th>Product Name</th>
-                      <th style="text-align: right;">Total Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${tbody}
-                  </tbody>
-                </table>
+              <!-- FIXED FOOTER -->
+              <div class="kpi-modal-footer">
+                <button onclick="showDispatchStockDetails()" class="btn-indigo" style="width: auto; padding: 9px 16px; font-size: 0.85rem;">
+                  <i class="fa-solid fa-calendar-days"></i> Change Date
+                </button>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-top: 15px;">
-                  <button onclick="showDispatchStockDetails()" class="btn-indigo" style="width: auto; padding: 8px 16px;"><i class="fa-solid fa-arrow-left"></i> Change Date</button>
-                  <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 8px 24px;">Close</button>
-              </div>
+
             </div>
           </div>
         `;
@@ -4479,16 +4733,12 @@ function formatShortDate(rawStr) {
       }
     }
 
-async function showTodayBillsDetails() {
+	async function showTodayBillsDetails() {
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-width: 950px; max-height: 85vh; overflow-y: auto;">
+          <div class="modal-box" style="max-width: 420px; text-align: center;">
             <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);"><i class="fa-solid fa-file-invoice"></i> Today's Received Bills</h3>
-            <div id="stockDetailsContent" style="margin-top: 12px; text-align:center;">
-              <i class="fa-solid fa-spinner fa-spin"></i> Loading today's data...
-            </div>
-            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 12px; width: auto; padding: 8px 16px;">Close</button>
+            <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Today's Bills...</h3>
           </div>
         </div>
       `;
@@ -4497,115 +4747,284 @@ async function showTodayBillsDetails() {
         const response = await fetch(`${GOOGLE_SHEET_URL}?action=getTodayBillsDetails`);
         const textData = await response.text(); 
         
-        // Security check: Agar JSON ki jagah HTML page return ho
         if (textData.includes("<!DOCTYPE") || textData.includes("<html")) {
           throw new Error("Google blocked the request. Apps Script Deploy karte time 'Who has access' ko 'Anyone' zaroor karein.");
         }
 
         let list = JSON.parse(textData);
         
-        // Agar backend error bheje
         if (list && list.status === "error") {
-            throw new Error("Backend Error: " + list.message);
+          throw new Error("Backend Error: " + list.message);
         }
 
-        // Safe filtering: Array verify karke RECEIVED QTY filter lagana
         let validList = (Array.isArray(list) ? list : []).filter(item => {
-           let rQty = parseInt(item.receivedQty !== undefined ? item.receivedQty : item.qty, 10);
-           return rQty > 0;
+          let rQty = parseInt(item.receivedQty !== undefined ? item.receivedQty : item.qty, 10);
+          return rQty > 0;
         });
 
-        let content = "";
+        window.currentTodayBillsData = validList;
+
+        let totalEntries = validList.length;
+        let totalRecQty = validList.reduce((sum, item) => sum + (parseInt(item.receivedQty !== undefined ? item.receivedQty : item.qty, 10) || 0), 0);
+
+        let tbody = "";
         if (validList.length === 0) {
-          content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No valid bills received today.</p>`;
+          tbody = `<tr><td colspan="9" style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-weight: 600;"><i class="fa-solid fa-file-circle-xmark"></i> No purchase bills received today.</td></tr>`;
         } else {
-          // YAHAN SE ALPHABETICAL SORTING WALI LINE HATA DI GAYI HAI
-          // Ab data usi order mein aayega jaise sheet mein enter hua hai (Entry Order)
-          let rows = validList.map(item => `
+          tbody = validList.map((item, idx) => `
             <tr>
-              <td>${escapeHtml(item.user)}</td>
-              <td>${escapeHtml(item.supplier)}</td>
+              <td style="color:var(--text-muted); font-weight:600; width: 4%;">${idx + 1}</td>
+              <td><b>${escapeHtml(item.user)}</b></td>
+              <td style="color:#334155; font-weight:500;">${escapeHtml(item.supplier)}</td>
               <td><b>${escapeHtml(item.product)}</b></td>
-              <td>${escapeHtml(formatShortDate(item.mfg))}</td>
-              <td>${escapeHtml(formatShortDate(item.exp))}</td>
-              <td>${escapeHtml(item.mrp)}</td>
-              <td style="text-align: right; font-weight: 700; color: #059669;">${formatNumber(item.receivedQty !== undefined ? item.receivedQty : item.qty)}</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.qty)}</td>
+              <td>${escapeHtml(formatShortDate(item.mfg) || "-")}</td>
+              <td>${escapeHtml(formatShortDate(item.exp) || "-")}</td>
+              <td>${escapeHtml(item.mrp ? "₹" + item.mrp : "-")}</td>
+              <td style="text-align: right;"><span class="kpi-qty-badge emerald">${formatNumber(item.receivedQty !== undefined ? item.receivedQty : item.qty)}</span></td>
+              <td style="text-align: right;"><span class="kpi-qty-badge">${formatNumber(item.qty)}</span></td>
             </tr>
           `).join("");
-
-          content = `
-            <div style="overflow-x: auto;">
-              <table class="pdf-item-table" style="min-width: 850px; font-size: 0.82rem;">
-                <thead>
-                  <tr>
-                    <th>USER</th>
-                    <th>SUPPLIER NAME</th>
-                    <th>PRODUCT NAME</th>
-                    <th>MFG</th>
-                    <th>EXP</th>
-                    <th>MRP</th>
-                    <th style="text-align: right;">RECEIVED QTY</th>
-                    <th style="text-align: right;">AVAILABLE QTY</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows}
-                </tbody>
-              </table>
-            </div>
-          `;
         }
-        document.getElementById("stockDetailsContent").innerHTML = content;
+
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box kpi-modal-box wide">
+              
+              <!-- FIXED HEADER -->
+              <div class="kpi-modal-header">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">
+                    <i class="fa-solid fa-file-invoice"></i> Today's Received Bills
+                  </h3>
+                  <span style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                    Live Inward Log (QA)
+                  </span>
+                </div>
+                <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <!-- BODY -->
+              <div class="kpi-modal-body" id="stockDetailsContent">
+                
+                <!-- SINGLE-LINE TOOLBAR -->
+                <div class="kpi-toolbar">
+                  <div class="kpi-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="todayBillsSearchInput" placeholder="Search by Product, Supplier, or User..." onkeyup="filterTodayBillsTable()">
+                  </div>
+
+                  <div class="kpi-toolbar-right">
+                    <div class="kpi-stat-pill">
+                      <i class="fa-solid fa-file-lines"></i> Entries: <span>${formatNumber(totalEntries)}</span>
+                    </div>
+                    <div class="kpi-stat-pill emerald">
+                      <i class="fa-solid fa-boxes-packing"></i> Received Qty: <span>${formatNumber(totalRecQty)} pcs</span>
+                    </div>
+                    <button onclick="exportTodayBillsExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+                      <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                  </div>
+                </div>
+
+                <!-- MAXIMIZED SCROLLABLE TABLE -->
+                <div class="kpi-table-container">
+                  <table class="kpi-table" id="todayBillsTable" style="min-width: 880px;">
+                    <thead>
+                      <tr>
+                        <th style="width: 4%;">Sr.</th>
+                        <th>User</th>
+                        <th>Supplier Name</th>
+                        <th>Product Name</th>
+                        <th>Mfg</th>
+                        <th>Exp</th>
+                        <th>MRP</th>
+                        <th style="text-align: right;">Received Qty</th>
+                        <th style="text-align: right;">Available Qty</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tbody}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              <!-- FIXED FOOTER -->
+              <div class="kpi-modal-footer">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                  <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Listed in chronological entry order as inwarded today.
+                </span>
+                <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
+              </div>
+
+            </div>
+          </div>
+        `;
       } catch (e) {
-        // Error ab screen par perfectly print hogi
-        document.getElementById("stockDetailsContent").innerHTML = `<p style="color:var(--danger); text-align:center; padding: 20px;"><b>Error Details:</b><br><br>${escapeHtml(e.message)}</p>`;
+        alert("Error loading Today's Bills: " + e.message);
+        closeModalAndResume();
       }
     }
 
+    function filterTodayBillsTable() {
+      let q = (document.getElementById("todayBillsSearchInput")?.value || "").toLowerCase();
+      let rows = document.querySelectorAll("#todayBillsTable tbody tr");
+      rows.forEach(row => {
+        if (row.cells.length < 2) return;
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
+    }
+
+    function exportTodayBillsExcel() {
+      if (!window.currentTodayBillsData || window.currentTodayBillsData.length === 0) {
+        alert("No bills received today to export.");
+        return;
+      }
+      let exportData = window.currentTodayBillsData.map((item, idx) => ({
+        "Sr.No": idx + 1,
+        "User": item.user || "N/A",
+        "Supplier Name": item.supplier || "N/A",
+        "Product Name": item.product || "N/A",
+        "Mfg Date": formatShortDate(item.mfg) || "N/A",
+        "Exp Date": formatShortDate(item.exp) || "N/A",
+        "MRP": item.mrp || "N/A",
+        "Received Qty": parseInt(item.receivedQty !== undefined ? item.receivedQty : item.qty, 10) || 0,
+        "Available Qty": parseInt(item.qty, 10) || 0
+      }));
+      let ws = XLSX.utils.json_to_sheet(exportData);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Today Bills");
+      XLSX.writeFile(wb, `Today_Received_Bills_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
     function openStockDetailsModal(title, contentHtml) {
+      let isLoading = contentHtml === "Loading...";
+      if (isLoading) {
+        document.getElementById("modal-container").innerHTML = `
+          <div class="modal-overlay">
+            <div class="modal-box" style="max-width: 420px; text-align: center;">
+              <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+              <h3 style="color:var(--primary); text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Stock...</h3>
+              <div id="stockDetailsContent" style="display:none;"></div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
-          <div class="modal-box" style="max-height: 85vh; overflow-y: auto;">
-            <button onclick="closeModalAndResume()" class="modal-close-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="color:var(--primary);">${title}</h3>
-            <div id="stockDetailsContent" style="margin-top: 4px;">${contentHtml}</div>
-            <button onclick="closeModalAndResume()" class="btn-secondary" style="margin-top: 8px;">Close</button>
+          <div class="modal-box kpi-modal-box">
+            <div class="kpi-modal-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h3 style="color:var(--primary); font-size: 1.2rem; display:flex; align-items:center; gap:8px; margin:0;">${title}</h3>
+                <span style="font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 50px; font-weight: 700; border: 1px solid #bfdbfe;">
+                  Product-Wise Summary
+                </span>
+              </div>
+              <button onclick="closeModalAndResume()" class="modal-close-btn" style="position:static;" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="stockDetailsContent" class="kpi-modal-body">${contentHtml}</div>
+            <div class="kpi-modal-footer">
+              <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Showing consolidated available stock per product.
+              </span>
+              <button onclick="closeModalAndResume()" class="btn-secondary" style="width: auto; padding: 9px 24px; font-size: 0.85rem;">Close</button>
+            </div>
           </div>
         </div>
       `;
     }
 
     function renderStockDetailsTable(title, list) {
-      let content = "";
       let validList = (list || []).filter(item => parseInt(item.totalQty, 10) > 0);
+      validList.sort((a, b) => a.product.localeCompare(b.product));
 
+      window.currentKpiModalList = validList;
+      window.currentKpiModalTitle = title.replace(/<[^>]*>?/gm, '').trim();
+
+      let totalProducts = validList.length;
+      let grandTotalPcs = validList.reduce((sum, item) => sum + (parseInt(item.totalQty, 10) || 0), 0);
+
+      let tbody = "";
       if (validList.length === 0) {
-        content = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">No products found in stock.</p>`;
+        tbody = `<tr><td colspan="3" style="text-align:center; padding: 30px 20px; color:var(--text-muted); font-weight: 600;"><i class="fa-solid fa-box-open"></i> No products found in stock.</td></tr>`;
       } else {
-        validList.sort((a, b) => a.product.localeCompare(b.product));
-        let rows = validList.map(item => `
+        tbody = validList.map((item, idx) => `
           <tr>
+            <td style="color:var(--text-muted); font-weight:600; width: 8%;">${idx + 1}</td>
             <td><b>${escapeHtml(item.product)}</b></td>
-            <td style="text-align: right; font-weight: 700; color: var(--primary);">${formatNumber(item.totalQty)} pcs</td>
+            <td style="text-align: right;"><span class="kpi-qty-badge">${formatNumber(item.totalQty)} pcs</span></td>
           </tr>
         `).join("");
+      }
 
-        content = `
-          <table class="pdf-item-table">
+      let content = `
+        <!-- SINGLE-LINE TOOLBAR: SEARCH + LIVE STATS + EXPORT -->
+        <div class="kpi-toolbar">
+          <div class="kpi-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="kpiModalSearchInput" placeholder="Search by Product Name..." onkeyup="filterKpiModalTable()">
+          </div>
+
+          <div class="kpi-toolbar-right">
+            <div class="kpi-stat-pill">
+              <i class="fa-solid fa-boxes-stacked"></i> Products: <span>${formatNumber(totalProducts)}</span>
+            </div>
+            <div class="kpi-stat-pill emerald">
+              <i class="fa-solid fa-cubes"></i> Total Stock: <span>${formatNumber(grandTotalPcs)} pcs</span>
+            </div>
+            <button onclick="exportKpiModalExcel()" class="btn-emerald" style="width: auto; padding: 8px 16px; height: 38px; font-size: 0.84rem;">
+              <i class="fa-solid fa-file-excel"></i> Export Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- MAXIMIZED SCROLLABLE TABLE -->
+        <div class="kpi-table-container">
+          <table class="kpi-table" id="kpiModalTable">
             <thead>
               <tr>
-                <th>Product Name</th>
-                <th style="text-align: right;">Total Qty</th>
+                <th style="width: 8%;">Sr.</th>
+                <th style="width: 64%;">Product Name</th>
+                <th style="text-align: right; width: 28%;">Total Available Qty</th>
               </tr>
             </thead>
             <tbody>
-              ${rows}
+              ${tbody}
             </tbody>
           </table>
-        `;
-      }
+        </div>
+      `;
       openStockDetailsModal(title, content);
+    }
+
+    function filterKpiModalTable() {
+      let q = (document.getElementById("kpiModalSearchInput")?.value || "").toLowerCase();
+      let rows = document.querySelectorAll("#kpiModalTable tbody tr");
+      rows.forEach(row => {
+        if (row.cells.length < 2) return;
+        row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+      });
+    }
+
+    function exportKpiModalExcel() {
+      if (!window.currentKpiModalList || window.currentKpiModalList.length === 0) {
+        alert("No stock data available to export.");
+        return;
+      }
+      let exportData = window.currentKpiModalList.map((item, idx) => ({
+        "Sr.No": idx + 1,
+        "Warehouse": window.currentKpiModalTitle || "Warehouse",
+        "Product Name": item.product || "N/A",
+        "Total Available Qty (Pcs)": parseInt(item.totalQty, 10) || 0
+      }));
+      let safeName = (window.currentKpiModalTitle || "KPI_Stock").replace(/[^a-zA-Z0-9]/g, '_');
+      let ws = XLSX.utils.json_to_sheet(exportData);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Stock Summary");
+      XLSX.writeFile(wb, `${safeName}_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     function getFooter() {
