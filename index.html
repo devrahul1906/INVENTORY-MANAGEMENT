@@ -619,9 +619,9 @@
       text-transform: uppercase;
       border: 1px solid #bfdbfe;
     }
-    .purchase-grid-2 {
+   .purchase-grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1.6fr;
+      grid-template-columns: 1.8fr 1fr; /* 1.8fr Product Name ke liye, 1fr Category ke liye */
       gap: 14px;
     }
     .purchase-grid-4 {
@@ -6025,8 +6025,8 @@ function filterAuditLogs() {
                     </div>
 
                     <div class="field-group">
-                      <label>Category (Auto-Filled) <span style="color:var(--danger);">*</span></label>
-                      <input type="text" class="p_category" placeholder="Auto-fills on Product selection" readonly style="background-color: #f1f5f9; font-weight: 700; color: var(--primary); cursor: not-allowed;">
+                      <label>Category <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_category" placeholder="Please Select Product Name" readonly style="background-color: #f1f5f9; font-weight: 700; color: var(--primary); cursor: not-allowed;">
                     </div>
                   </div>
 
