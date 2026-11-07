@@ -3963,7 +3963,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     // REMEMBER: UPDATE THIS URL TO YOUR DEPLOYED WEB APP URL
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwdhb7WvDOlEPcXkQerhgIFEByhfNq7EM1W-mnnClEA0mq9KOWoppaIARWa_KfEOs_e/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzDKpIhqu0jTaRiyFI70mmStH79jAu-AGz8FX9HTyLU7vWxcS7PjCrNt57hUVxCaLIE/exec";
 
 	// 1. GLOBAL CUSTOM CONFIRM POPUP (INDEPENDENT)
     window.customConfirm = function(rawMessage, customTitle = "Confirm Action") {
@@ -5126,10 +5126,89 @@ function formatShortDate(rawStr) {
       }
     }
 
+
+	// --- ITEM MASTER (PRODUCTS, CATEGORIES & SUPPLIERS) CACHE ---
+    let itemMasterCache = JSON.parse(localStorage.getItem("hatvet_item_master_v2") || '{"items":[],"suppliers":[]}');
+
+    async function fetchItemMasterFromCloud() {
+      try {
+        const res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getItemMaster`);
+        if (res && Array.isArray(res.items)) {
+          itemMasterCache = res;
+          localStorage.setItem("hatvet_item_master_v2", JSON.stringify(res));
+          
+          // Agar Purchase ya Suspense modal khula ho to turant dropdown update karein
+          let supSel = document.getElementById("global_supplier");
+          if (supSel && supSel.options.length <= 1) {
+            supSel.innerHTML = getSupplierMasterOptionsHtml();
+          }
+          document.querySelectorAll(".p_name").forEach(sel => {
+            if (sel.options.length <= 1) sel.innerHTML = getItemMasterOptionsHtml("-- Select Product --");
+          });
+          let srSel = document.getElementById("sr_product");
+          if (srSel && srSel.options.length <= 1) {
+            srSel.innerHTML = getItemMasterOptionsHtml("-- Select Product Name --");
+          }
+        }
+      } catch (e) {
+        console.warn("Using cached Item Master:", e);
+      }
+    }
+
+    // Column A se Products ke <option> banayega
+    function getItemMasterOptionsHtml(defaultLabel = "-- Select Product --") {
+      let html = `<option value="">${defaultLabel}</option>`;
+      (itemMasterCache.items || []).forEach(item => {
+        if (item.product) {
+          html += `<option value="${escapeHtml(item.product)}">${escapeHtml(item.product)}</option>`;
+        }
+      });
+      return html;
+    }
+
+    // Column C se Suppliers ke <option> banayega
+    function getSupplierMasterOptionsHtml() {
+      let html = `<option value="">-- Select Supplier --</option>`;
+      (itemMasterCache.suppliers || []).forEach(sup => {
+        html += `<option value="${escapeHtml(sup)}">${escapeHtml(sup)}</option>`;
+      });
+      return html;
+    }
+
+    // Product select karte hi Column B se Category apne-aap fill karega
+    function autoFillPurchaseCategory(selectElem) {
+      let selectedProd = selectElem.value.trim().toUpperCase();
+      let row = selectElem.closest(".purchase-item-row");
+      if (!row) return;
+      let catInput = row.querySelector(".p_category");
+      if (!catInput) return;
+
+      if (!selectedProd) {
+        catInput.value = "";
+        return;
+      }
+
+      let found = (itemMasterCache.items || []).find(item => 
+        String(item.product || "").trim().toUpperCase() === selectedProd
+      );
+
+      if (found && found.category) {
+        let rawCat = String(found.category).trim();
+        // Sheet me "Tablet" likha hai aur aapke savePurchaseModalData() me "Tablets" par 10x logic hai
+        if (rawCat.toLowerCase() === "tablet") {
+          rawCat = "Tablets";
+        }
+        catInput.value = rawCat;
+      } else {
+        catInput.value = "";
+      }
+    }
+
     async function syncDataAndShowDashboard() {
       showDashboard(); 
       fetchAllMetrics(); 
       fetchUserScansFromCloud(); 
+      fetchItemMasterFromCloud(); 
     }
 
 	function getBrandingHeader() {
@@ -5899,16 +5978,6 @@ function filterAuditLogs() {
     }
 
 	function openPurchaseModal() {
-      let supplierSet = new Set();
-      userScansCache.forEach(item => {
-        if (item.supplier) supplierSet.add(item.supplier.trim());
-      });
-
-      let supplierOptions = '<option value="">-- Select Supplier --</option>';
-      Array.from(supplierSet).sort().forEach(sup => {
-        supplierOptions += `<option value="${escapeHtml(sup)}">${escapeHtml(sup)}</option>`;
-      });
-
       document.getElementById("modal-container").innerHTML = `
         <div class="modal-overlay">
           <div class="modal-box purchase-modal-box">
@@ -5927,41 +5996,13 @@ function filterAuditLogs() {
             <!-- SCROLLABLE BODY -->
             <div class="purchase-modal-body">
               
-              <!-- SUPPLIER SECTION -->
+              <!-- SUPPLIER SECTION (FROM ITEM MASTER COLUMN C) -->
               <div class="field-group purchase-supplier-card">
                 <label style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">
                   <i class="fa-solid fa-truck-field"></i> Supplier Name (Applies to all items below) <span style="color:var(--danger);">*</span>
                 </label>
                 <select id="global_supplier" style="margin-top: 6px; background: #fff; font-weight: 600;">
-                  <option value="">-- Select Supplier --</option>
-                  <option value="General Machine Tools">General Machine Tools</option>
-                  <option value="Dasya Pharma">Dasya Pharma</option>
-                  <option value="Zaneka Health Care Ltd">Zaneka Health Care Ltd</option>
-                  <option value="Zaneka Drugs">Zaneka Drugs</option>
-                  <option value="FARMA HUB">FARMA HUB</option>
-                  <option value="LIFE MAX CANCER LABORATORIES">LIFE MAX CANCER LABORATORIES</option>
-                  <option value="Fentum Health Care">Fentum Health Care</option>
-                  <option value="MALIK LIFESCIENCES PVT.LTD.">MALIK LIFESCIENCES PVT.LTD.</option>
-                  <option value="PURE AND CURE HEALTHCARE PVT.LTD.">PURE AND CURE HEALTHCARE PVT.LTD.</option>
-                  <option value="BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+">BIO-MED HEALTHCARE PRODUCTS PVT. LTD.+</option>
-                  <option value="PODDAR PHARMACEUTICALS PRIVATE LIMITE">PODDAR PHARMACEUTICALS PRIVATE LIMITE</option>
-                  <option value="MASCOT HEALTH SERIES PVT. LTD.">MASCOT HEALTH SERIES PVT. LTD.</option>
-                  <option value="AKUMS DRUGS & PHARMACEUTICALS LTD.">AKUMS DRUGS & PHARMACEUTICALS LTD.</option>
-                  <option value="PERCOS INDIA PVT. LTD.">PERCOS INDIA PVT. LTD.</option>
-                  <option value="SAFECON LIFESCIENCES PVT. LTD.">SAFECON LIFESCIENCES PVT. LTD.</option>
-                  <option value="APCO PHARMA LTD.">APCO PHARMA LTD.</option>
-                  <option value="DASYA PHARMA PRIVATE LIMITED.">DASYA PHARMA PRIVATE LIMITED.</option>
-                  <option value="PELLUCID VETSCIENCES">PELLUCID VETSCIENCES</option>
-                  <option value="ISKON REMEDIES">ISKON REMEDIES</option>
-                  <option value="LIFE GEM MEDI HEALTHCARE (INDIA)">LIFE GEM MEDI HEALTHCARE (INDIA)</option>
-                  <option value="MULTANI PHARMACEUTICALS LIMITED">MULTANI PHARMACEUTICALS LIMITED</option>
-                  <option value="CIAN HEALTHCARE LIMITED">CIAN HEALTHCARE LIMITED</option>
-                  <option value="COTEC HEALTHCARE LIMITED">COTEC HEALTHCARE LIMITED</option>
-                  <option value="MAKIN LABORATORIES PVT. LTD.">MAKIN LABORATORIES PVT. LTD.</option>
-                  <option value="ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)">ALPHAFACTS HEALTH SOLUTIONS BVBA (ROORKEE)</option>
-                  <option value="GEMSTAR LIFEHEALTHCARE MEDICHEM">GEMSTAR LIFEHEALTHCARE MEDICHEM</option>
-                  <option value="MULTANI PHARMACEUTICALS LTD.">MULTANI PHARMACEUTICALS LTD.</option>
-                  <option value="MONIQUE PHARMACEUTICALS PVT. LTD.">MONIQUE PHARMACEUTICALS PVT. LTD.</option>
+                  ${getSupplierMasterOptionsHtml()}
                 </select>
               </div>
 
@@ -5974,181 +6015,18 @@ function filterAuditLogs() {
                     <div class="remove-btn-slot"></div>
                   </div>
 
-                  <!-- ROW 1: Category & Product Name side-by-side -->
+                  <!-- ROW 1: Product Name (Column A) & Auto-Filled Category (Column B) -->
                   <div class="purchase-grid-2">
                     <div class="field-group">
-                      <label>Category <span style="color:var(--danger);">*</span></label>
-                      <select class="p_category">
-                        <option value="">-- Select Category --</option>
-                        <option value="Tablets">Tablets</option>
-                        <option value="Oral Powder">Oral Powder</option>
-                        <option value="Oral Spray">Oral Spray</option>
-                        <option value="Injection">Injection</option>
-                        <option value="Syrup / Suspension">Syrup / Suspension</option>
-                        <option value="Eye Drop">Eye Drop</option>
-                        <option value="Topical Cream / Ointment">Topical Cream / Ointment</option>
-                        <option value="Topical Spray">Topical Spray</option>
-                        <option value="Topical Solution">Topical Solution</option>
-                        <option value="Ear Drop">Ear Drop</option>
-                        <option value="Ear Cleanser">Ear Cleanser</option>
-                        <option value="Shampoo">Shampoo</option>
-                        <option value="Dusting Powder">Dusting Powder</option>
-                        <option value="Dispenser Syringe">Dispenser Syringe</option>
+                      <label>Product Name <span style="color:var(--danger);">*</span></label>
+                      <select class="p_name" onchange="autoFillPurchaseCategory(this)">
+                        ${getItemMasterOptionsHtml("-- Select Product --")}
                       </select>
                     </div>
 
                     <div class="field-group">
-                      <label>Product Name <span style="color:var(--danger);">*</span></label>
-                      <select class="p_name">
-                        <option value="">-- Select Product --</option>
-                        <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-                        <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-                        <option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
-                        <option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
-                        <option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
-                        <option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
-                        <option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
-                        <option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
-                        <option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
-                        <option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
-                        <option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
-                        <option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
-                        <option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
-                        <option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
-                        <option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
-                        <option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
-                        <option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
-                        <option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
-                        <option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
-                        <option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
-                        <option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
-                        <option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
-                        <option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
-                        <option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
-                        <option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
-                        <option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
-                        <option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
-                        <option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
-                        <option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
-                        <option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
-                        <option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
-                        <option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
-                        <option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
-                        <option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
-                        <option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
-                        <option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
-                        <option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
-                        <option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
-                        <option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
-                        <option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
-                        <option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
-                        <option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
-                        <option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
-                        <option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
-                        <option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
-                        <option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
-                        <option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
-                        <option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
-                        <option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
-                        <option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
-                        <option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
-                        <option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
-                        <option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
-                        <option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
-                        <option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
-                        <option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
-                        <option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
-                        <option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
-                        <option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
-                        <option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
-                        <option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
-                        <option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
-                        <option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
-                        <option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
-                        <option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
-                        <option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
-                        <option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
-                        <option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
-                        <option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
-                        <option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
-                        <option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
-                        <option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
-                        <option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
-                        <option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
-                        <option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
-                        <option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
-                        <option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
-                        <option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
-                        <option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
-                        <option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
-                        <option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
-                        <option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
-                        <option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
-                        <option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
-                        <option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
-                        <option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
-                        <option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
-                        <option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
-                        <option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
-                        <option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
-                        <option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
-                        <option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
-                        <option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
-                        <option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
-                        <option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
-                        <option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
-                        <option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
-                        <option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
-                        <option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
-                        <option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
-                        <option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
-                        <option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
-                        <option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
-                        <option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
-                        <option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
-                        <option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
-                        <option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
-                        <option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
-                        <option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
-                        <option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
-                        <option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
-                        <option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
-                        <option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
-                        <option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
-                        <option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
-                        <option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
-                        <option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
-                        <option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
-                        <option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
-                        <option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
-                        <option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
-                        <option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
-                        <option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
-                        <option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
-                        <option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
-                        <option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
-                        <option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
-                        <option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
-                        <option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-                        <option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
-                        <option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
-                        <option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
-                        <option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
-                        <option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
-                        <option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
-                        <option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
-                        <option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
-                        <option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
-                        <option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
-                        <option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
-                        <option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
-                        <option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
-                        <option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
-                        <option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
-                        <option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
-                        <option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
-                        <option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>
-                      </select>
+                      <label>Category (Auto-Filled) <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_category" placeholder="Auto-fills on Product selection" readonly style="background-color: #f1f5f9; font-weight: 700; color: var(--primary); cursor: not-allowed;">
                     </div>
                   </div>
 
@@ -6204,6 +6082,10 @@ function filterAuditLogs() {
           </div>
         </div>
       `;
+
+      if (!itemMasterCache.items || itemMasterCache.items.length === 0) {
+        fetchItemMasterFromCloud();
+      }
     }
 
     function addPurchaseRow() {
@@ -10135,154 +10017,7 @@ async function handleDispatchReturnPdfUpload(input) {
                   <div class="field-group">
                     <label><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--warning);"></i> Product Name <span style="color:var(--danger);">*</span></label>
                     <select id="sr_product" class="form-control">
-                      <option value="">-- Select Product Name --</option>
-                      <option value="MR.INJECT(Disposable Syringe)">MR.INJECT(Disposable Syringe)</option>
-                      <option value="(BLISTER PACK) WITHOUT NEEDLE 5ML">(BLISTER PACK) WITHOUT NEEDLE 5ML</option>
-                      <option value="AMOXYHAT-SL INJ. 300 MG">AMOXYHAT-SL INJ. 300 MG</option>
-                      <option value="AZITHROHAT SYRUP 30 ML">AZITHROHAT SYRUP 30 ML</option>
-                      <option value="RENALRAJ-PB SUSPENSION">RENALRAJ-PB SUSPENSION</option>
-                      <option value="HATLAC JUNIOR DRY SYP.">HATLAC JUNIOR DRY SYP.</option>
-                      <option value="AZITHROHAT-300 1*6">AZITHROHAT-300 1*6</option>
-                      <option value="CARDIOHAT TAB 1*30">CARDIOHAT TAB 1*30</option>
-                      <option value="CARPOHAT-100 TAB 1*10">CARPOHAT-100 TAB 1*10</option>
-                      <option value="CARPOHAT-50 TAB. 1*10">CARPOHAT-50 TAB. 1*10</option>
-                      <option value="CLINDAHAT 600MG TAB. 1*10">CLINDAHAT 600MG TAB. 1*10</option>
-                      <option value="CLINDAHAT SYRUP 60 ML">CLINDAHAT SYRUP 60 ML</option>
-                      <option value="CLINDAHAT-250 TAB 1*10">CLINDAHAT-250 TAB 1*10</option>
-                      <option value="CORTIHAT TOPICAL SPRAY 50 ML">CORTIHAT TOPICAL SPRAY 50 ML</option>
-                      <option value="DIGEHAT PLUS SYRUP 100 ML">DIGEHAT PLUS SYRUP 100 ML</option>
-                      <option value="ECTOCOVER PNC SHAMPOO 200 ML">ECTOCOVER PNC SHAMPOO 200 ML</option>
-                      <option value="ECTOCOVER-F ANTI-TICKS POWDER 100 GM">ECTOCOVER-F ANTI-TICKS POWDER 100 GM</option>
-                      <option value="ECTOCOVER-PP ANTI-TICKS POWDER 100 GM">ECTOCOVER-PP ANTI-TICKS POWDER 100 GM</option>
-                      <option value="ECTOCOVER-CM 24 SHAMPOO 200 ML">ECTOCOVER-CM 24 SHAMPOO 200 ML</option>
-                      <option value="ECTOCOVER-BPSS SHAMPOO 200ML">ECTOCOVER-BPSS SHAMPOO 200ML</option>
-                      <option value="ENROHAT-10 SYRUP 60 ML">ENROHAT-10 SYRUP 60 ML</option>
-                      <option value="ENROHAT-50 SYRUP 60 ML">ENROHAT-50 SYRUP 60 ML</option>
-                      <option value="ENROHAT-DT 200 1*10">ENROHAT-DT 200 1*10</option>
-                      <option value="EPIHAT-KBR SYP 100 ml">EPIHAT-KBR SYP 100 ml</option>
-                      <option value="EPIHAT-LC SYP 100 ml">EPIHAT-LC SYP 100 ml</option>
-                      <option value="HATCAL JUNIOR SYRUP 100 ML">HATCAL JUNIOR SYRUP 100 ML</option>
-                      <option value="HATCAL-D TAB 1*30">HATCAL-D TAB 1*30</option>
-                      <option value="HATCAL-RENAL TAB 1*10">HATCAL-RENAL TAB 1*10</option>
-                      <option value="HATCEF-100 DT TAB 1*10">HATCEF-100 DT TAB 1*10</option>
-                      <option value="HATCEF-200 DT TAB 1*10">HATCEF-200 DT TAB 1*10</option>
-                      <option value="HATCLAV 500 TAB 1*10">HATCLAV 500 TAB 1*10</option>
-                      <option value="HATCLAV DS D/S 30 ML">HATCLAV DS D/S 30 ML</option>
-                      <option value="HATCLAV-250 DRY SYP 30 ML">HATCLAV-250 DRY SYP 30 ML</option>
-                      <option value="HATCLAV-375 TAB 1*10">HATCLAV-375 TAB 1*10</option>
-                      <option value="HATCORT MP TAB 1*10">HATCORT MP TAB 1*10</option>
-                      <option value="HATCORT SYP 60 ml">HATCORT SYP 60 ml</option>
-                      <option value="HATCORT-DS SYP 60 ML">HATCORT-DS SYP 60 ML</option>
-                      <option value="HATCURE INJ 100 ML">HATCURE INJ 100 ML</option>
-                      <option value="HATDERM KC TOPICAL SPRAY 100 ML">HATDERM KC TOPICAL SPRAY 100 ML</option>
-                      <option value="HATDERM MC TOPICAL SPRAY 100 ML">HATDERM MC TOPICAL SPRAY 100 ML</option>
-                      <option value="HATDERM-KCN CREAM 30 GM">HATDERM-KCN CREAM 30 GM</option>
-                      <option value="HATDOTE INJ. 5 ml">HATDOTE INJ. 5 ml</option>
-                      <option value="HATFUR OMEGA TAB 1*10">HATFUR OMEGA TAB 1*10</option>
-                      <option value="HATFUR TAB 1*10">HATFUR TAB 1*10</option>
-                      <option value="HATFUR-Z TAB. 1*10">HATFUR-Z TAB. 1*10</option>
-                      <option value="HATGAT EYE DROP 5 ml">HATGAT EYE DROP 5 ml</option>
-                      <option value="HATGAT-P EYE DROP 5 ml">HATGAT-P EYE DROP 5 ml</option>
-                      <option value="HATGROW PLUS POWDER 200 GM">HATGROW PLUS POWDER 200 GM</option>
-                      <option value="HATJOINT PLUS TAB 1*10">HATJOINT PLUS TAB 1*10</option>
-                      <option value="HATLAC PLUS TAB. 1*10">HATLAC PLUS TAB. 1*10</option>
-                      <option value="HATLAC PLUS D/S 60 ML">HATLAC PLUS D/S 60 ML</option>
-                      <option value="HATLAC SUSP 60 ml">HATLAC SUSP 60 ml</option>
-                      <option value="HATLAC TAB 1*10">HATLAC TAB 1*10</option>
-                      <option value="HATLEXIN-1000 TAB 1*10">HATLEXIN-1000 TAB 1*10</option>
-                      <option value="HATLEXIN-250 SYRUP 60 ML">HATLEXIN-250 SYRUP 60 ML</option>
-                      <option value="HATLEXIN-300 TAB. 1*10">HATLEXIN-300 TAB. 1*10</option>
-                      <option value="HATLEXIN-600 TAB. 1*10">HATLEXIN-600 TAB. 1*10</option>
-                      <option value="HATLOOSE SYP 100 ml">HATLOOSE SYP 100 ml</option>
-                      <option value="HATMOIST EYE DROP 10 ml">HATMOIST EYE DROP 10 ml</option>
-                      <option value="HATMOX EYE DROP 5 ml">HATMOX EYE DROP 5 ml</option>
-                      <option value="HATMOX-D EYE DROP 5 ml">HATMOX-D EYE DROP 5 ml</option>
-                      <option value="HATMOX-KT EYE DROP 5 ml">HATMOX-KT EYE DROP 5 ml</option>
-                      <option value="HATODINE AQUA SOLUTION 60 ML">HATODINE AQUA SOLUTION 60 ML</option>
-                      <option value="HATODINE OINT 1*30 G">HATODINE OINT 1*30 G</option>
-                      <option value="HATODINE SCRUB TOPICAL SPRAY 100 ML">HATODINE SCRUB TOPICAL SPRAY 100 ML</option>
-                      <option value="HATODINE TOPICAL SPRAY 100 ML">HATODINE TOPICAL SPRAY 100 ML</option>
-                      <option value="HATODINE-M OINT 1*30 G">HATODINE-M OINT 1*30 G</option>
-                      <option value="HATOTIC-ES EAR DROP 15 ML">HATOTIC-ES EAR DROP 15 ML</option>
-                      <option value="HATOTIC-GBC E/D 15 ML">HATOTIC-GBC E/D 15 ML</option>
-                      <option value="HATOTIC-NBC E/D 15ML">HATOTIC-NBC E/D 15ML</option>
-                      <option value="HATPAN TAB 1*10">HATPAN TAB 1*10</option>
-                      <option value="HATPLAT SYRUP 100 ML">HATPLAT SYRUP 100 ML</option>
-                      <option value="HATPLAT TAB. (HERBAL) 1*10">HATPLAT TAB. (HERBAL) 1*10</option>
-                      <option value="HATPOD 100 DT TAB 1*10">HATPOD 100 DT TAB 1*10</option>
-                      <option value="HATPOD 200 DT TAB 1*10">HATPOD 200 DT TAB 1*10</option>
-                      <option value="HATPOD-100 D/S 30 ml">HATPOD-100 D/S 30 ml</option>
-                      <option value="HATPOD-200 TAB 1*10">HATPOD-200 TAB 1*10</option>
-                      <option value="HATPYRIN SYP 60 ML">HATPYRIN SYP 60 ML</option>
-                      <option value="HATPYRIN TAB 1*10">HATPYRIN TAB 1*10</option>
-                      <option value="HATVET'S ALL IN ONE SHAMPOO 200 ML">HATVET'S ALL IN ONE SHAMPOO 200 ML</option>
-                      <option value="HATVET'S ANTI DANDRUFF SHAMPOO 200 ML">HATVET'S ANTI DANDRUFF SHAMPOO 200 ML</option>
-                      <option value="HATVET'S ALL IN ONE SHAMPOO 30 ML">HATVET'S ALL IN ONE SHAMPOO 30 ML</option>
-                      <option value="HATVET'S DRY FOAM SHAMPOO 150 ML">HATVET'S DRY FOAM SHAMPOO 150 ML</option>
-                      <option value="HATVET'S HATGROOM POWDER 100 GM">HATVET'S HATGROOM POWDER 100 GM</option>
-                      <option value="HATVIT-A TAB 1*10">HATVIT-A TAB 1*10</option>
-                      <option value="HATWORM KITTY TAB 1*1">HATWORM KITTY TAB 1*1</option>
-                      <option value="HATWORM PLUS TAB. 1*2">HATWORM PLUS TAB. 1*2</option>
-                      <option value="HATZAPINE TAB 1*10">HATZAPINE TAB 1*10</option>
-                      <option value="HATZINE-25 1*10">HATZINE-25 1*10</option>
-                      <option value="HATZINE-50 1*10">HATZINE-50 1*10</option>
-                      <option value="HEPARAJ ADVANCE TAB 1*10">HEPARAJ ADVANCE TAB 1*10</option>
-                      <option value="HEPARAJ JUNIOR SYRUP 100 ML">HEPARAJ JUNIOR SYRUP 100 ML</option>
-                      <option value="HEPARAJ PLUS TAB. 1*10">HEPARAJ PLUS TAB. 1*10</option>
-                      <option value="HEPARAJ TAB 1*10">HEPARAJ TAB 1*10</option>
-                      <option value="IMMUNOHAT SYP 100 ML">IMMUNOHAT SYP 100 ML</option>
-                      <option value="INFLAHAT-TBR TAB 1*10">INFLAHAT-TBR TAB 1*10</option>
-                      <option value="ITRARAJ SYP 60 ml">ITRARAJ SYP 60 ml</option>
-                      <option value="ITRARAJ-100MG TAB 1*10">ITRARAJ-100MG TAB 1*10</option>
-                      <option value="IVERRAJ-10MG TAB. 1*10">IVERRAJ-10MG TAB. 1*10</option>
-                      <option value="IVERRAJ-3MG TAB. 1*10">IVERRAJ-3MG TAB. 1*10</option>
-                      <option value="IVERRAJ-DT 16 TAB 1*10">IVERRAJ-DT 16 TAB 1*10</option>
-                      <option value="KETOHAT 200 MG TAB. 1*10">KETOHAT 200 MG TAB. 1*10</option>
-                      <option value="METROHAT 300 MG TAB 1*10">METROHAT 300 MG TAB 1*10</option>
-                      <option value="METROHAT SYP 60 ml">METROHAT SYP 60 ml</option>
-                      <option value="NASOVET NASAL DROP 10 ml">NASOVET NASAL DROP 10 ml</option>
-                      <option value="ONDAHAT ORAL SPRAY 20 ML">ONDAHAT ORAL SPRAY 20 ML</option>
-                      <option value="ONDAHAT ORAL SPRAY 30ML">ONDAHAT ORAL SPRAY 30ML</option>
-                      <option value="OPTHORAJ-DT EYE DROP 5 ml">OPTHORAJ-DT EYE DROP 5 ml</option>
-                      <option value="OTIHAT TeN EAR CLEANSER 50 ML">OTIHAT TeN EAR CLEANSER 50 ML</option>
-                      <option value="OTIHAT-EC 60 ML">OTIHAT-EC 60 ML</option>
-                      <option value="PANTOHAT 40 TAB. 1*10">PANTOHAT 40 TAB. 1*10</option>
-                      <option value="PANTOHAT-D TAB. 1*10">PANTOHAT-D TAB. 1*10</option>
-                      <option value="PANTOHAT-I.V. INJ. 10ML">PANTOHAT-I.V. INJ. 10ML</option>
-                      <option value="PULMOHAT SYRUP 100 ML">PULMOHAT SYRUP 100 ML</option>
-                      <option value="RAJCPM SYP 60 ml">RAJCPM SYP 60 ml</option>
-                      <option value="RAJDOX 100 INJ. 100 MG">RAJDOX 100 INJ. 100 MG</option>
-                      <option value="RAJDOX 200 INJ. 200 MG">RAJDOX 200 INJ. 200 MG</option>
-                      <option value="RAJDOX SUSP 60 ml">RAJDOX SUSP 60 ml</option>
-                      <option value="RAJDOX-100 TAB 1*10">RAJDOX-100 TAB 1*10</option>
-                      <option value="RAJDOX-200 TAB 1*10">RAJDOX-200 TAB 1*10</option>
-                      <option value="RAJDOX-LB 100 1*10">RAJDOX-LB 100 1*10</option>
-                      <option value="RAJDOX-LB 200 1*10">RAJDOX-LB 200 1*10</option>
-                      <option value="RAJDOX-LB 300 TAB 1*10">RAJDOX-LB 300 TAB 1*10</option>
-                      <option value="RAJDROXIL-500 DT TAB 1*10">RAJDROXIL-500 DT TAB 1*10</option>
-                      <option value="RAJDROXIL-250 TAB 1*10">RAJDROXIL-250 TAB 1*10</option>
-                      <option value="RAJDROXIL-600 DT TAB 1*10">RAJDROXIL-600 DT TAB 1*10</option>
-                      <option value="RAJFAN TAB 1*3">RAJFAN TAB 1*3</option>
-                      <option value="RAJFAN-50 SYRUP 60 ML">RAJFAN-50 SYRUP 60 ML</option>
-                      <option value="RAJMET SYP 60 ml">RAJMET SYP 60 ml</option>
-                      <option value="RAJMET-DP SYRUP 60 ML">RAJMET-DP SYRUP 60 ML</option>
-                      <option value="RAJPARA SUSP 60 ml">RAJPARA SUSP 60 ml</option>
-                      <option value="RAJPARA TAB 1*10">RAJPARA TAB 1*10</option>
-                      <option value="RANTIRAJ SYP 100 ml">RANTIRAJ SYP 100 ml</option>
-                      <option value="RANTIRAJ TAB 1*10">RANTIRAJ TAB 1*10</option>
-                      <option value="RENALRAJ SUSP 170 ml">RENALRAJ SUSP 170 ml</option>
-                      <option value="RENOHAT PLUS TABLET 1*30">RENOHAT PLUS TABLET 1*30</option>
-                      <option value="RENOHAT-H SYRUP 100 ML">RENOHAT-H SYRUP 100 ML</option>
-                      <option value="SCABHAT OINTMENT 30 GM">SCABHAT OINTMENT 30 GM</option>
-                      <option value="TERBIRAJ 250 TAB 1*10">TERBIRAJ 250 TAB 1*10</option>
-                      <option value="TERBIRAJ 500 TAB 1*10">TERBIRAJ 500 TAB 1*10</option>
-                      <option value="TORSOHAT 7.5 TAB 1*10">TORSOHAT 7.5 TAB 1*10</option>
-                      <option value="TRAMAHAT 100 DT TAB 1*10">TRAMAHAT 100 DT TAB 1*10</option>
-                      <option value="TRAMAHAT 50 DT TAB 1*10">TRAMAHAT 50 DT TAB 1*10</option>
-                      <option value="VETAXONE-SL INJ. 750 MG">VETAXONE-SL INJ. 750 MG</option>
-                      <option value="VETAXONE-TAZO INJ. 562.5">VETAXONE-TAZO INJ. 562.5</option>
-                      <option value="VETTAX-SL INJ. 750 MG">VETTAX-SL INJ. 750 MG</option>
-                      <option value="VITnMIN-H TAB 1*10">VITnMIN-H TAB 1*10</option>
+                      ${getItemMasterOptionsHtml("-- Select Product Name --")}
                     </select>
                   </div>
 
@@ -10351,6 +10086,10 @@ async function handleDispatchReturnPdfUpload(input) {
           </div>
         </div>
       `;
+
+      if (!itemMasterCache.items || itemMasterCache.items.length === 0) {
+        fetchItemMasterFromCloud();
+      }
     }
 
 	function getSuspenseExpiryMonthsDiff(expStr) {
