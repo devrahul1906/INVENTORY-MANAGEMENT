@@ -5130,50 +5130,45 @@ function formatShortDate(rawStr) {
 	// --- ITEM MASTER (PRODUCTS, CATEGORIES & SUPPLIERS) CACHE ---
     let itemMasterCache = JSON.parse(localStorage.getItem("hatvet_item_master_v2") || '{"items":[],"suppliers":[]}');
 
-    async function fetchItemMasterFromCloud() {
-      try {
-        const res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getItemMaster`);
-        if (res && Array.isArray(res.items)) {
-          itemMasterCache = res;
-          localStorage.setItem("hatvet_item_master_v2", JSON.stringify(res));
-          
-          // Agar Purchase ya Suspense modal khula ho to turant dropdown update karein
-          let supSel = document.getElementById("global_supplier");
-          if (supSel && supSel.options.length <= 1) {
-            supSel.innerHTML = getSupplierMasterOptionsHtml();
-          }
-          document.querySelectorAll(".p_name").forEach(sel => {
-            if (sel.options.length <= 1) sel.innerHTML = getItemMasterOptionsHtml("-- Select Product --");
-          });
-          let srSel = document.getElementById("sr_product");
-          if (srSel && srSel.options.length <= 1) {
-            srSel.innerHTML = getItemMasterOptionsHtml("-- Select Product Name --");
-          }
-        }
-      } catch (e) {
-        console.warn("Using cached Item Master:", e);
+	async function fetchItemMasterFromCloud() {
+  try {
+    const res = await safeFetch(`${GOOGLE_SHEET_URL}?action=getItemMaster`);
+    if (res && Array.isArray(res.items)) {
+      itemMasterCache = res;
+      localStorage.setItem("hatvet_item_master_v2", JSON.stringify(res));
+      
+      let supList = document.getElementById("supplier_list");
+      if (supList && supList.options.length === 0) {
+        supList.innerHTML = getSupplierMasterOptionsHtml();
       }
-    }
-
-    // Column A se Products ke <option> banayega
-    function getItemMasterOptionsHtml(defaultLabel = "-- Select Product --") {
-      let html = `<option value="">${defaultLabel}</option>`;
-      (itemMasterCache.items || []).forEach(item => {
-        if (item.product) {
-          html += `<option value="${escapeHtml(item.product)}">${escapeHtml(item.product)}</option>`;
-        }
+      
+      let prodListHtml = getItemMasterOptionsHtml();
+      document.querySelectorAll(".product_list_data").forEach(dl => {
+        if (dl.options.length === 0) dl.innerHTML = prodListHtml;
       });
-      return html;
     }
+  } catch (e) {
+    console.warn("Using cached Item Master:", e);
+  }
+}
 
-    // Column C se Suppliers ke <option> banayega
-    function getSupplierMasterOptionsHtml() {
-      let html = `<option value="">-- Select Supplier --</option>`;
-      (itemMasterCache.suppliers || []).forEach(sup => {
-        html += `<option value="${escapeHtml(sup)}">${escapeHtml(sup)}</option>`;
-      });
-      return html;
+function getItemMasterOptionsHtml() {
+  let html = "";
+  (itemMasterCache.items || []).forEach(item => {
+    if (item.product) {
+      html += `<option value="${escapeHtml(item.product)}"></option>`;
     }
+  });
+  return html;
+}
+
+function getSupplierMasterOptionsHtml() {
+  let html = "";
+  (itemMasterCache.suppliers || []).forEach(sup => {
+    html += `<option value="${escapeHtml(sup)}"></option>`;
+  });
+  return html;
+}
 
     // Product select karte hi Column B se Category apne-aap fill karega
     function autoFillPurchaseCategory(selectElem) {
@@ -5996,14 +5991,15 @@ function filterAuditLogs() {
             <!-- SCROLLABLE BODY -->
             <div class="purchase-modal-body">
               
-              <!-- SUPPLIER SECTION (FROM ITEM MASTER COLUMN C) -->
+		<!-- SUPPLIER SECTION -->
               <div class="field-group purchase-supplier-card">
                 <label style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">
                   <i class="fa-solid fa-truck-field"></i> Supplier Name (Applies to all items below) <span style="color:var(--danger);">*</span>
                 </label>
-                <select id="global_supplier" style="margin-top: 6px; background: #fff; font-weight: 600;">
+                <input type="text" id="global_supplier" list="supplier_list" placeholder="Start typing to search supplier..." style="margin-top: 6px; background: #fff; font-weight: 600;" autocomplete="off">
+                <datalist id="supplier_list">
                   ${getSupplierMasterOptionsHtml()}
-                </select>
+                </datalist>
               </div>
 
               <!-- PRODUCT ITEMS CONTAINER -->
@@ -6016,17 +6012,19 @@ function filterAuditLogs() {
                   </div>
 
                   <!-- ROW 1: Product Name (Column A) & Auto-Filled Category (Column B) -->
+			<!-- ROW 1: Product Name & Category -->
                   <div class="purchase-grid-2">
                     <div class="field-group">
                       <label>Product Name <span style="color:var(--danger);">*</span></label>
-                      <select class="p_name" onchange="autoFillPurchaseCategory(this)">
-                        ${getItemMasterOptionsHtml("-- Select Product --")}
-                      </select>
+                      <input type="text" class="p_name" list="product_list" placeholder="Start typing to search product..." onchange="autoFillPurchaseCategory(this)" autocomplete="off">
+                      <datalist id="product_list" class="product_list_data">
+                        ${getItemMasterOptionsHtml()}
+                      </datalist>
                     </div>
 
                     <div class="field-group">
-                      <label>Category <span style="color:var(--danger);">*</span></label>
-                      <input type="text" class="p_category" placeholder="Please Select Product Name" readonly style="background-color: #f1f5f9; font-weight: 700; color: var(--primary); cursor: not-allowed;">
+                      <label>Category (Auto-Filled) <span style="color:var(--danger);">*</span></label>
+                      <input type="text" class="p_category" placeholder="Auto-fills on Product selection" readonly style="background-color: #f1f5f9; font-weight: 700; color: var(--primary); cursor: not-allowed;">
                     </div>
                   </div>
 
@@ -10014,11 +10012,12 @@ async function handleDispatchReturnPdfUpload(input) {
                 
                 <!-- LEFT SIDE: INPUT FORM CARD -->
                 <div class="suspense-form-card">
-                  <div class="field-group">
+			<div class="field-group">
                     <label><i class="fa-solid fa-prescription-bottle-medical" style="color:var(--warning);"></i> Product Name <span style="color:var(--danger);">*</span></label>
-                    <select id="sr_product" class="form-control">
-                      ${getItemMasterOptionsHtml("-- Select Product Name --")}
-                    </select>
+                    <input type="text" id="sr_product" list="sr_product_list" placeholder="Start typing to search product..." class="form-control" autocomplete="off">
+                    <datalist id="sr_product_list" class="product_list_data">
+                      ${getItemMasterOptionsHtml()}
+                    </datalist>
                   </div>
 
                   <!-- ROW 2: Batch No & Exp Date side-by-side -->
